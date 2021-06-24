@@ -1,0 +1,29 @@
+/*body {
+    background-image: url('../img/dog-breeds.jpg');
+}*/
+
+.container {
+    text-align: center;
+}
+
+
+.marginRight {
+    margin-right: 15px;
+}
+
+.marginLeft {
+    margin-left: 15px;
+}
+
+.marginTop {
+    margin-top: 20px;
+}
+
+.label {
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.bold {
+    font-weight: bold;
+}

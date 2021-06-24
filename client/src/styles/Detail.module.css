@@ -1,0 +1,19 @@
+.container {
+    text-align: center;
+}
+
+.image {
+  width:50%;
+  margin-bottom: 16px;
+}
+
+@media only screen and (max-width: 600px) {
+    .image {
+      width: 100%
+    }
+  }
+
+.label {
+    font-weight: bold;
+}
+
