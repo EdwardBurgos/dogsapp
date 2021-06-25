@@ -1,11 +1,8 @@
-import s from '../styles/Create.module.css';
+import s from './Create.module.css';
 import React, { useEffect, useState } from 'react';
-//import { useSelector } from 'react-redux';
-//{ useEffect, useState }
 import axios from 'axios';
-import Modal from './Modal';
-
-import * as actionsCreators from '../actions';
+import Modal from '../Modal/Modal';
+import * as actionsCreators from '../../actions';
 import { useDispatch, useSelector } from 'react-redux'
 
 export default function Create() {

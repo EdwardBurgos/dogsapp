@@ -1,8 +1,8 @@
-import s from '../styles/Pagination.module.css';
+import s from './Pagination.module.css';
 //import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux'
 import React, { useEffect, useState } from 'react';
-import { changePage } from '../actions';
+import { changePage } from '../../actions';
 
 
 export default function Pagination() {

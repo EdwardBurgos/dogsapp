@@ -1,6 +1,4 @@
-// import s from '../styles/LandingPage.module.css';
-// import { Link } from 'react-router-dom';
-import Card from './Card';
+import Card from '../Card/Card';
 import React from 'react';
 
 export default function Cards({dogs}) {

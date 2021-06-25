@@ -1,15 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import LandingPage from './components/LandingPage';
-import Home from './components/Home'
-import Detail from './components/Detail';
-import Create from './components/Create';
 import reportWebVitals from './reportWebVitals';
-import { BrowserRouter, Route } from 'react-router-dom';
+import { BrowserRouter} from 'react-router-dom';
 import storeConfig from './store.js';
 import { Provider } from 'react-redux';
-// import App from './App';
+import App from './App';
 // import redux from 'redux';
 
 const store = storeConfig();
@@ -18,10 +14,7 @@ ReactDOM.render(
   <Provider store={store}>
     <BrowserRouter>
       <React.StrictMode>
-        <Route exact path="/" component={LandingPage} />
-        <Route path="/home" component={Home} />
-        <Route path="/detail/:id" render={({ match }) => <Detail id={match.params.id} />} />
-        <Route path="/create" component={Create}/>
+        <App></App>
       </React.StrictMode>
     </BrowserRouter>
   </Provider>,

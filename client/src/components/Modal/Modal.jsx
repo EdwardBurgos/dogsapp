@@ -10,9 +10,9 @@
 // </div>
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import s from '../styles/Modal.module.css';
+import s from './Modal.module.css';
 import { Link } from 'react-router-dom';
-import {deleteCreationMessage}  from '../actions'
+import {deleteCreationMessage}  from '../../actions'
 import React from 'react';
 
 export default function Modal({content}) {

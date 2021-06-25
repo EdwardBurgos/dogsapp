@@ -1,10 +1,10 @@
-import s from '../styles/Home.module.css';
+import s from './Home.module.css';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import Cards from './Cards';
-import * as actionsCreators from '../actions';
+import Cards from '../Cards/Cards';
+import * as actionsCreators from '../../actions';
 import { useDispatch, useSelector } from 'react-redux'
-import Pagination from './Pagination';
+import Pagination from '../Pagination/Pagination';
 
 
 export default function Home(props) {

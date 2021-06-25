@@ -1,11 +1,19 @@
 import './App.css';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import LandingPage from './components/LandingPage/LandingPage';
+import Home from './components/Home/Home'
+import Detail from './components/Detail/Detail';
+import Create from './components/Create/Create';
+import { Route } from 'react-router-dom';
+
 
 function App() {
   return (
     <div className="App">
-      <h1>Henry Dogs</h1>
-      <Link to="/home"><button>HOME</button></Link>
+      <Route exact path="/" component={LandingPage} />
+      <Route path="/home" component={Home} />
+      <Route path="/detail/:id" render={({ match }) => <Detail id={match.params.id} />} />
+      <Route path="/create" component={Create} />
     </div>
   );
 }
