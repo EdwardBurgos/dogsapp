@@ -9,51 +9,72 @@ import Pagination from '../Pagination/Pagination';
 
 export default function Home(props) {
   const dispatch = useDispatch();
-  const dogsRedux = useSelector(state => state.dogs); // Default dogs
-  const temperamentsRedux = useSelector(state => state.temperaments);
-  const actualPageRedux = useSelector(state => state.actualPage);
+
   const finalResultRedux = useSelector(state => state.finalResult);
+  const actualPageRedux = useSelector(state => state.actualPage);
+  const temperamentsRedux = useSelector(state => state.temperaments);
 
+  //const [temperamentsRedux] = useSelector([])
 
-  const [foundogs, setFoundogs] = useState([]); // Searched dogs
-  const [filterdogs, setFilterdogs] = useState([]); // Filter dogs
+  const [dogs, setDogs] = useState([])
+  const [foundogs, setFoundogs] = useState([]);
+  const [firstfilterdogs, setFirstfilterdogs] = useState([]);
   const [secondfilterdogs, setSecondfilterdogs] = useState([]);
+  const [error, setError] = useState('');
+  //const [breed, setBreed] = useState('');
+  const [temperament, setTemperament] = useState('');
+  const [property, setProperty] = useState('');
 
+  // Al cargar la página
   useEffect(() => {
-    dispatch(actionsCreators.axiosTemperaments());
-    dispatch(actionsCreators.axiosDogs());
-    //dispatch(actionsCreators.axiosFullDogs());
+    async function requesting() {
+      const imcompleteDogs = await axios.get(`http://localhost:3001/dogs`);
+      setDogs(imcompleteDogs.data);
+      dispatch(actionsCreators.modifyFinalResult(imcompleteDogs.data))
+      //if (imcompleteDogs > )
+      const completeDogs = await axios.get(`http://localhost:3001/dogs/all`);
+      setDogs(completeDogs.data);
+      dispatch(actionsCreators.modifyFinalResult(completeDogs.data)) 
+    }
+    requesting();
   }, [dispatch])
 
-  useEffect(() => {
-    dispatch(actionsCreators.modifyFinalResult(dogsRedux))
-  }, [dogsRedux, dispatch])
+  // useEffect(() => {
+  //   dispatch(actionsCreators.axiosTemperaments());
+  //   dispatch(actionsCreators.axiosDogs());
+  //   //dispatch(actionsCreators.axiosFullDogs());
+  // }, [dispatch])
 
-  useEffect(() => {
-    if (dogsRedux.length > 8) {
-      dispatch(actionsCreators.changePage(dogsRedux.slice(0, 8)));
-    }
-  }, [dogsRedux, dispatch])
+  // useEffect(() => {
+  //   dispatch(actionsCreators.modifyFinalResult(dogsRedux))
+  // }, [dogsRedux, dispatch])
+
+  // useEffect(() => {
+  //   if (dogsRedux.length > 8) {
+  //     dispatch(actionsCreators.changePage(dogsRedux.slice(0, 8)));
+  //   }
+  // }, [dogsRedux, dispatch])
 
 
   async function searchDog(dogBreed) {
-    const response = await axios.get(`http://localhost:3001/dogs/all?name=${dogBreed}`)
-    if (response.data instanceof Array && response.data.length) {dispatch(actionsCreators.modifyFinalResult(response.data)); return setFoundogs(response.data);}
-    dispatch(actionsCreators.modifyFinalResult(dogsRedux)); return setFoundogs([]);
+    // setBreed(dogBreed);
+    if (!dogBreed) return dispatch(actionsCreators.modifyFinalResult(dogs));
+    const foundogs = dogs.filter((e) => e.name.toLowerCase().includes(dogBreed.toLowerCase()))
+    if (foundogs.length) { dispatch(actionsCreators.modifyFinalResult(foundogs)); return setFoundogs([foundogs]) }
+    dispatch(actionsCreators.modifyFinalResult([])); setError(`Not results found matching ${dogBreed}`);
   }
 
   async function filterTemperament(temperament) {
-   // if (foundogs.length) { arrayToFilter = foundogs }
-   // else if (foundogs.length) { arrayToFilter = foundogs }
-
-    if (temperament === 'default') return setFilterdogs([]);
-if (foundogs.length) {
-      const filterResult = foundogs.filter(e => e.temperament ? e.temperament.toLowerCase().includes(temperament.toLowerCase()) : false)
-      if (filterResult.length) {dispatch(actionsCreators.modifyFinalResult(filterResult)); return setFilterdogs(filterResult)}
-      setFilterdogs('No se hallaron coincidencias')
-}
-    
-
+    // if (foundogs.length) { arrayToFilter = foundogs }
+    // else if (foundogs.length) { arrayToFilter = foundogs }
+    setTemperament(temperament);
+    if (temperament === 'default') return setFirstfilterdogs([]);
+    let arrayToFilter = [];
+    if (foundogs.length) {arrayToFilter = foundogs;}
+    else if (dogs.length) { arrayToFilter = dogs;}
+    arrayToFilter = arrayToFilter.filter(e => e.temperament ? e.temperament.toLowerCase().includes(temperament.toLowerCase()) : false);
+    if (arrayToFilter.length) { dispatch(actionsCreators.modifyFinalResult(arrayToFilter)); return setFirstfilterdogs(arrayToFilter) }
+    dispatch(actionsCreators.modifyFinalResult(arrayToFilter)); return setError(`Not results found matching ${temperament}`)
     /*
     //(e) => e.temperament ? e.temperament.toLowerCase().includes(temperament.toLowerCase()) : false)
     const temperamentFilter = await axios.get(`http://localhost:3001/dogs?temperament=${temperament}`)
@@ -61,18 +82,16 @@ if (foundogs.length) {
     return setFoundogs([]);*/
   }
 
-
   async function filterProperty(property) {
+    setProperty(property);
     let arrayToFilter = [];
-    if (filterdogs.length) { arrayToFilter = filterdogs }
+    if (firstfilterdogs.length) { arrayToFilter = firstfilterdogs }
     else if (foundogs.length) { arrayToFilter = foundogs }
-    else { arrayToFilter = dogsRedux }
+    else if (dogs.length) { arrayToFilter = dogs }
     if (property === "own") arrayToFilter = arrayToFilter.filter(e => e.id >= 265)
     if (property === "notOwn") arrayToFilter = arrayToFilter.filter(e => e.id < 265)
-    console.log(arrayToFilter)
-    dispatch(actionsCreators.modifyFinalResult(arrayToFilter))
-    if (arrayToFilter.length) return setSecondfilterdogs(arrayToFilter)
-    setSecondfilterdogs('No se hallaron coincidencias')
+    if (arrayToFilter.length) { dispatch(actionsCreators.modifyFinalResult(arrayToFilter)); return setSecondfilterdogs(arrayToFilter) }
+    dispatch(actionsCreators.modifyFinalResult(arrayToFilter)); return setError(`Not results found matching ${property}`)
     /*if (property === 'own') {
       const ownDogs = await axios.get(`http://localhost:3001/dogs/own`);
       console.log(ownDogs.data)
@@ -81,24 +100,38 @@ if (foundogs.length) {
     if (property === 'all') return 'all';*/
   }
 
-  function deletesecondfilter() {
-    if (filterdogs.length) return dispatch(actionsCreators.modifyFinalResult(filterdogs))
-    if (foundogs.length) return dispatch(actionsCreators.modifyFinalResult(foundogs))
-    dispatch(actionsCreators.modifyFinalResult(dogsRedux))
+  function deleteSearch() {
+    document.getElementById('search').value = '';
+    setFoundogs([]);
+    if (secondfilterdogs.length) return filterProperty(property);
+    if (firstfilterdogs.length) return filterTemperament(temperament);
+    dispatch(actionsCreators.modifyFinalResult(dogs));
   }
 
   function deletefirstfilter() {
-    if (foundogs.length) return 
+    document.getElementById('temperamentSelector').value = 'default';
+    setFirstfilterdogs([]);
+    if (secondfilterdogs.length) return filterProperty(property);
+    if (foundogs.length) return dispatch(actionsCreators.modifyFinalResult(foundogs));
+    dispatch(actionsCreators.modifyFinalResult(dogs));
   }
+
+  function deletesecondfilter() {
+    document.getElementById('own').checked = false; 
+    document.getElementById('notOwn').checked = false;
+    setSecondfilterdogs([]);
+    if (firstfilterdogs.length) return dispatch(actionsCreators.modifyFinalResult(firstfilterdogs))
+    if (foundogs.length) return dispatch(actionsCreators.modifyFinalResult(foundogs))
+    dispatch(actionsCreators.modifyFinalResult(dogs))
+  }
+
+  
   return (
     <div className={s.container}>
       <form>
-        <input className={s.marginTop} id="search" placeholder="Enter a dog breed"
+        <input className={s.marginTop} id="search" placeholder="Search a dog breed"
           onChange={e => { searchDog(e.target.value); }} />
-        <button>Search</button>
-        
-
-        {/* onClick={(e) => searchDog(document.getElementById('#search').value, e)} */}
+        <button className={s.marginLeft} onClick={() => { deleteSearch() }}>Delete search</button>
       </form>
       <div className={s.marginTop}>
         <label className={s.label}>Filter by temperament</label>
@@ -108,7 +141,7 @@ if (foundogs.length) {
             temperamentsRedux.map((e, i) => <option key={i} value={e}>{e}</option>)
           }
         </select>
-        <button className={s.marginLeft} onClick={() => { setFilterdogs([]); document.getElementById('temperamentSelector').value = 'default'; deletefirstfilter()}}>Delete filter</button>
+        <button className={s.marginLeft} onClick={() => { deletefirstfilter() }}>Delete filter</button>
 
       </div>
       <div className={s.marginTop}>
@@ -117,12 +150,12 @@ if (foundogs.length) {
 
         <input type="radio" id="notOwn" name="propertyFilter" value="notOwn" onClick={e => filterProperty(e.target.value)} className={s.marginLeft} /> Not show own dogs
 
-        <button className={s.marginLeft} onClick={() => { setSecondfilterdogs([]); document.getElementById('own').checked = false; document.getElementById('notOwn').checked = false; deletesecondfilter()}}>Delete filter</button>
+        <button className={s.marginLeft} onClick={() => { deletesecondfilter() }}>Delete filter</button>
 
 
       </div>
-      {<Cards dogs={actualPageRedux}></Cards>}
-      
+      {finalResultRedux.length ? <Cards dogs={actualPageRedux}></Cards> : <p>{error}</p>}
+
       {/*foundogs.length ? 
         secondfilterdogs instanceof Array && secondfilterdogs.length ?
           <Cards dogs={secondfilterdogs}></Cards> 
