@@ -27,15 +27,11 @@ export default function Home(props) {
   // When component mounts
   useEffect(() => {
     async function requesting() {
-      const imcompleteDogs = await axios.get(`http://localhost:3001/dogs`);
-      setDogs(imcompleteDogs.data);
-      dispatch(actionsCreators.modifyFinalResult(imcompleteDogs.data))
-      const temperaments = await axios.get('http://localhost:3001/temperament');
-      setTemperaments(temperaments.data);
-      //if (imcompleteDogs > )
       const completeDogs = await axios.get(`http://localhost:3001/dogs/all`);
       setDogs(completeDogs.data);
-      dispatch(actionsCreators.modifyFinalResult(completeDogs.data))
+      dispatch(actionsCreators.modifyFinalResult(completeDogs.data));
+      const temperaments = await axios.get('http://localhost:3001/temperament');
+      setTemperaments(temperaments.data);
     }
     requesting();
   }, [dispatch])
@@ -43,7 +39,7 @@ export default function Home(props) {
   // Filter function
   function filter(e) {
     if (e.target.id !== 'own' && e.target.id !== 'notOwn') { e.preventDefault(); }
-    if (dogs.length < 8) return setError('Wait a moment please');
+    if (dogs.length < 9) return setError('Wait a moment please');
     let componentValue = e.target.value;
     let componentId = e.target.id;
     let finalResult = [];

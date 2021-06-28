@@ -20,6 +20,11 @@
     border: 1px solid transparent;
 }
 
+.buttonHome:hover {
+    box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
+      -webkit-box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
+}
+
 .content {
     background-color: rgba(231, 233, 235, 0.5);
     position: absolute;
@@ -31,6 +36,8 @@
     -ms-transform: translateY(-50%);
     transform: translateY(-50%);
     border-radius: 1rem;
+    box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
+      -webkit-box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
 }
 
 .title {
@@ -40,7 +47,7 @@
 }
 
 .description {
-    font-size: 1.20rem;
+    font-size: 1.10rem;
     margin-bottom: 20px;
 }
 
