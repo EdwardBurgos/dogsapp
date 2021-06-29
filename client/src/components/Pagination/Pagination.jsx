@@ -85,7 +85,6 @@ export default function Pagination() {
                     firstRender("first");
                     break;
                 case "last":
-                    console.log(children)
                     if (document.getElementById('reRender')) return changePageFunction(e.target.parentNode.children[8], true);
                     firstRender("last");
                     break;
