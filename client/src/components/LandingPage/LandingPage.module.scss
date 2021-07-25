@@ -10,7 +10,7 @@
 }
   
 .buttonHome {
-    background-color: #0D6EFD;
+    background-color: #2962ff;
     font-size: 20px;
     color: white;
     padding: 10px;
@@ -37,7 +37,7 @@
     transform: translateY(-50%);
     border-radius: 1rem;
     box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
-      -webkit-box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
+    -webkit-box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
 }
 
 .title {
@@ -60,15 +60,14 @@
         right: 10%;
         left: 10%;
         -ms-transform: translateY(50%);
-    transform: translateY(50%);
-    top: 50%;
+        transform: translateY(50%);
+        top: 50%;
     }
+}
 
-  }
-
-  @media only screen and (max-width: 576px) {
+@media only screen and (max-width: 576px) {
     .content {
-        -ms-transform: translateY(35%);
+    -ms-transform: translateY(35%);
     transform: translateY(35%);
     }
-  }
+}

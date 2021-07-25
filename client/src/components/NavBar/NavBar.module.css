@@ -1,0 +1,55 @@
+.logo {
+    position: absolute;
+    top:0;
+    left: 100px;
+    height: 80px;
+}
+
+.navbar {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding-left: 300px;
+    height: 80px;
+    background-color: #F2F2F2;
+        background-color: #fff; 
+        border-bottom: 1px;
+        box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
+        -webkit-box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
+        position: fixed;
+        top:0 ;
+}
+
+.section {
+    float: left;
+    font-size: 1.25rem;
+    margin-right: 20px;
+    margin-top: 26.8px;
+    font-weight: 500;
+}
+
+.enlace, .enlace a, .enlace a:link, .enlace a:focus, .enlace a:disabled, .enlace a:visited, .enlace a:active {
+    color: #000 ;
+    text-decoration: none;
+}
+
+.section:hover {
+    font-size: 1.5rem;
+    vertical-align: middle;
+}
+
+@media only screen and (max-width: 768px) {
+    
+    .section {
+        display: none;
+    }
+
+    .navbar {
+        position: static;
+    padding: 0;
+    text-align: center;
+    }
+    .logo {
+        position: static;
+    }
+  }

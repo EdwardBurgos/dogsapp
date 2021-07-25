@@ -6,6 +6,8 @@ import { BrowserRouter} from 'react-router-dom';
 import storeConfig from './store.js';
 import { Provider } from 'react-redux';
 import App from './App';
+import { Route } from 'react-router-dom';
+import LandingPage from './components/LandingPage/LandingPage';
 // import redux from 'redux';
 
 const store = storeConfig();
@@ -14,7 +16,8 @@ ReactDOM.render(
   <Provider store={store}>
     <BrowserRouter>
       <React.StrictMode>
-        <App></App>
+        <Route exact path="/" component={LandingPage} />
+        <Route path='/:page' component={App} />
       </React.StrictMode>
     </BrowserRouter>
   </Provider>,

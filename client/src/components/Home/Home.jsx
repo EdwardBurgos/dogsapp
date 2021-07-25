@@ -5,6 +5,7 @@ import Cards from '../Cards/Cards';
 import * as actionsCreators from '../../actions';
 import { useDispatch, useSelector } from 'react-redux'
 import Pagination from '../Pagination/Pagination';
+import NavBar from '../NavBar/NavBar';
 
 export default function Home(props) {
   // Dispatch
@@ -70,24 +71,25 @@ export default function Home(props) {
   // HTML estructure
   return (
     <div className={s.container}>
-      <form>
-        <input className={s.marginTop} id="searchTerm" placeholder="Search a dog breed" value={searchTerm}
+      <form className={s.marginTop}>
+      <label className={s.label}>Search a breed</label>
+        <input className={s.searchInput} id="searchTerm" placeholder="Insert a dog breed" value={searchTerm}
           onChange={e => filter(e)} />
-        <button className={s.marginLeft} id="deleteSearch" onClick={e => { filter(e) }}>Delete search</button>
+        <button className={s.button} id="deleteSearch" onClick={e => { filter(e) }}>Delete search</button>
       </form>
       <div className={s.marginTop}>
         <label className={s.label}>Filter by temperament</label>
-        <select onChange={e => filter(e)} id="temperament" value={temperament}>
+        <select onChange={e => filter(e)} id="temperament" value={temperament} className={s.selectInput}>
           <option key='default' value='default'>Select a temperament</option>
           {temperaments.map((e, i) => <option key={i} value={e}>{e}</option>)}
         </select>
-        <button className={s.marginLeft} id="deleteTemperamentFilter" onClick={e => { filter(e) }}>Delete filter</button>
+        <button className={s.button} id="deleteTemperamentFilter" onClick={e => { filter(e) }}>Delete filter</button>
       </div>
-      <div className={s.marginTop}>
+      <div className={`${s.marginTop} ${s.marginBottom}`}>
         <span className={s.label}>Filter by property</span>
         <input type="radio" id="own" name="propertyFilter" checked={property === 'own'} onChange={e => filter(e)} /> Show own dogs
         <input type="radio" id="notOwn" name="propertyFilter" checked={property === 'notOwn'} onChange={e => filter(e)} className={s.marginLeft} /> Not show own dogs
-        <button id="deletePropertyFilter" className={s.marginLeft} onClick={e => { filter(e) }}>Delete filter</button>
+        <button id="deletePropertyFilter" className={s.button} onClick={e => { filter(e) }}>Delete filter</button>
       </div>
       {finalResultRedux.length ? <Cards dogs={actualPageRedux}></Cards> : <p>{error}</p>}
       {finalResultRedux.length ? <Pagination></Pagination> : null}

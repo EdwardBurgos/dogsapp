@@ -3,7 +3,9 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Modal from '../Modal/Modal';
 import * as actionsCreators from '../../actions';
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux';
+import * as icons from 'ionicons/icons';
+import { closeCircleOutline } from 'ionicons/icons';
 
 export default function Create() {
     const [selectedTemperaments, setSelectedTemperaments] = useState([]);
@@ -34,7 +36,7 @@ export default function Create() {
 
     function selectTemperament(temperament) {
         setTemperamentErr('');
-        if (selectedTemperaments.includes(temperament)) return setTemperamentErr('Temperament already selected')
+        // if (selectedTemperaments.includes(temperament)) return setTemperamentErr('Temperament already selected')
         setSelectedTemperaments([...new Set([...selectedTemperaments, temperament])])
     }
 
@@ -51,38 +53,38 @@ export default function Create() {
         let value = e.target.value;
         switch (type) {
             case 'name':
-                if (/\d/.test(value)) { setnameErr('Name can not contain numbers') } else { setnameErr('') }
-                if (!value) {setnameErr('This field is required')}
+                value = value.replace(/[0-9]/g, '');
+                if (!value) {setnameErr('This field is required')} else { setnameErr('') }
                 return setName(value)
             case 'maxHeight':
                 value = parseInt(value.replace(/[^0-9]/g, ''));
-                if (isNaN(value)) { setMaxHeight(''); return setMaxHeightErr('Insert numbers'); }
-                if (value > minHeight) { setMaxHeightErr(''); setMinHeightErr(''); } else { setMaxHeightErr('Max height must be greater than min height') }
+                if (isNaN(value)) { setMaxHeight(''); return setMaxHeightErr('This field is required'); }
+                if (value > minHeight) { setMaxHeightErr(''); minHeight ? setMinHeightErr('') : setMinHeightErr('This field is required') } else { setMaxHeightErr('Max height must be greater than min height') }
                 return setMaxHeight(value)
             case 'minHeight':
                 value = parseInt(value.replace(/[^0-9]/g, ''));
-                if (isNaN(value)) { setMinHeight(''); return setMinHeightErr('Insert numbers') }
-                if (maxHeight > value) { setMinHeightErr(''); setMaxHeightErr(''); } else { setMinHeightErr('Min height must be less than max height') }
+                if (isNaN(value)) { setMinHeight(''); return setMinHeightErr('This field is required') }
+                if (maxHeight > value) { setMinHeightErr(''); maxHeight ? setMaxHeightErr('') : setMaxHeightErr('This field is required') } else { setMinHeightErr('Min height must be less than max height') }
                 return setMinHeight(value)
             case 'maxWeight':
                 value = parseInt(value.replace(/[^0-9]/g, ''));
-                if (isNaN(value)) { setMaxWeight(''); return setMaxWeightErr('Insert numbers') }
-                if (value > minWeight) { setMaxWeightErr(''); setMinWeightErr('') } else { setMaxWeightErr('Max weight must be greater than min weight') }
+                if (isNaN(value)) { setMaxWeight(''); return setMaxWeightErr('This field is required') }
+                if (value > minWeight) { setMaxWeightErr(''); minWeight ? setMinWeightErr('') : setMinWeightErr('This field is required') } else { setMaxWeightErr('Max weight must be greater than min weight') }
                 return setMaxWeight(value)
             case 'minWeight':
                 value = parseInt(value.replace(/[^0-9]/g, ''));
-                if (isNaN(value)) { setMinWeight(''); return setMinWeightErr('Insert numbers') }
-                if (maxWeight > value) { setMinWeightErr(''); setMaxWeightErr('') } else { setMinWeightErr('Min weight must be less than max weight') }
+                if (isNaN(value)) { setMinWeight(''); return setMinWeightErr('This field is required') }
+                if (maxWeight > value) { setMinWeightErr(''); maxWeight ? setMaxWeightErr('') : setMaxWeightErr('This field is required') } else { setMinWeightErr('Min weight must be less than max weight') }
                 return setMinWeight(value)
             case 'maxLifespan':
                 value = parseInt(value.replace(/[^0-9]/g, ''));
-                if (isNaN(value)) { setMaxLifespan(''); return setMaxLifespanErr('Insert numbers') }
-                if (value > minLifespan) { setMaxLifespanErr(''); setMinLifespanErr('') } else { setMaxLifespanErr('Max lifespan must be greater than min lifespan') }
+                if (isNaN(value)) { setMaxLifespan(''); return setMaxLifespanErr('This field is required') }
+                if (value > minLifespan) { setMaxLifespanErr(''); minLifespan ? setMinLifespanErr('') : setMinLifespanErr('This field is required') } else { setMaxLifespanErr('Max lifespan must be greater than min lifespan') }
                 return setMaxLifespan(value)
             case 'minLifespan':
                 value = parseInt(value.replace(/[^0-9]/g, ''));
-                if (isNaN(value)) { setMinLifespan(''); return setMinLifespanErr('Insert numbers') }
-                if (maxLifespan > value) { setMinLifespanErr(''); setMaxLifespanErr('') } else { setMinLifespanErr('Min lifespan must be less than max lifespan') }
+                if (isNaN(value)) { setMinLifespan(''); return setMinLifespanErr('This field is required') }
+                if (maxLifespan > value) { setMinLifespanErr(''); maxLifespan ? setMaxLifespanErr('') : setMaxLifespanErr('This field is required') } else { setMinLifespanErr('Min lifespan must be less than max lifespan') }
                 return setMinLifespan(value)
             default:
                 return '';
@@ -166,35 +168,36 @@ export default function Create() {
             <h1 className={s.title}>REGISTER A NEW BREED</h1>
             <form onSubmit={e => { e.preventDefault(); submitForm(name, maxHeight, minHeight, maxWeight, minWeight, maxLifespan, minLifespan, selectedTemperaments) }}>
                 <label className={s.label}>Name</label><br />
-                <input value={name} placeholder="Insert name" className={s.input} type="text" onChange={e => { validateValue(e, 'name') }}></input><br />
+                <input value={name} placeholder="Insert name" className={nameErr ? s.errorInput : s.formInput} type="text" onChange={e => { validateValue(e, 'name') }}></input><br />
                 {nameErr ? <><small className={s.error}>{nameErr}</small><br /></> : null}
                 <label className={s.label}>Max Height</label><br />
-                <input value={maxHeight} placeholder="Insert max height" className={s.input} type="text" onChange={e => { validateValue(e, 'maxHeight') }} ></input><br />
+                <input value={maxHeight} placeholder="Insert max height" className={maxHeightErr ? s.errorInput : s.formInput} type="text" onChange={e => { validateValue(e, 'maxHeight') }} ></input><br />
                 {maxHeightErr ? <><small className={s.error}>{maxHeightErr}</small><br /></> : null}
                 <label className={s.label}>Min Height</label><br />
-                <input value={minHeight} placeholder="Insert min height" className={s.input} type="text" onChange={e => { validateValue(e, 'minHeight') }}></input><br />
+                <input value={minHeight} placeholder="Insert min height" className={minHeightErr ? s.errorInput : s.formInput} type="text" onChange={e => { validateValue(e, 'minHeight') }}></input><br />
                 {minHeightErr ? <><small className={s.error}>{minHeightErr}</small><br /></> : null}
                 <label className={s.label}>Max Weight</label><br />
-                <input value={maxWeight} placeholder="Insert max weight" className={s.input} type="text" onChange={e => { validateValue(e, 'maxWeight') }}></input><br />
+                <input value={maxWeight} placeholder="Insert max weight" className={maxWeightErr ? s.errorInput : s.formInput} type="text" onChange={e => { validateValue(e, 'maxWeight') }}></input><br />
                 {maxWeightErr ? <><small className={s.error}>{maxWeightErr}</small><br /></> : null}
                 <label className={s.label}>Min Weight</label><br />
-                <input value={minWeight} placeholder="Insert min weight" className={s.input} type="text" onChange={e => { validateValue(e, 'minWeight') }}></input><br />
+                <input value={minWeight} placeholder="Insert min weight" className={minWeightErr ? s.errorInput : s.formInput} type="text" onChange={e => { validateValue(e, 'minWeight') }}></input><br />
                 {minWeightErr ? <><small className={s.error}>{minWeightErr}</small><br /></> : null}
                 <label className={s.label}>Max Lifespan</label><br />
-                <input value={maxLifespan} placeholder="Insert max lifespan" className={s.input} type="text" onChange={e => { validateValue(e, 'maxLifespan') }}></input><br />
+                <input value={maxLifespan} placeholder="Insert max lifespan" className={maxLifespanErr ? s.errorInput : s.formInput} type="text" onChange={e => { validateValue(e, 'maxLifespan') }}></input><br />
                 {maxLifespanErr ? <><small className={s.error}>{maxLifespanErr}</small><br /></> : null}
                 <label className={s.label}>Min Lifespan</label><br />
-                <input value={minLifespan} placeholder="Insert min lifespan" className={s.input} type="text" onChange={e => { validateValue(e, 'minLifespan') }}></input><br />
+                <input value={minLifespan} placeholder="Insert min lifespan" className={minLifespanErr ? s.errorInput : s.formInput} type="text" onChange={e => { validateValue(e, 'minLifespan') }}></input><br />
                 {minLifespanErr ? <><small className={s.error}>{minLifespanErr}</small><br /></> : null}
                 {/* onChange={e => filterTemperament(e.target.value)} */}
-                <select className={s.select} id="temperamentSelector" value={actualTemperament} onChange={e => selectTemperament(e.target.value)}>
+                <label className={s.label}>Temperaments</label><br />
+                <select className={temperamentErr ? s.errorSelect : s.selectInput} id="temperamentSelector" value={actualTemperament} onChange={e => selectTemperament(e.target.value)}>
                     <option key='default' value='default' disabled>Select a temperament</option>
                     {
                         temperamentsRedux.map((e, i) => <option key={i} value={e}>{e}</option>)
                     }
                 </select><br />
                 {temperamentErr ? <><small className={s.error}>{temperamentErr}</small><br /></> : null}
-                {selectedTemperaments.length ? <div className={s.temperamentsContainer}>{selectedTemperaments.map((e, i) => <input key={i} type='button' value={e} className={s.temperament} onClick={e => deleteTemperament(e)} />)}</div> : null}
+                {selectedTemperaments.length ? <div className={s.temperamentsContainer}>{selectedTemperaments.map((e, i) => <><input key={i} type='button' value={e} className={s.temperament} onClick={e => deleteTemperament(e)} /> <img  src={closeCircleOutline} className={s.iconColor}></img></>)}</div> : null}
 
                 <input type="submit" value="Register breed" className={s.submit} disabled={buttonState}></input>
 
