@@ -6,10 +6,10 @@ import logo from '../../img/logo.gif';
 export default function NavBar() {
   return (
       <div className={s.navbar}>
-      <NavLink to="/home" className={s.enlace}><p className={s.section}>Home</p></NavLink>
+      <NavLink to="/home" className={s.enlace}><img src={logo} className={s.logo} alt="Cute dog"></img></NavLink>
       <NavLink to="/about" className={s.enlace}><p className={s.section}>About the creator</p></NavLink>
       <NavLink to="/create" className={s.enlace}><p className={s.section}>Create breed</p></NavLink>
-      <img src={logo} className={s.logo} alt="Cute dog"></img>
+      
       </div>
     // <div className={s.card}>
     //   <p className={s.title}>{name}</p>

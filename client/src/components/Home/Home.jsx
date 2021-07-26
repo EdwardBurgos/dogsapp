@@ -71,6 +71,7 @@ export default function Home(props) {
   // HTML estructure
   return (
     <div className={s.container}>
+      <h1 className={s.title}>Dog breeds</h1>
       <form className={s.marginTop}>
       <label className={s.label}>Search a breed</label>
         <input className={s.searchInput} id="searchTerm" placeholder="Insert a dog breed" value={searchTerm}
