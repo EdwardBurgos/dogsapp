@@ -88,8 +88,8 @@ export default function Home(props) {
       </div>
       <div className={`${s.marginTop} ${s.marginBottom}`}>
         <span className={s.label}>Filter by property</span>
-        <input type="radio" id="own" name="propertyFilter" checked={property === 'own'} onChange={e => filter(e)} /> Show own dogs
-        <input type="radio" id="notOwn" name="propertyFilter" checked={property === 'notOwn'} onChange={e => filter(e)} className={s.marginLeft} /> Not show own dogs
+        <label className={s.radio}><input type="radio" id="own" name="propertyFilter" checked={property === 'own'} onChange={e => filter(e)} />Show own dogs</label> 
+        <label className={s.radio}><input type="radio" id="notOwn" name="propertyFilter" checked={property === 'notOwn'} onChange={e => filter(e)} className={s.marginLeft} /> Not show own dogs</label>
         <button id="deletePropertyFilter" className={s.button} onClick={e => { filter(e) }}>Delete filter</button>
       </div>
       {finalResultRedux.length ? <Cards dogs={actualPageRedux}></Cards> : <p>{error}</p>}

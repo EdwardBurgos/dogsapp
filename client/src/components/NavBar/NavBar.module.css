@@ -1,15 +1,14 @@
 .logo {
-    position: absolute;
-    top:0;
-    left: 100px;
-    height: 80px;
+    margin-right: 40px;
+    height: 60px;
 }
 
-.navbar {
+.navbar, .navbarExpanded {
     display: flex;
     width: 100%;
+    position: absolute;
+    padding: 1% 5% ;
     box-sizing: border-box;
-    padding-left: 300px;
     height: 80px;
     background-color: #F2F2F2;
         background-color: #fff; 
@@ -17,14 +16,18 @@
         box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
         -webkit-box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
         top:0 ;
-        align-items: center;
+    flex-wrap: wrap;
 }
 
-.section {
+.navbarExpanded {
+    height: 200px;
+}
+
+.section, .sectionExpanded {
     float: left;
     font-size: 1rem;
     margin-right: 20px;
-    font-weight: 400;
+    font-weight: 600;
 }
 
 .enlace, .enlace a, .enlace a:link, .enlace a:focus, .enlace a:disabled, .enlace a:visited, .enlace a:active {
@@ -32,9 +35,29 @@
     text-decoration: none;
 }
 
-.section:hover {
-    font-weight: 400;
+.section:hover, .sectionExpanded:hover {
+    font-weight: 600;
     font-size: 1.5rem;
+}
+
+.icon {
+    vertical-align: middle;
+    margin-right: 5px;
+    display: inline-block;
+}
+
+.menu {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 30px;
+    border: 0;
+    display: none;
+    background-color: transparent;
+}
+
+.center {
+   display: flex;
+   align-items: center; 
 }
 
 @media only screen and (max-width: 768px) {
@@ -42,13 +65,15 @@
     .section {
         display: none;
     }
-
-    .navbar {
-        position: static;
-    padding: 0;
-    text-align: center;
+    .navbar, .navbarExpanded {
+        justify-content: space-between;
     }
-    .logo {
-        position: static;
+    .navbarExpanded{
+    }
+    .menu {
+        display: block;
+    }
+    .enlaceInferior {
+        width: 100%;
     }
   }

@@ -59,7 +59,7 @@
 
 .label {
     margin-right: 10px;
-    font-weight: bold;
+    font-weight: 600;
 }
 
 .bold {
@@ -79,5 +79,38 @@
 
 
 .title {
-    font-weight: 400;
+    font-weight: 600;
+}
+
+
+@media only screen and (max-width: 768px) {
+    .button{
+        width: 70%;
+        margin: 0;
+        margin-top: 15px;
+    }
+    .marginTop {
+        flex-wrap: wrap;
+    }
+}
+
+@media only screen and (max-width: 576px) {
+    .label, .searchInput, .button, .radio, .selectInput{
+        width: 100%;
+        margin: 0;
+        margin-top: 15px;
+    }
+    .label {
+        margin: 0;
+    }
+    .marginTop {
+        flex-wrap: wrap;
+    }
+}
+
+
+
+.marginTop {
+    display: flex;
+    justify-content: center;
 }

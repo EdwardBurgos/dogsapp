@@ -4,7 +4,7 @@ import React from 'react';
 
 export default function About() {
     return (
-        <div>ROSALÍA</div>
+        <div>ABOUT</div>
 //     <div className={s.card}>
 //       <p className={s.title}>{name}</p>
 //       <img src={img} alt={name} width="100%"/>
