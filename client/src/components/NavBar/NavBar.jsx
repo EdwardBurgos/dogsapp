@@ -1,23 +1,16 @@
 import s from './NavBar.module.css';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import React from 'react';
 import { IonIcon } from '@ionic/react';
 import logo from '../../img/logo.png';
 import { menuOutline } from 'ionicons/icons'
 import { useState } from 'react';
 import { useEffect } from 'react';
+import { Navbar, Container, Nav, NavDropdown } from 'react-bootstrap'
 
 export default function NavBar() {
   const [mostrarMenu, setMostrarMenu] = useState(false);
-  // const x = window.matchMedia("(max-width: 768px)")
-  //let x ;
-  function desplegarMenu() {
-    console.log(mostrarMenu)
-    mostrarMenu ? setMostrarMenu(false) : setMostrarMenu(true)
-    console.log(mostrarMenu)
-  }
 
-  
 
   // function myFunction(x) {
   //     if (x.matches) {
@@ -28,46 +21,66 @@ export default function NavBar() {
   useEffect(() => {
     let x = window.matchMedia("(max-width: 768px)")
     x.addEventListener("change", () => {
-      if (x.matches) setMostrarMenu(false)
+      if (x.matches) {
+        setMostrarMenu(false)
+        console.log('READY')
+      }
     });
 
   }, [])
 
   return (
-    <>
-      {
-        mostrarMenu ?
-          <div className={s.navbarExpanded}>
-            <div className={s.center}>
-              <NavLink to="/home" className={s.enlace} ><img src={logo} className={s.logo} alt="Cute dog"></img></NavLink>
-            </div>
+    // <>
+    //   {
+    //     mostrarMenu ?
+    //       <div className={s.navbarExpanded}>
+    //         <div className={s.center}>
+    //           <NavLink to="/home" className={s.enlace} onClick={() => setMostrarMenu(false)}><img src={logo} className={s.logo} alt="Cute dog"></img></NavLink>
+    //         </div>
 
-            <div className={s.center}>
-              <button onClick={desplegarMenu} className={s.menu}>
-                <IonIcon icon={menuOutline} className={s.icon}></IonIcon>
-              </button>
-            </div>
+    //         <div className={s.center}>
+    //           <button onClick={() => mostrarMenu ? setMostrarMenu(false) : setMostrarMenu(true)} className={s.menu}>
+    //             <IonIcon icon={menuOutline} className={s.icon}></IonIcon>
+    //           </button>
+    //         </div>
 
-            <NavLink to="/about" className={`${s.enlace} ${s.enlaceInferior}`} onClick={() => console.log('')}><p className={s.sectionExpanded} >About the creator</p></NavLink>
-            <NavLink to="/create" className={`${s.enlace} ${s.enlaceInferior}`} onClick={() => console.log('')}><p className={s.sectionExpanded}>Create breed</p></NavLink>
-          </div>
-          :
-          <div className={s.navbar}>
-            <div className={s.center}>
-            <NavLink to="/home" className={s.enlace}><img src={logo} className={s.logo} alt="Cute dog"></img></NavLink>
-            </div>
-            
-            <NavLink to="/about" className={s.enlace}><p className={s.section}>About the creator</p></NavLink>
-            <NavLink to="/create" className={s.enlace}><p className={s.section}>Create breed</p></NavLink>
+    //         <NavLink to="/about" className={`${s.enlace} ${s.enlaceInferior}`} onClick={() => setMostrarMenu(false)}><p className={s.sectionExpanded} >About the creator</p></NavLink>
+    //         <NavLink to="/create" className={`${s.enlace} ${s.enlaceInferior}`} onClick={() => setMostrarMenu(false)}><p className={s.sectionExpanded}>Register a breed</p></NavLink>
+    //       </div>
+    //       :
+    //       <div className={s.navbar}>
+    //         <div className={s.center}>
+    //           <NavLink to="/home" className={s.enlace}><img src={logo} className={s.logo} alt="Cute dog"></img></NavLink>
+    //         </div>
 
-            <div className={s.center}>
-              <button onClick={desplegarMenu} className={s.menu}>
-                <IonIcon icon={menuOutline} className={s.icon}></IonIcon>
-              </button>
-            </div>
-          </div>
-      }
-    </>
+    //         <NavLink to="/about" className={s.enlace}><p className={s.section}>About the creator</p></NavLink>
+    //         <NavLink to="/create" className={s.enlace}><p className={s.section}>Register a new breed</p></NavLink>
+
+    //         <div className={s.center}>
+    //           <button onClick={mostrarMenu ? setMostrarMenu(false) : setMostrarMenu(true)} className={s.menu}>
+    //             <IonIcon icon={menuOutline} className={s.icon}></IonIcon>
+    //           </button>
+    //         </div>
+    //       </div>
+    //   }
+    // </>
+
+    <Navbar expand="sm" className={s.navbar} id="navBar">
+        <Navbar.Brand href="/home">
+        <img src={logo} className={s.logo} alt="Cute dog"></img>
+        </Navbar.Brand>
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="me-auto">
+            <Nav.Link as={NavLink} to="/about" className={s.enlace} activeClassName={s.enlaceActivo}>About the creator</Nav.Link>
+            <Nav.Link as={NavLink} to="/create" className={s.enlace} activeClassName={s.enlaceActivo} onClick={() => {
+                let nav = document.getElementById('navBar');
+                nav.classList.add('show')
+            }}>Register a new breed</Nav.Link>
+          </Nav>
+        </Navbar.Collapse>
+    </Navbar>
+
 
     // <div className={s.card}>
     //   <p className={s.title}>{name}</p>

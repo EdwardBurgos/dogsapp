@@ -165,7 +165,7 @@ export default function Create() {
 
     return (
         <div className={s.container}>
-            <h1 className={s.title}>REGISTER A NEW BREED</h1>
+            <h1 className={s.title}>Register a new breed</h1>
             <form onSubmit={e => { e.preventDefault(); submitForm(name, maxHeight, minHeight, maxWeight, minWeight, maxLifespan, minLifespan, selectedTemperaments) }}>
                 <label className={s.label}>Name</label><br />
                 <input value={name} placeholder="Insert name" className={nameErr ? s.errorInput : s.formInput} type="text" onChange={e => { validateValue(e, 'name') }}></input><br />

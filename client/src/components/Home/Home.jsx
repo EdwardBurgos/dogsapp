@@ -4,7 +4,7 @@ import axios from 'axios';
 import Cards from '../Cards/Cards';
 import * as actionsCreators from '../../actions';
 import { useDispatch, useSelector } from 'react-redux'
-import Pagination from '../Pagination/Pagination';
+import PaginationComponent from '../PaginationComponent/PaginationComponent';
 import NavBar from '../NavBar/NavBar';
 
 export default function Home(props) {
@@ -19,6 +19,8 @@ export default function Home(props) {
   const [dogs, setDogs] = useState([]);
   const [temperaments, setTemperaments] = useState([]);
   const [error, setError] = useState('');
+  const [offset, setOffset] = useState(0);
+  const [limit] = useState(8);
 
   // Elements states
   const [searchTerm, setSearchTerm] = useState('');
@@ -72,12 +74,12 @@ export default function Home(props) {
   return (
     <div className={s.container}>
       <h1 className={s.title}>Dog breeds</h1>
-      <form className={s.marginTop}>
-      <label className={s.label}>Search a breed</label>
+      <div className={s.marginTop}>
+        <label className={s.label}>Search a breed</label>
         <input className={s.searchInput} id="searchTerm" placeholder="Insert a dog breed" value={searchTerm}
           onChange={e => filter(e)} />
         <button className={s.button} id="deleteSearch" onClick={e => { filter(e) }}>Delete search</button>
-      </form>
+      </div>
       <div className={s.marginTop}>
         <label className={s.label}>Filter by temperament</label>
         <select onChange={e => filter(e)} id="temperament" value={temperament} className={s.selectInput}>
@@ -88,12 +90,14 @@ export default function Home(props) {
       </div>
       <div className={`${s.marginTop} ${s.marginBottom}`}>
         <span className={s.label}>Filter by property</span>
-        <label className={s.radio}><input type="radio" id="own" name="propertyFilter" checked={property === 'own'} onChange={e => filter(e)} />Show own dogs</label> 
-        <label className={s.radio}><input type="radio" id="notOwn" name="propertyFilter" checked={property === 'notOwn'} onChange={e => filter(e)} className={s.marginLeft} /> Not show own dogs</label>
+        <div className={s.middleContent}>
+          <label><input type="radio" id="own" name="propertyFilter" checked={property === 'own'} onChange={e => filter(e)} className={s.radioOne}/>Show own dogs</label>
+          <label className={s.radioTwoInput}><input type="radio" id="notOwn" name="propertyFilter" checked={property === 'notOwn'} onChange={e => filter(e)} className={s.radioTwo}/> Not show own dogs</label>
+        </div>
         <button id="deletePropertyFilter" className={s.button} onClick={e => { filter(e) }}>Delete filter</button>
       </div>
       {finalResultRedux.length ? <Cards dogs={actualPageRedux}></Cards> : <p>{error}</p>}
-      {finalResultRedux.length ? <Pagination></Pagination> : null}
+      {finalResultRedux.length ? <PaginationComponent /> : null}
     </div>
   );
 }
