@@ -5,20 +5,20 @@ import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { changePage } from '../../actions';
 import { Alert, Button, Col, Form,Pagination, Row } from 'react-bootstrap';
-
+import { setClickedNumber } from '../../actions';
 
 export default function PaginationComponent(props) {
 
   const dispatch = useDispatch();
   const finalResultRedux = useSelector(state => state.finalResult);
-
+  const clickedNumber = useSelector(state => state.clickedNumber)
   const [items, setItems] = useState([]);
 
 
   const [page, setPage] = useState({
     totalPages: null,
     dataStartingIndex: null,
-    currentClickedNumber: 1,
+    currentClickedNumber: clickedNumber,
     pageData: null,
     clickedOnNumber: null,
     currentClickedPage: null,
@@ -56,6 +56,7 @@ export default function PaginationComponent(props) {
   }, [page.currentClickedNumber, page.pageData])
 
   const setCurrentClickedNumber = (e) => {
+    dispatch(setClickedNumber(parseInt(e.target.innerText)));
     setPage({
       ...page,
       currentClickedNumber: parseInt(e.target.innerText)

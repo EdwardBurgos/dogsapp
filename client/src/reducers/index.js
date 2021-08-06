@@ -1,9 +1,11 @@
 const initialState = {
+  login: false,
   dogs: [],
   temperaments: [],
   creationMessage: '',
   actualPage: [],
-  finalResult: []
+  finalResult: [],
+  clickedNumber: 1
 }
 
 export default function reducer (state = initialState, action) {
@@ -42,6 +44,11 @@ export default function reducer (state = initialState, action) {
       return {
         ...state,
         creationMessage: ''
+      }
+    case 'SET_CLICKED_NUMBER':
+      return {
+        ...state,
+        clickedNumber: action.clickedNumber
       }
     default:
       return { ...state }

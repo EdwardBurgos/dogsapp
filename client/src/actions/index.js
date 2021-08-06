@@ -1,5 +1,27 @@
 import axios from 'axios'; // Esta librería también es necesaria para hacer el request al servidor
 
+export function getUserLoged() {
+
+}
+
+export function modificarUsuarioLogueado() {
+
+}
+
+export function setLoginOrNot() {
+    return {
+        type: 'SET_LOGIN_OR_NOT',
+        login: true
+    }
+}
+
+export function setClickedNumber(clickedNumber) {
+    return {
+        type: 'SET_CLICKED_NUMBER',
+        clickedNumber
+    }
+}
+
 export function receiveDogs(dogs) {
     return {
         type: 'RECEIVE_DOGS',

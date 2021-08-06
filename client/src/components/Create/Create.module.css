@@ -1,3 +1,40 @@
+:root {
+    --height: calc(100vh - 116px);
+  }
+  .containerNoLogin{
+    height: var(--height);
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    text-align: center;
+  } 
+
+
+
+.loginButton {
+    background-color: #2962ff;
+    color: white;
+    padding: 10px;
+    width: 100%;
+    display: block;
+    text-decoration: none;
+    border-radius: 1rem;
+    border: 1px solid transparent;
+    /*left: 20px;
+    margin-top: 20px;*/
+}
+.loginButton:hover {
+    color: white;
+box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
+  -webkit-box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
+}
+
+  .contentNoLogin {
+    width: 100%;
+    max-width: 330px;
+    margin: 0 auto;
+  }
+  
 .container {
     text-align: left;
     width: 100%;

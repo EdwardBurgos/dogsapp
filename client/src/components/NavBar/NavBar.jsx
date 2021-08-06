@@ -7,10 +7,11 @@ import { menuOutline } from 'ionicons/icons'
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { Navbar, Container, Nav, NavDropdown } from 'react-bootstrap'
+import { useSelector } from 'react-redux';
 
 export default function NavBar() {
   const [mostrarMenu, setMostrarMenu] = useState(false);
-
+  const login = useSelector(state => state.login);
 
   // function myFunction(x) {
   //     if (x.matches) {
@@ -28,6 +29,15 @@ export default function NavBar() {
     });
 
   }, [])
+
+  const [navExpanded, setNavExpanded] = useState(false);
+
+  function setNav(navExpanded) {
+    setNavExpanded(navExpanded);
+  };
+  function closeNav() {
+    setNavExpanded(false);
+  };
 
   return (
     // <>
@@ -65,20 +75,26 @@ export default function NavBar() {
     //   }
     // </>
 
-    <Navbar expand="sm" className={s.navbar} id="navBar">
-        <Navbar.Brand href="/home">
+    <Navbar expand="md" className={s.navbar} id="navBar" expanded={navExpanded}>
+      <Navbar.Brand as={NavLink} to="/home" onClick={() => closeNav()}>
         <img src={logo} className={s.logo} alt="Cute dog"></img>
-        </Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto">
-            <Nav.Link as={NavLink} to="/about" className={s.enlace} activeClassName={s.enlaceActivo}>About the creator</Nav.Link>
-            <Nav.Link as={NavLink} to="/create" className={s.enlace} activeClassName={s.enlaceActivo} onClick={() => {
-                let nav = document.getElementById('navBar');
-                nav.classList.add('show')
-            }}>Register a new breed</Nav.Link>
-          </Nav>
-        </Navbar.Collapse>
+      </Navbar.Brand>
+      <Navbar.Toggle aria-controls="basic-navbar-nav" onClick={() => navExpanded ? setNavExpanded(false) : setNavExpanded(true)} />
+      <Navbar.Collapse id="basic-navbar-nav">
+        <Nav className="me-auto" >
+          <Nav.Link as={NavLink} to="/about" className={s.enlace} activeClassName={s.enlaceActivo} onClick={() => closeNav()}>About the creator</Nav.Link>
+          <Nav.Link as={NavLink} to="/create" className={s.enlace} activeClassName={s.enlaceActivo} onClick={() => closeNav()}>Register a new breed</Nav.Link>
+        </Nav>
+        {
+          login ?
+            <Navbar.Text className={s.signedInfo}>
+              <a href="#login">Mark Otto</a>
+            </Navbar.Text>
+            :
+            <Nav.Link as={NavLink} to="/login" className={s.enlaceLogin} activeClassName={s.enlaceActivo} onClick={() => closeNav()}>Log in</Nav.Link>
+        }
+
+      </Navbar.Collapse>
     </Navbar>
 
 

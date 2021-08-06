@@ -11,7 +11,7 @@ export default function Card({name, img, temperament, id}) {
       <span className={s.label}>Temperaments:</span> 
       <p>{temperament}</p>
       </div>
-      <Link to={`/detail/${id}`}><button className={s.detailsButton}>See details</button></Link>
+      <Link to={`/detail/${id}`} className={s.detailsButton}>See details</Link>
     </div>
   );
 }

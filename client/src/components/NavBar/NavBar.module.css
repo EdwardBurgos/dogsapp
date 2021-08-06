@@ -43,13 +43,19 @@
     
 } */
 
-.enlace {
+.enlace, .enlaceLogin {
     padding: 8px 0;
     color: #a8a7a7 !important;
     text-decoration: none;
     margin-right: 20px;
-    
 }
+
+.enlaceLogin {
+    margin-right: 0;
+    padding-left: 0 !important;
+}
+
+
 
 /* .enlace:active {
     color: #000 ;
@@ -57,11 +63,15 @@
     font-weight: 600;
 } */
 
-.enlace:hover {
+.enlace:hover, .enlaceLogin:hover {
     color: #646464 !important;
     text-decoration: none;
     margin-right: 20px;
     
+}
+
+.enlaceLogin:hover {
+    margin-right: 0;
 }
 
 .enlaceActivo, .enlaceActivo:hover {
@@ -72,7 +82,9 @@
 
 }
 
-
+.signedInfo {
+    display: block;
+}
 
 
 .icon {
