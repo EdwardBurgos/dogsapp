@@ -255,7 +255,7 @@ function Login(props) {
 
                         <p className={s.marginBottom0}>
                             Don't have an account?
-                            <Link className={s.registroLink} onClick={() => handleShow()}>
+                            <Link className={s.registroLink} to="/signup">
                                 Sign up
                             </Link>
                         </p>
