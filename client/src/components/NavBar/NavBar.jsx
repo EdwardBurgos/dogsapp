@@ -75,8 +75,8 @@ export default function NavBar() {
     //   }
     // </>
 
-    <Navbar expand="md" className={s.navbar} id="navBar" expanded={navExpanded}>
-      <Navbar.Brand as={NavLink} to="/home" onClick={() => closeNav()}>
+    <Navbar expand="md" className={s.navbar} id="navBar" expanded={navExpanded}  fixed="top">
+      <Navbar.Brand as={NavLink} to="/home" onClick={() => closeNav()} className={s.brand}>
         <img src={logo} className={s.logo} alt="Cute dog"></img>
       </Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" onClick={() => navExpanded ? setNavExpanded(false) : setNavExpanded(true)} />

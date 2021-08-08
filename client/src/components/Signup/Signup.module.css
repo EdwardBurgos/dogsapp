@@ -1,5 +1,5 @@
 :root {
-  --height: calc(100vh - 116px);
+  --height: calc(100vh - 56px);
 }
 .container{
   height: var(--height);
@@ -51,6 +51,10 @@
   box-sizing: border-box;
 }
 
+
+.form {
+  margin: 20px 0;
+}
 .image, .form {
   width: 30%;
 }
@@ -93,6 +97,7 @@
 
 .colorBoton {
   background-color: #2962ff !important;
+  font-weight: 600 !important;
 }
 
 .title {
@@ -118,7 +123,9 @@
 .description {
   color: #000;
 }
-
+.infoForm {
+  text-align: left;
+}
 .registroLink {
   text-decoration: none;
   margin-left: 5px;
@@ -203,4 +210,11 @@ box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
 	bottom: auto;
 	border-top-color: transparent;	
     border-right-color: rgba( 0, 0, 0, .7);	
+}
+
+.label {
+  margin-bottom: 0.5rem;
+  color: rgba(26,26,26,.7);
+  font-weight: 600;
+  font-size: 0.9rem;
 }
