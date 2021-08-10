@@ -7,6 +7,7 @@ module.exports = (sequelize) => {
     name: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: true
     },
     heightmax: {
       type: DataTypes.INTEGER,
@@ -34,7 +35,7 @@ module.exports = (sequelize) => {
     }
   });
 
-  
+
 };
 
 

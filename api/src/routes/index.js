@@ -21,13 +21,16 @@ router.post('/dog', async (req, res) => {
     try {
         const { name, heightmax, heightmin, weightmax, weightmin, lifespanmax, lifespanmin, temperaments } = req.body;
         const razaCreada = await Dog.create({ name, heightmax, heightmin, weightmax, weightmin, lifespanmax, lifespanmin });
-        temperaments.forEach(async (e) => {
-            var foundTemperament = await Temperament.findOne({ where: { name: e } });
-            if (foundTemperament) razaCreada.addTemperament(foundTemperament);
-        });
-        res.json({ message: `The dog breed ${name} was created successfully`, id: razaCreada.id });
+        if (razaCreada) {
+            temperaments.forEach(async (e) => {
+                var foundTemperament = await Temperament.findOne({ where: { name: e } });
+                if (foundTemperament) razaCreada.addTemperament(foundTemperament);
+            });
+            res.json({ message: `The dog breed ${name} was created successfully`, id: razaCreada.id });
+        }         
     } catch (e) {
-        return res.status(400).send('Sorry, an error occurred')
+        if (e.original.code === '23505' && e.original.detail.includes('name')) return res.status(400).send(`The dog breed ${req.body.name} already exists`);
+        res.status(400).send('Sorry, an error ocurred')
     }
 })
 

@@ -1,18 +1,92 @@
 .container {
+  display: flex;
+  justify-content: center;
+}
+
+.cardDetail {
   text-align: center;
+  padding: 16px;
+  margin-bottom: 30px;
+  width: 40%;
+}
+
+.errorGlobal {
+  background-color: #f8d7da;
+  border: 1px #f5c2c7 solid;
+  color: #842029;
+  width: 100%;
+  display: block;
+  padding: 10px 0;
+  border-radius: 5px;
+  margin-bottom: 0;
+}
+
+.containerCenter {
+  height: var(--height);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  text-align: center;
+} 
+
+.contentCenter {
+  width: 100%;
+  max-width: 330px;
+  margin: 0 auto;
 }
 
 .image {
-  width:50%;
+  width:100%;
   margin-bottom: 16px;
+  border-radius: 5px;
+}
+
+.title {
+  margin-bottom: 30px;
 }
 
 .label {
   font-weight: bold;
 }
 
-@media only screen and (max-width: 600px) {
-  .image {
-    width: 100%
+.temperamentsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.test {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin: 0 8px 16px 8px;
+}
+
+.temperament {
+  background-color: #2962ff;
+  color: white;
+  padding: 0.375rem 0.75rem;
+  text-decoration: none;
+  border-radius: 5px;
+  border: 1px solid transparent;
+  margin: 0;
+}
+
+@media only screen and (max-width: 992px) {
+  .cardDetail {
+    width: 60%;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .cardDetail {
+    width: 80%;
+  }
+}
+
+@media only screen and (max-width: 576px) {
+  .cardDetail {
+    width: 100%;
   }
 }

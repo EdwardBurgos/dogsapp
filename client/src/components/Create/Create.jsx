@@ -1,9 +1,7 @@
 import s from './Create.module.css';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import * as actionsCreators from '../../actions';
-import { useDispatch, useSelector } from 'react-redux';
-import * as icons from 'ionicons/icons';
+import { useSelector } from 'react-redux';
 import { closeCircleOutline } from 'ionicons/icons';
 import { IonIcon } from '@ionic/react';
 import { Link } from 'react-router-dom';
@@ -34,7 +32,6 @@ export default function Create() {
     const [minLifespan, setMinLifespan] = useState('')
     const [minLifespanErr, setMinLifespanErr] = useState('')
     const [temperamentErr, setTemperamentErr] = useState('')
-    const [actualTemperament, setActualTemperament] = useState('default')
     const [buttonState, setButtonState] = useState(true)
     const [errGlobal, setErrGlobal] = useState('')
 
@@ -42,8 +39,9 @@ export default function Create() {
     const login = useSelector(state => state.login);
 
     // Variables
-    const dispatch = useDispatch();
     const history = useHistory();
+
+    // Hooks 
 
     // This hook is to get the temperaments when the component mount
     useEffect(() => {
@@ -75,7 +73,7 @@ export default function Create() {
     }
 
     function handleChange(e) {
-        const value = e.target.value;
+        let value = e.target.value;
         switch (e.target.name) {
             case 'name':
                 !value ? setnameErr('This field is required') : setnameErr('')
@@ -85,20 +83,18 @@ export default function Create() {
                     setMaxHeightErr('This field is required');
                     if (minHeightErr === 'The minimum height must be less than maximum height') setMinHeightErr('');
                 } else {
-                    if (/^\d+$/.test(value)) {
-                        if (parseInt(value) > parseInt(minHeight)) {
-                            setMaxHeightErr('');
-                            setMinHeightErr('');
-                        } else {
-                            if (minHeight) {
-                                setMaxHeightErr('The maximum height must be greater than minimum height')
-                            } else {
-                                setMaxHeightErr('');
-                            }
-                        }
+                    value = value.replace(/[^0-9]/g, '');
+                    if (parseInt(value) > parseInt(minHeight)) {
+                        setMaxHeightErr('');
+                        setMinHeightErr('');
                     } else {
-                        setMaxHeightErr('The maximum height must be an integer')
+                        if (minHeight) {
+                            setMaxHeightErr('The maximum height must be greater than minimum height')
+                        } else {
+                            setMaxHeightErr('');
+                        }
                     }
+
                 }
                 return setMaxHeight(value)
             case 'minHeight':
@@ -106,19 +102,16 @@ export default function Create() {
                     setMinHeightErr('This field is required');
                     if (maxHeightErr === 'The maximum height must be greater than minimum height') setMaxHeightErr('');
                 } else {
-                    if (/^\d+$/.test(value)) {
-                        if (parseInt(value) < parseInt(maxHeight)) {
-                            setMinHeightErr('');
-                            setMaxHeightErr('');
-                        } else {
-                            if (maxHeight) {
-                                setMinHeightErr('The minimum height must be less than maximum height')
-                            } else {
-                                setMinHeightErr('');
-                            }
-                        }
+                    value = value.replace(/[^0-9]/g, '');
+                    if (parseInt(value) < parseInt(maxHeight)) {
+                        setMinHeightErr('');
+                        setMaxHeightErr('');
                     } else {
-                        setMinHeightErr('The minimum height must be an integer')
+                        if (maxHeight) {
+                            setMinHeightErr('The minimum height must be less than maximum height')
+                        } else {
+                            setMinHeightErr('');
+                        }
                     }
                 }
                 return setMinHeight(value)
@@ -127,19 +120,16 @@ export default function Create() {
                     setMaxWeightErr('This field is required');
                     if (minWeightErr === 'The minimum weight must be less than maximum weight') setMinWeightErr('');
                 } else {
-                    if (/^\d+$/.test(value)) {
-                        if (parseInt(value) > parseInt(minWeight)) {
-                            setMaxWeightErr('');
-                            setMinWeightErr('');
-                        } else {
-                            if (minWeight) {
-                                setMaxWeightErr('The maximum weight must be greater than minimum weight')
-                            } else {
-                                setMaxWeightErr('');
-                            }
-                        }
+                    value = value.replace(/[^0-9]/g, '');
+                    if (parseInt(value) > parseInt(minWeight)) {
+                        setMaxWeightErr('');
+                        setMinWeightErr('');
                     } else {
-                        setMaxWeightErr('The maximum weight must be an integer')
+                        if (minWeight) {
+                            setMaxWeightErr('The maximum weight must be greater than minimum weight')
+                        } else {
+                            setMaxWeightErr('');
+                        }
                     }
                 }
                 return setMaxWeight(value)
@@ -148,19 +138,16 @@ export default function Create() {
                     setMinWeightErr('This field is required');
                     if (maxWeightErr === 'The maximum weight must be greater than minimum weight') setMaxWeightErr('');
                 } else {
-                    if (/^\d+$/.test(value)) {
-                        if (parseInt(value) < parseInt(maxWeight)) {
-                            setMinWeightErr('');
-                            setMaxWeightErr('');
-                        } else {
-                            if (maxWeight) {
-                                setMinWeightErr('The minimum weight must be less than maximum weight')
-                            } else {
-                                setMinWeightErr('');
-                            }
-                        }
+                    value = value.replace(/[^0-9]/g, '');
+                    if (parseInt(value) < parseInt(maxWeight)) {
+                        setMinWeightErr('');
+                        setMaxWeightErr('');
                     } else {
-                        setMinWeightErr('The minimum weight must be an integer')
+                        if (maxWeight) {
+                            setMinWeightErr('The minimum weight must be less than maximum weight')
+                        } else {
+                            setMinWeightErr('');
+                        }
                     }
                 }
                 return setMinWeight(value)
@@ -169,19 +156,16 @@ export default function Create() {
                     setMaxLifespanErr('This field is required');
                     if (minLifespanErr === 'The minimum lifespan must be less than maximum lifespan') setMinLifespanErr('');
                 } else {
-                    if (/^\d+$/.test(value)) {
-                        if (parseInt(value) > parseInt(minLifespan)) {
-                            setMaxLifespanErr('');
-                            setMinLifespanErr('');
-                        } else {
-                            if (minLifespan) {
-                                setMaxLifespanErr('The maximum lifespan must be greater than minimum lifespan')
-                            } else {
-                                setMaxLifespanErr('');
-                            }
-                        }
+                    value = value.replace(/[^0-9]/g, '');
+                    if (parseInt(value) > parseInt(minLifespan)) {
+                        setMaxLifespanErr('');
+                        setMinLifespanErr('');
                     } else {
-                        setMaxLifespanErr('The maximum lifespan must be an integer')
+                        if (minLifespan) {
+                            setMaxLifespanErr('The maximum lifespan must be greater than minimum lifespan')
+                        } else {
+                            setMaxLifespanErr('');
+                        }
                     }
                 }
                 return setMaxLifespan(value)
@@ -190,19 +174,16 @@ export default function Create() {
                     setMinLifespanErr('This field is required');
                     if (maxLifespanErr === 'The maximum lifespan must be greater than minimum lifespan') setMaxLifespanErr('');
                 } else {
-                    if (/^\d+$/.test(value)) {
-                        if (parseInt(value) < parseInt(maxLifespan)) {
-                            setMinLifespanErr('');
-                            setMaxLifespanErr('');
-                        } else {
-                            if (maxLifespan) {
-                                setMinLifespanErr('The minimum lifespan must be less than maximum lifespan')
-                            } else {
-                                setMinLifespanErr('');
-                            }
-                        }
+                    value = value.replace(/[^0-9]/g, '');
+                    if (parseInt(value) < parseInt(maxLifespan)) {
+                        setMinLifespanErr('');
+                        setMaxLifespanErr('');
                     } else {
-                        setMinLifespanErr('The minimum lifespan must be an integer')
+                        if (maxLifespan) {
+                            setMinLifespanErr('The minimum lifespan must be less than maximum lifespan')
+                        } else {
+                            setMinLifespanErr('');
+                        }
                     }
                 }
                 return setMinLifespan(value);
@@ -230,7 +211,7 @@ export default function Create() {
             })
             if (response.status === 200) {
                 showMessage(response.data.message);
-                //history.push(`/detail/${response.data.id}`);
+                history.push(`/detail/${response.data.id}`);
             }
         } catch (e) {
             return setErrGlobal(e.response.data);
@@ -295,7 +276,7 @@ export default function Create() {
 
                             <div className={temperamentErr ? '' : 'mb-3'}>
                                 <label className={s.label}>Temperaments</label>
-                                <select className={temperamentErr ? s.errorSelect : s.selectInput} id="temperamentSelector" value={actualTemperament} onChange={e => selectTemperament(e.target.value)} name="temperament">
+                                <select className={temperamentErr ? s.errorSelect : s.selectInput} id="temperamentSelector" value='default' onChange={e => selectTemperament(e.target.value)} name="temperament">
                                     <option key='default' value='default' disabled>Select a temperament</option>
                                     {temperaments.map((e, i) => <option key={i} value={e}>{e}</option>)}
                                 </select>
@@ -306,7 +287,7 @@ export default function Create() {
                                 <div className={`${s.temperamentsContainer} ${temperamentErr ? '' : 'mt-3'}`}>
                                     {selectedTemperaments.map((e, i) =>
                                         <div key={i} className={s.test}>
-                                            <button onClick={() => deleteTemperament(e)} value={e} className={s.temperament}>
+                                            <button type="button" onClick={() => deleteTemperament(e)} value={e} className={s.temperament}>
                                                 {e}
                                                 <IonIcon icon={closeCircleOutline} className={s.iconDelete}></IonIcon>
                                             </button>
@@ -319,14 +300,14 @@ export default function Create() {
                         </form>
                     </div>
                     :
-                    <div className={s.containerNoLogin}>
-                        <div className={s.contentNoLogin}>
-                            <img className={s.loading} src={loading} alt='loadingGif' width="25%"></img>
+                    <div className={s.containerCenter}>
+                        <div className={s.contentCenter}>
+                            <img className={s.loading} src={loading} alt='loadingGif'></img>
                         </div>
                     </div>
                 :
-                <div className={s.containerNoLogin}>
-                    <div className={s.contentNoLogin}>
+                <div className={s.containerCenter}>
+                    <div className={s.contentCenter}>
                         <p>To be able to register a new breed you need to be logged in.</p>
                         <Link to="/login" className={s.loginButton}>Log in</Link>
                     </div>

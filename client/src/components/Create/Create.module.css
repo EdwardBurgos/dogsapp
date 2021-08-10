@@ -1,8 +1,4 @@
-:root {
-  --height: calc(100vh - 56px);
-}
-
-.containerNoLogin{
+.containerCenter{
   height: var(--height);
   display: flex;
   align-items: center;
@@ -27,7 +23,11 @@
   -webkit-box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
 }
 
-.contentNoLogin {
+.loading {
+  width: 25%;
+}
+
+.contentCenter {
   width: 100%;
   max-width: 330px;
   margin: 0 auto;
@@ -47,18 +47,20 @@
   color: rgba(26,26,26,.7);
   font-weight: 600;
   font-size: 0.9rem;
+  display: block;
+  margin-bottom: 16px;
 }
 
 .title {
-    text-align: center;
-    margin-bottom: 30px;
-    font-weight: 600;
-    width: 100%;
+  text-align: center;
+  margin-bottom: 30px;
+  font-weight: 600;
+  width: 100%;
 }
 
 .temperament {
-  margin-right: 20px;
-  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
   background-color: #2962ff;
   color: white;
   padding: 0.375rem 0.75rem;
@@ -71,6 +73,7 @@
 .temperamentsContainer {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .error {
@@ -84,8 +87,7 @@
   position: relative;
   display: flex;
   align-items: center;
-  margin-bottom: 16px;
-  margin-right: 16px;
+  margin: 0 8px 16px 8px;
 }
 
 .submit {
@@ -98,7 +100,6 @@
   padding: 0.375rem 0.75rem;
   font-weight: 400;
   line-height: 1.5;
-  color: #212529;
   background-color: #fff;
   background-clip: padding-box;
   border: 1px solid #ced4da;
@@ -121,7 +122,6 @@
 }
 
 .formInput:focus, .selectInput:focus {
-  color: #212529;
   background-color: #fff;
   border-color: #86b7fe;
   outline: 0;
@@ -133,7 +133,6 @@
 }
 
 .errorInput:focus, .errorSelect:focus {
-  color: #212529;
   background-color: #fff;
   border-color: #fe8686;
   outline: 0;

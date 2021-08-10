@@ -24,14 +24,10 @@ function Login(props) {
     const [showRegister, setShowRegister] = useState(false)
 
     const usuario = useSelector(state => state['user'])
-    // 
 
     useEffect(() => {
         console.log('WHO', usuario)
     }, [showRegister])
-
-    const handleClose = () => setShowRegister(false);
-    const handleShow = () => setShowRegister(true);
 
     const history = useHistory()
 
@@ -47,14 +43,10 @@ function Login(props) {
             default:
                 break;
         }
-
     }
-
-
 
     function validateErrors() {
         if (!email) {
-            //email, a pesar de estar vacío y entrar a esta validación, no cambia el estado
             setErrors({ ...errors, email: 'Se necesita un E-mail' })
         } else if (!/\S+@{1}[a-zA-Z]+\.{1}[a-z]{3}\.?[a-z]*/gm.test(email)) {
             setErrors({ ...errors, email: 'E-mail inválido' })
@@ -121,6 +113,8 @@ function Login(props) {
     //     }
     // }
 
+    // ESTA ES LA FUNCIÓN PARA REGISTRAR
+
     // async function handleSubmitRegister(values) {
     //     console.log(values)
     //     let user: UserProps = {
@@ -137,7 +131,6 @@ function Login(props) {
     //     if (values.mail === 'braiansilva@gmail.com') user.role = Role.ADMIN;
     //     try {
     //       const registro = await axios.post('http://localhost:3001/api/session/register', userWithPassword, { withCredentials: true })
-
     //       if (registro.status === 200) {
     //         swalWithBootstrapButtons.fire(
     //           'Se registró correctamente',
@@ -157,12 +150,6 @@ function Login(props) {
     //     }
     //   }
 
-
-
-
-
-    const dispatch = useDispatch();
-    //   dispatch(modificarUsuarioLogueado(usuarioLogueado))
 
     async function handleSubmit(e) {
         e.preventDefault()
@@ -201,26 +188,8 @@ function Login(props) {
         }
     }
 
-    // const test: CSS.Properties = {
-    //     position: 'relative',
-    //     display: 'flex',
-    //     alignItems: 'center'
-    // }
-    // const inputMargin: CSS.Properties = {
-    //     margin: '0px'
-    // }
-    // const eyeTest: CSS.Properties = {
-    //     position: 'absolute',
-    //     right: '15px'
-    // }
-
-
-
     return (
         <div className={s.container}>
-            {/* <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link> */}
-
             <div className={s.content}>
                 <div className={s.image}>
                     <img className={s.logo} src={logo} alt='logo' width="100%"></img>
@@ -237,7 +206,6 @@ function Login(props) {
                         <div className={`form-floating ${s.test}`} >
                             <input className={s.inputMargin} ref={inputRef} type='password' value={password} name='passValue' onChange={handleChange} placeholder='Contraseña' className={`form-control mb-3 ${s.inputPassword}`} />
                             <label htmlFor="floatingPassword">Password</label>
-                            {/* <i style={eyeTest} ref={eyeRef} className="fa fa-eye-slash" onClick={() => myFunction()}></i> */}
                             <IonIcon ref={eyeRef} icon={eyeOutline} className={s.iconDumb} onClick={() => myFunction()}></IonIcon>
                         </div>
 
@@ -248,25 +216,20 @@ function Login(props) {
                                 Email or password are incorrect</small> : null}
                         </div>
 
-                        <div className={`w-100 btn mb-3 ${s.googleButton}`} > {/*  onClick={loginConGoogle} */}
-                            <img src={googleLogo} className={s.googleLogo} alt='Google Logo'></img>
-                            <span>Log in with Google</span>
-                        </div>
-
-                        <p className={s.marginBottom0}>
-                            Don't have an account?
-                            <Link className={s.registroLink} to="/signup">
-                                Sign up
-                            </Link>
-                        </p>
-
-                        {/* <Register show={showRegister} handleClose={handleClose} /> */}
-
-
                     </form>
+
+                    <div className={`w-100 btn mb-3 ${s.googleButton}`} > {/*  onClick={loginConGoogle} */}
+                        <img src={googleLogo} className={s.googleLogo} alt='Google Logo'></img>
+                        <span>Log in with Google</span>
+                    </div>
+
+                    <p className={s.marginBottom0}>
+                        Don't have an account?
+                        <Link className={s.registroLink} to="/signup">
+                            Sign up
+                        </Link>
+                    </p>
                 </div>
-
-
             </div>
         </div>
     )

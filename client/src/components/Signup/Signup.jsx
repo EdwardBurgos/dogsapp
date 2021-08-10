@@ -169,7 +169,7 @@ export default function Signup(props) {
                         </div>
                     </>
                     :
-                    <img className={s.loading} src={loading} alt='loadingGif' width="25%"></img>
+                    <img className={s.loading} src={loading} alt='loadingGif'></img>
                 }
             </div>
         </div>

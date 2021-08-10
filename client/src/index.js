@@ -9,7 +9,6 @@ import App from './App';
 import { Route } from 'react-router-dom';
 import LandingPage from './components/LandingPage/LandingPage';
 import 'bootstrap/dist/css/bootstrap.min.css'
-// import redux from 'redux';
 
 const store = storeConfig();
 

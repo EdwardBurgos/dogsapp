@@ -5,29 +5,26 @@ import Cards from '../Cards/Cards';
 import * as actionsCreators from '../../actions';
 import { useDispatch, useSelector } from 'react-redux'
 import PaginationComponent from '../PaginationComponent/PaginationComponent';
-import NavBar from '../NavBar/NavBar';
 
-export default function Home(props) {
-  // Dispatch
-  const dispatch = useDispatch();
-
-  // Global States
-  const finalResultRedux = useSelector(state => state.finalResult);
-  const actualPageRedux = useSelector(state => state.actualPage);
-
-  // Local States
+export default function Home() {
+  // Own States
   const [dogs, setDogs] = useState([]);
   const [temperaments, setTemperaments] = useState([]);
   const [error, setError] = useState('');
-  const [offset, setOffset] = useState(0);
-  const [limit] = useState(8);
-
-  // Elements states
   const [searchTerm, setSearchTerm] = useState('');
   const [temperament, setTemperament] = useState('');
   const [property, setProperty] = useState('');
 
-  // When component mounts
+  // Redux states
+  const finalResultRedux = useSelector(state => state.finalResult);
+  const actualPageRedux = useSelector(state => state.actualPage);
+ 
+  // Variables
+  const dispatch = useDispatch();
+
+  // Hooks
+
+  // This hook load the dogs and the temperaments for the filter
   useEffect(() => {
     async function requesting() {
       const completeDogs = await axios.get(`http://localhost:3001/dogs/all`);
@@ -39,7 +36,8 @@ export default function Home(props) {
     requesting();
   }, [dispatch])
 
-  // Filter function
+  // Functions 
+
   function filter(e) {
     if (e.target.id !== 'own' && e.target.id !== 'notOwn') { e.preventDefault(); }
     if (dogs.length < 9) return setError('Wait a moment please');
@@ -70,7 +68,6 @@ export default function Home(props) {
     dispatch(actionsCreators.modifyFinalResult(finalResult))
   }
 
-  // HTML estructure
   return (
     <div className={s.container}>
       <h1 className={s.title}>Dog breeds</h1>
@@ -91,8 +88,8 @@ export default function Home(props) {
       <div className={`${s.marginTop} ${s.marginBottom}`}>
         <span className={s.label}>Filter by property</span>
         <div className={s.middleContent}>
-          <div className={s.radioOneInput}><label htmlFor="own"><input type="radio" id="own" name="propertyFilter" checked={property === 'own'} onChange={e => filter(e)} className={s.radioOne}/>Show dog breeds created by the community</label></div>
-          <div className={s.radioTwoInput}><label htmlFor="notOwn"><input type="radio" id="notOwn" name="propertyFilter" checked={property === 'notOwn'} onChange={e => filter(e)} className={s.radioTwo}/>Do not show dog breeds created by the community</label></div>
+          <div className={s.radioOneInput}><label htmlFor="own"><input type="radio" id="own" name="propertyFilter" checked={property === 'own'} onChange={e => filter(e)} className={s.radioOne} />Show dog breeds created by the community</label></div>
+          <div className={s.radioTwoInput}><label htmlFor="notOwn"><input type="radio" id="notOwn" name="propertyFilter" checked={property === 'notOwn'} onChange={e => filter(e)} className={s.radioTwo} />Do not show dog breeds created by the community</label></div>
         </div>
         <button id="deletePropertyFilter" className={s.button} onClick={e => { filter(e) }}>Delete filter</button>
       </div>
