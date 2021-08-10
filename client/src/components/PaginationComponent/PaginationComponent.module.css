@@ -1,7 +1,7 @@
 .pagination {
-    justify-content: center !important;
-    flex-wrap: wrap !important;
-  }
+  justify-content: center !important;
+  flex-wrap: wrap !important;
+}
 
 .activo span {
   background-color: #2962ff !important;
@@ -27,10 +27,3 @@
   border-radius: 5px;
   border: 1px solid #E7EAED;
 }
-
-/* @media only screen and (max-width: 576px) {
-  .pagination {display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-} */

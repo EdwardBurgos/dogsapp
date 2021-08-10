@@ -9,6 +9,11 @@ import { IonIcon } from '@ionic/react';
 import { Link } from 'react-router-dom';
 import loading from '../../img/loadingGif.gif';
 import { getTemperaments } from '../../extras/globalFunctions';
+import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
+import { useHistory } from "react-router-dom";
+
+toast.configure();
 
 export default function Create() {
     // Own states
@@ -31,12 +36,14 @@ export default function Create() {
     const [temperamentErr, setTemperamentErr] = useState('')
     const [actualTemperament, setActualTemperament] = useState('default')
     const [buttonState, setButtonState] = useState(true)
+    const [errGlobal, setErrGlobal] = useState('')
 
     // Redux states
     const login = useSelector(state => state.login);
 
     // Variables
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
+    const history = useHistory();
 
     // This hook is to get the temperaments when the component mount
     useEffect(() => {
@@ -46,18 +53,25 @@ export default function Create() {
         loadTemperaments();
     }, [])
 
+    // This hook is to enable or disable the submit button
+    useEffect(() => {
+        if (nameErr || maxHeightErr || minHeightErr || maxWeightErr || minWeightErr || maxLifespanErr || minLifespanErr || !selectedTemperaments.length ||
+            !name || !maxHeight || !minHeight || !maxWeight || !minWeight || !maxLifespan || !minLifespan) return setButtonState(true);
+        return setButtonState(false);
+    }, [nameErr, maxHeightErr, minHeightErr, maxWeightErr, minWeightErr, maxLifespanErr, minLifespanErr, selectedTemperaments,
+        name, maxHeight, minHeight, maxWeight, minWeight, maxLifespan, minLifespan])
 
-
-
+    // Functions
 
     function selectTemperament(temperament) {
         setTemperamentErr('');
-        // if (selectedTemperaments.includes(temperament)) return setTemperamentErr('Temperament already selected')
-        setSelectedTemperaments([...new Set([...selectedTemperaments, temperament])])
+        selectedTemperaments.includes(temperament) ? setTemperamentErr('Temperament already selected') : setSelectedTemperaments([...new Set([...selectedTemperaments, temperament])])
     }
 
     function deleteTemperament(temperament) {
-        setSelectedTemperaments(selectedTemperaments.filter(e => e === temperament ? false : true))
+        let newTemperaments = selectedTemperaments.filter(e => e === temperament ? false : true);
+        !newTemperaments.length ? setTemperamentErr('This field is required') : setTemperamentErr('')
+        setSelectedTemperaments(newTemperaments)
     }
 
     function handleChange(e) {
@@ -192,14 +206,17 @@ export default function Create() {
                     }
                 }
                 return setMinLifespan(value);
-            case 'temperament':
-                return selectTemperament(value);
             default:
                 break;
         }
     }
 
-    async function submitForm(name, maxHeight, minHeight, maxWeight, minWeight, maxLifespan, minLifespan, selectedTemperaments) {
+    function showMessage(data) {
+        toast(data, { position: toast.POSITION.BOTTOM_LEFT, pauseOnFocusLoss: false })
+    }
+
+    async function handleSubmit(e) {
+        e.preventDefault();
         try {
             const response = await axios.post('http://localhost:3001/dog', {
                 name: name,
@@ -211,29 +228,14 @@ export default function Create() {
                 lifespanmin: minLifespan,
                 temperaments: selectedTemperaments
             })
-            dispatch(actionsCreators.saveCreationMessage(response.data));
-
+            if (response.status === 200) {
+                showMessage(response.data.message);
+                //history.push(`/detail/${response.data.id}`);
+            }
         } catch (e) {
-            console.log(e)
+            return setErrGlobal(e.response.data);
         }
     }
-
-    function handleSubmit(e) {
-        e.preventDefault();
-        submitForm(name, maxHeight, minHeight, maxWeight, minWeight, maxLifespan, minLifespan, selectedTemperaments);
-    }
-
-
-
-
-    useEffect(() => {
-        if (!nameErr && !maxHeightErr && !minHeightErr && !maxWeightErr && !minWeightErr && !maxLifespanErr && !minLifespanErr && !temperamentErr) {
-            setButtonState(false);
-        }
-        if (nameErr || maxHeightErr || minHeightErr || maxWeightErr || minWeightErr || maxLifespanErr || minLifespanErr || temperamentErr) {
-            setButtonState(true);
-        }
-    }, [nameErr, maxHeightErr, minHeightErr, maxWeightErr, minWeightErr, maxLifespanErr, minLifespanErr, temperamentErr])
 
     return (
         <>
@@ -241,64 +243,67 @@ export default function Create() {
                 temperaments.length ?
                     <div className={s.container}>
                         <h1 className={s.title}>Register a new breed</h1>
+                        <div className={s.errorGlobalContainer}>
+                            {errGlobal ? <small className={s.errorGlobal}>{errGlobal}</small> : null}
+                        </div>
                         <form onSubmit={handleSubmit} className={s.form}>
                             <div className={nameErr ? '' : 'mb-3'}>
-                                <label className={s.label}>Name</label><br />
-                                <input value={name} placeholder="Insert name" className={nameErr ? s.errorInput : s.formInput} type="text" onChange={handleChange} name="name"></input><br />
+                                <label className={s.label}>Name</label>
+                                <input value={name} placeholder="Insert name" className={nameErr ? s.errorInput : s.formInput} type="text" onChange={handleChange} name="name"></input>
                             </div>
                             {nameErr ? <small className={s.error}>{nameErr}</small> : null}
 
 
                             <div className={maxHeightErr ? '' : 'mb-3'}>
-                                <label className={s.label}>Max Height</label><br />
-                                <input value={maxHeight} placeholder="Insert max height" className={maxHeightErr ? s.errorInput : s.formInput} type="text" onChange={handleChange} name="maxHeight"></input><br />
+                                <label className={s.label}>Max Height</label>
+                                <input value={maxHeight} placeholder="Insert max height" className={maxHeightErr ? s.errorInput : s.formInput} type="text" onChange={handleChange} name="maxHeight"></input>
                             </div>
                             {maxHeightErr ? <small className={s.error}>{maxHeightErr}</small> : null}
 
                             <div className={minHeightErr ? '' : 'mb-3'}>
-                                <label className={s.label}>Min Height</label><br />
-                                <input value={minHeight} placeholder="Insert min height" className={minHeightErr ? s.errorInput : s.formInput} type="text" onChange={handleChange} name="minHeight"></input><br />
+                                <label className={s.label}>Min Height</label>
+                                <input value={minHeight} placeholder="Insert min height" className={minHeightErr ? s.errorInput : s.formInput} type="text" onChange={handleChange} name="minHeight"></input>
                             </div>
                             {minHeightErr ? <small className={s.error}>{minHeightErr}</small> : null}
 
 
                             <div className={maxWeightErr ? '' : 'mb-3'}>
-                                <label className={s.label}>Max Weight</label><br />
-                                <input value={maxWeight} placeholder="Insert max weight" className={maxWeightErr ? s.errorInput : s.formInput} type="text" onChange={handleChange} name="maxWeight"></input><br />
+                                <label className={s.label}>Max Weight</label>
+                                <input value={maxWeight} placeholder="Insert max weight" className={maxWeightErr ? s.errorInput : s.formInput} type="text" onChange={handleChange} name="maxWeight"></input>
                             </div>
                             {maxWeightErr ? <small className={s.error}>{maxWeightErr}</small> : null}
 
 
                             <div className={minWeightErr ? '' : 'mb-3'}>
-                                <label className={s.label}>Min Weight</label><br />
-                                <input value={minWeight} placeholder="Insert min weight" className={minWeightErr ? s.errorInput : s.formInput} type="text" onChange={handleChange} name="minWeight"></input><br />
+                                <label className={s.label}>Min Weight</label>
+                                <input value={minWeight} placeholder="Insert min weight" className={minWeightErr ? s.errorInput : s.formInput} type="text" onChange={handleChange} name="minWeight"></input>
                             </div>
                             {minWeightErr ? <small className={s.error}>{minWeightErr}</small> : null}
 
 
                             <div className={maxLifespanErr ? '' : 'mb-3'}>
-                                <label className={s.label}>Max Lifespan</label><br />
-                                <input value={maxLifespan} placeholder="Insert max lifespan" className={maxLifespanErr ? s.errorInput : s.formInput} type="text" onChange={handleChange} name="maxLifespan"></input><br />
+                                <label className={s.label}>Max Lifespan</label>
+                                <input value={maxLifespan} placeholder="Insert max lifespan" className={maxLifespanErr ? s.errorInput : s.formInput} type="text" onChange={handleChange} name="maxLifespan"></input>
                             </div>
                             {maxLifespanErr ? <small className={s.error}>{maxLifespanErr}</small> : null}
 
                             <div className={minLifespanErr ? '' : 'mb-3'}>
-                                <label className={s.label}>Min Lifespan</label><br />
-                                <input value={minLifespan} placeholder="Insert min lifespan" className={minLifespanErr ? s.errorInput : s.formInput} type="text" onChange={handleChange} name="minLifespan"></input><br />
+                                <label className={s.label}>Min Lifespan</label>
+                                <input value={minLifespan} placeholder="Insert min lifespan" className={minLifespanErr ? s.errorInput : s.formInput} type="text" onChange={handleChange} name="minLifespan"></input>
                             </div>
                             {minLifespanErr ? <small className={s.error}>{minLifespanErr}</small> : null}
 
                             <div className={temperamentErr ? '' : 'mb-3'}>
-                                <label className={s.label}>Temperaments</label><br />
-                                <select className={temperamentErr ? s.errorSelect : s.selectInput} id="temperamentSelector" value={actualTemperament} onChange={handleChange} name="temperament">
+                                <label className={s.label}>Temperaments</label>
+                                <select className={temperamentErr ? s.errorSelect : s.selectInput} id="temperamentSelector" value={actualTemperament} onChange={e => selectTemperament(e.target.value)} name="temperament">
                                     <option key='default' value='default' disabled>Select a temperament</option>
                                     {temperaments.map((e, i) => <option key={i} value={e}>{e}</option>)}
-                                </select><br />
+                                </select>
                             </div>
                             {temperamentErr ? <small className={s.error}>{temperamentErr}</small> : null}
 
                             {selectedTemperaments.length ?
-                                <div className={s.temperamentsContainer}>
+                                <div className={`${s.temperamentsContainer} ${temperamentErr ? '' : 'mt-3'}`}>
                                     {selectedTemperaments.map((e, i) =>
                                         <div key={i} className={s.test}>
                                             <button onClick={() => deleteTemperament(e)} value={e} className={s.temperament}>
@@ -307,19 +312,6 @@ export default function Create() {
                                             </button>
                                         </div>
                                     )}
-                                    {/* <div className={s.quitarDeCesta}>
-                                        <button onClick={quitardeCesta} className={s.quitarDeCestaButton}>
-                                            <IonIcon icon={closeCircleOutline} className={s.iconDumb}></IonIcon>
-                                            <span className={s.textDumb}>Quitar</span>
-                                        </button>
-                                    </div> */}
-
-
-                                    {/* {selectedTemperaments.map((e, i) => 
-                                    <div className={s.test}>
-                                        <input key={i} type='button' value={e} className={s.temperament} onClick={e => deleteTemperament(e)} />
-                                        <IonIcon icon={closeCircleOutline} className={s.iconColor}></IonIcon>
-                                    </div>)} */}
                                 </div>
                                 : null}
 

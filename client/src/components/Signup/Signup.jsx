@@ -14,7 +14,7 @@ import { useHistory } from "react-router-dom";
 toast.configure();
 
 export default function Signup(props) {
-    // States
+    // Own states
     const [errGlobal, setErrGlobal] = useState('');
     const [fullname, setFullname] = useState('');
     const [errFullname, setErrFullname] = useState('');
@@ -31,7 +31,25 @@ export default function Signup(props) {
     // Variables
     const history = useHistory();
 
-    // This function validate the form in every change done by the user 
+    // Hooks 
+
+    // This hook set the country of the user
+    useEffect(() => {
+        async function getCountry() {
+            const response = await axios.get('https://geolocation-db.com/json/');
+            if (response) { setCountry(response.data.country_name); }
+        }
+        getCountry();
+    }, [])
+
+    // This hook manage the button state
+    useEffect(() => {
+        if (errFullname || errUsername || errEmail || errPassword || !fullname || !username || !email || !password) return setButtonState(true)
+        return setButtonState(false)
+    }, [errFullname, errUsername, errEmail, errPassword, fullname, username, email, password])
+
+    // Functions 
+
     function handleChange(e) {
         const value = e.target.value;
         switch (e.target.name) {
@@ -71,7 +89,6 @@ export default function Signup(props) {
         toast(data, { position: toast.POSITION.BOTTOM_LEFT, pauseOnFocusLoss: false })
     }
 
-    // This function is executed on submit
     async function handleSubmit(e) {
         e.preventDefault();
         try {
@@ -92,21 +109,6 @@ export default function Signup(props) {
             return setErrGlobal('Sorry, an error occurred');
         }
     }
-
-    // This hook set the country of the user
-    useEffect(() => {
-        async function getCountry() {
-            const response = await axios.get('https://geolocation-db.com/json/');
-            if (response) { setCountry(response.data.country_name); }
-        }
-        getCountry();
-    }, [])
-
-    // This hook 
-    useEffect(() => {
-        if (errFullname || errUsername || errEmail || errPassword || !fullname || !username || !email || !password) return setButtonState(true)
-        return setButtonState(false)
-    }, [errFullname, errUsername, errEmail, errPassword, fullname, username, email, password])
 
     return (
         <div className={s.container}>

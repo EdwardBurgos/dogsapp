@@ -22,7 +22,7 @@
 
 .buttonHome:hover {
     box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
-      -webkit-box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
+    -webkit-box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
 }
 
 .content {
@@ -53,7 +53,7 @@
 
 @media only screen and (max-width: 992px) {
     .container {
-      background-image: url('../../img/landingBackgroundPhone.jpg');
+        background-image: url('../../img/landingBackgroundPhone.jpg');
     }
 
     .content {
@@ -67,7 +67,7 @@
 
 @media only screen and (max-width: 576px) {
     .content {
-    -ms-transform: translateY(35%);
-    transform: translateY(35%);
+        -ms-transform: translateY(35%);
+        transform: translateY(35%);
     }
 }

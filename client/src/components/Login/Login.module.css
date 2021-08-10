@@ -1,6 +1,7 @@
 :root {
   --height: calc(100vh - 56px);
 }
+
 .container{
   height: var(--height);
   display: flex;
@@ -46,6 +47,7 @@
   width: 90%;
   margin-right: 10%;
 }
+
 .image {
   width: 25%;
   box-sizing: border-box;
@@ -53,26 +55,6 @@
 
 .image, .form {
   width: 30%;
-}
-
-
-@media only screen and (max-width: 992px) {
-  .image, .form {
-    width: 40%;
-  }
-}
-
-@media only screen and (max-width: 768px) {
-  .image, .form {
-    width: 50%;
-  }
-}
-
-@media only screen and (max-width: 576px) {
-  .image, .form {
-    width: 100%;
-  }
-  .logo {margin-right: 0;}
 }
 
 .input, .inputPassword {
@@ -120,12 +102,10 @@
   -webkit-box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
 }
 
-
 .googleLogo {
   height: 1.2rem;
   margin-right: 10px;
 }
-
 
 .botonswal {
   background-color: #2962ff;
@@ -146,6 +126,7 @@ box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
 .botonswal:disabled {
   background-color: #99b2f5;
 }
+
 .inputMargin {
   margin: 0px;
 }
@@ -154,4 +135,23 @@ box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
   position: relative;
   display: flex;
   align-items: center;
+}
+
+@media only screen and (max-width: 992px) {
+  .image, .form {
+    width: 40%;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .image, .form {
+    width: 50%;
+  }
+}
+
+@media only screen and (max-width: 576px) {
+  .image, .form {
+    width: 100%;
+  }
+  .logo {margin-right: 0;}
 }

@@ -2,11 +2,13 @@
     margin-right: 40px;
     height: 30px;
 }
+
 .brand {
     padding: 0;
     display: flex;
     align-items: center;
 }
+
 .navbar {
     padding: 1% 5%;
     background-color: #F2F2F2;
@@ -16,14 +18,11 @@
     -webkit-box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
     margin-bottom: 30px;
 }
-/* 
-.sectionItem {
-    color: #000 !important;
-} */
 
 .sectionItem a .active {
     color: red !important;
 }
+
 .sectionItem:hover {
     font-weight: 600;
 }
@@ -35,18 +34,13 @@
     padding: 1% 5% ;
     box-sizing: border-box;
     height: 80px;
-    
-        top:0 ;
+    top:0 ;
     flex-wrap: wrap;
 }
 
 .navbarExpanded {
     height: 200px;
 }
-
-/* .section, .sectionExpanded {
-    
-} */
 
 .enlace, .enlaceLogin, .enlaceSignup {
     padding: 8px 0;
@@ -60,19 +54,10 @@
     padding-left: 0 !important;
 }
 
-
-
-/* .enlace:active {
-    color: #000 ;
-    text-decoration: none;
-    font-weight: 600;
-} */
-
 .enlace:hover, .enlaceLogin:hover {
     color: #646464 !important;
     text-decoration: none;
-    margin-right: 20px;
-    
+    margin-right: 20px; 
 }
 
 .enlaceLogin:hover {
@@ -84,13 +69,11 @@
     text-decoration: none;
     margin-right: 20px;
     font-weight: 600;
-
 }
 
 .signedInfo {
     display: block;
 }
-
 
 .icon {
     vertical-align: middle;
@@ -113,7 +96,6 @@
 }
 
 @media only screen and (max-width: 768px) {
-    
     .section {
         display: none;
     }
@@ -126,4 +108,4 @@
     .enlaceInferior {
         width: 100%;
     }
-  }
+}

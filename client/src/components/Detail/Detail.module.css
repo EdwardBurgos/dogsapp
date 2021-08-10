@@ -1,5 +1,5 @@
 .container {
-    text-align: center;
+  text-align: center;
 }
 
 .image {
@@ -7,13 +7,12 @@
   margin-bottom: 16px;
 }
 
-@media only screen and (max-width: 600px) {
-    .image {
-      width: 100%
-    }
-  }
-
 .label {
-    font-weight: bold;
+  font-weight: bold;
 }
 
+@media only screen and (max-width: 600px) {
+  .image {
+    width: 100%
+  }
+}

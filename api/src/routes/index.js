@@ -19,17 +19,15 @@ Crea una raza de perro en la base de datos
  */
 router.post('/dog', async (req, res) => {
     try {
-
         const { name, heightmax, heightmin, weightmax, weightmin, lifespanmax, lifespanmin, temperaments } = req.body;
         const razaCreada = await Dog.create({ name, heightmax, heightmin, weightmax, weightmin, lifespanmax, lifespanmin });
         temperaments.forEach(async (e) => {
             var foundTemperament = await Temperament.findOne({ where: { name: e } });
             if (foundTemperament) razaCreada.addTemperament(foundTemperament);
         });
-        res.json({ message: 'La raza de perro ' + name + ' fue creada exitosamente', id: razaCreada.id });
+        res.json({ message: `The dog breed ${name} was created successfully`, id: razaCreada.id });
     } catch (e) {
-        console.log(req.body)
-        res.status(404).json({ error: 'Se produjo este error > ' + e });
+        return res.status(400).send('Sorry, an error occurred')
     }
 })
 
