@@ -1,5 +1,5 @@
 const initialState = {
-  login: false,
+  login: true,
   dogs: [],
   temperaments: [],
   creationMessage: '',

@@ -92,7 +92,7 @@ export default function NavBar() {
             </Navbar.Text>
             :
             <>
-              <Nav.Link as={NavLink} to="/signup" className={s.enlace} activeClassName={s.enlaceActivo} onClick={() => closeNav()}>Sign up</Nav.Link>
+              <Nav.Link as={NavLink} to="/signup" className={s.enlaceSignup} activeClassName={s.enlaceActivo} onClick={() => closeNav()}>Sign up</Nav.Link>
               <Nav.Link as={NavLink} to="/login" className={s.enlaceLogin} activeClassName={s.enlaceActivo} onClick={() => closeNav()}>Log in</Nav.Link>
             </>
         }

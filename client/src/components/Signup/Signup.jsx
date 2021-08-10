@@ -4,19 +4,23 @@ import loading from '../../img/loadingGif.gif';
 import { Link } from 'react-router-dom';
 import { countries } from '../../extras/countries';
 import axios from 'axios';
-import { useHistory } from "react-router-dom";
 import s from './Signup.module.css';
-import { eyeOutline, eyeOffOutline, alertCircleOutline } from "ionicons/icons";
+import 'react-toastify/dist/ReactToastify.css';
+import { eyeOutline, eyeOffOutline } from "ionicons/icons";
 import { IonIcon } from '@ionic/react';
+import { toast } from 'react-toastify';
+import { useHistory } from "react-router-dom";
+
+toast.configure();
 
 export default function Signup(props) {
     // States
-    const [fullName, setFullName] = useState('');
-    const [errFullName, setErrFullName] = useState('');
+    const [errGlobal, setErrGlobal] = useState('');
+    const [fullname, setFullname] = useState('');
+    const [errFullname, setErrFullname] = useState('');
     const [username, setUsername] = useState('');
-    const [description, setDescription] = useState(false)
+    const [errUsername, setErrUsername] = useState(false);
     const [country, setCountry] = useState('');
-    const [errCountry, setErrCountry] = useState('');
     const [email, setEmail] = useState('');
     const [errEmail, setErrEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -29,30 +33,26 @@ export default function Signup(props) {
 
     // This function validate the form in every change done by the user 
     function handleChange(e) {
+        const value = e.target.value;
         switch (e.target.name) {
-            case 'countryValue':
-                !e.target.value ? setErrCountry('This field is required') : setErrCountry('')
-                setCountry(e.target.value)
-                break;
-            case 'fullNameValue':
-                !e.target.value ? setErrFullName('This field is required') : setErrFullName('')
-                setFullName(e.target.value)
-                break;
+            case 'fullnameValue':
+                !value ? setErrFullname('This field is required') : setErrFullname('')
+                return setFullname(value)
             case 'usernameValue':
-                if (e.target.value) setDescription(false)
-                setUsername(e.target.value)
-                break;
+                !value ? setErrUsername('This field is required') : (value.length < 31 ? (/\s/.test(value) ? setErrUsername("The username can't contain white spaces") : (/^[a-z0-9._]+$/g.test(value) ? setErrUsername('') : setErrUsername("The username only can contains lowercase letters, numbers, points and subscripts"))) : setErrUsername("The username can't have more than 30 characters"))
+                return setUsername(value)
+            case 'countryValue':
+                return setCountry(value)
             case 'emailValue':
-                !e.target.value ? setErrEmail('This field is required') : (/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(e.target.value) ? setErrEmail('') : setErrEmail('Invalid email'))
-                setEmail(e.target.value)
-                break;
+                !value ? setErrEmail('This field is required') : (/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(value) ? setErrEmail('') : setErrEmail('Invalid email'))
+                return setEmail(value)
             case 'passValue':
-                if (!e.target.value) {
+                if (!value) {
                     setErrPassword('This field is required')
                 } else {
-                    e.target.value.length < 21 ?
-                        /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})/.test(e.target.value) ?
-                            !/\s/.test(e.target.value) ?
+                    value.length < 21 ?
+                        /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})/.test(value) ?
+                            !/\s/.test(value) ?
                                 setErrPassword('')
                                 :
                                 setErrPassword("The password can't contain white spaces")
@@ -61,32 +61,35 @@ export default function Signup(props) {
                         :
                         setErrPassword("The password can't have more than 20 characters")
                 }
-                setPassword(e.target.value)
-                break;
+                return setPassword(value)
             default:
                 break;
         }
+    }
+
+    function showMessage(data) {
+        toast(data, { position: toast.POSITION.BOTTOM_LEFT, pauseOnFocusLoss: false })
     }
 
     // This function is executed on submit
     async function handleSubmit(e) {
         e.preventDefault();
         try {
-            const login = await axios.post(`http://localhost:3001/api/login`, {
-                mail: email,
-                password: password
-            }, { withCredentials: true })
-            document.cookie = `token=${JSON.stringify(login.data.token)}`
-            localStorage.setItem('login', 'true')
-            // const user = await axios.post(`http://localhost:3001/api/verify`, {}, { headers: { Authorization: getCookieValue('token').replaceAll("\"", '') } })
-            // if (user !== null) props.getUserLoged({ mail: user.data.mail, name: user.data.name, lastName: user.data.lastName })
-            // console.log(store.getState())
-            // const usuarioActualizado = await setRoleOfUser()
-            // dispatch(modificarUsuarioLogueado(usuarioActualizado))
-            // const clases = await axios.get(`http://localhost:3001/api/carrito/all/${usuarioActualizado[1].mail}`)
-            history.push('/home')
-        } catch (error) {
-            //setWrongPassword(true)
+            const availableUsername = await axios.post(`http://localhost:3001/users/register`, {
+                fullname,
+                username,
+                country,
+                email,
+                password
+            });
+            if (availableUsername.status === 200) {
+                showMessage(availableUsername.data);
+                history.push('/home');
+            }
+        } catch (e) {
+            if (e.response.status === 409 && e.response.data === 'There is already a user with this email') return setErrEmail(e.response.data)
+            if (e.response.status === 409 && e.response.data === 'There is already a user with this username') return setErrUsername(e.response.data)
+            return setErrGlobal('Sorry, an error occurred');
         }
     }
 
@@ -101,84 +104,70 @@ export default function Signup(props) {
 
     // This hook 
     useEffect(() => {
-        if (errFullName || errCountry || errEmail || errPassword || !fullName || !country || !email || !password) return setButtonState(true)
+        if (errFullname || errUsername || errEmail || errPassword || !fullname || !username || !email || !password) return setButtonState(true)
         return setButtonState(false)
-    }, [errFullName, errCountry, errEmail, errPassword, fullName, country, email, password])
+    }, [errFullname, errUsername, errEmail, errPassword, fullname, username, email, password])
 
     return (
         <div className={s.container}>
             <div className={s.content}>
-                {
-                    country ?
-                        <>
-                            <div className={s.image}>
-                                <img className={s.logo} src={logo} alt='logo' width="100%"></img>
-                            </div>
-                            <div className={s.form}>
-                                <h1 className={s.title}>Sign up</h1>
-                                <form onSubmit={handleSubmit} className={s.infoForm}>
-                                    <div className={errFullName ? '' : 'mb-3'}>
-                                        <label className={s.label} htmlFor="fullNameValue">Full Name</label>
-                                        <input id="fullNameValue" value={fullName} name='fullNameValue' onChange={handleChange} className={`form-control ${s.input}`} />
+                {country ?
+                    <>
+                        <div className={s.image}>
+                            <img className={s.logo} src={logo} alt='logo' width="100%"></img>
+                        </div>
+                        <div className={s.form}>
+                            <h1 className={s.title}>Sign up</h1>
+                            {errGlobal ? <small className={s.errorGlobal}>{errGlobal}</small> : null}
+                            <form onSubmit={handleSubmit} className={s.infoForm}>
+                                <div className={errFullname ? '' : 'mb-3'}>
+                                    <label className={s.label} htmlFor="fullnameValue">Full Name</label>
+                                    <input id="fullnameValue" value={fullname} name='fullnameValue' onChange={handleChange} className={`form-control ${s.input} ${errFullname ? s.errorInput : ''}`} />
+                                </div>
+                                {errFullname ? <small className={s.error}>{errFullname}</small> : null}
+
+                                <div className={errUsername ? '' : 'mb-3'}>
+                                    <label className={s.label} htmlFor="usernameValue">Username</label>
+                                    <input id="usernameValue" value={username} name='usernameValue' onChange={handleChange} className={`form-control ${s.input} ${errUsername ? s.errorInput : ''}`} />
+                                </div>
+                                {errUsername ? <small className={s.error}>{errUsername}</small> : null}
+
+                                <div className='mb-3'>
+                                    <label className={s.label} htmlFor="countryValue">Country</label>
+                                    <select id="countryValue" name='countryValue' value={country} onChange={handleChange} className={`form-control ${s.input}`}>
+                                        {countries.map(c => {
+                                            return <option key={c} value={c}>{c}</option>
+                                        })}
+                                    </select>
+                                </div>
+
+                                <div className={errEmail ? '' : 'mb-3'}>
+                                    <label className={s.label} htmlFor="emailValue">Email</label>
+                                    <input id="emailValue" type='email' value={email} name='emailValue' onChange={handleChange} className={`form-control ${s.input} ${errEmail ? s.errorInput : ''}`} />
+                                </div>
+                                {errEmail ? <small className={s.error}>{errEmail}</small> : null}
+
+                                <div className={errPassword ? '' : 'mb-3'}>
+                                    <label className={s.label} htmlFor="passValue">Password</label>
+                                    <div className={s.test}>
+                                        <input id="passValue" value={password} name='passValue' type={showPassword ? 'text' : 'password'} onChange={handleChange} className={`form-control ${s.inputPassword} ${errPassword ? s.errorInput : ''}`} />
+                                        <IonIcon icon={showPassword ? eyeOutline : eyeOffOutline} className={s.iconDumb} onClick={() => showPassword ? setShowPassword(false) : setShowPassword(true)}></IonIcon>
                                     </div>
-                                    {errFullName ? <small className={s.error}>{errFullName}</small> : null}
+                                </div>
+                                {errPassword ? <small className={s.error}>{errPassword}</small> : null}
 
-                                    <div className={description ? '' : 'mb-3'}>
-                                        <label className={s.label} htmlFor="usernameValue">Username</label>
-                                        <div className={s.test}>
-                                            <input id="usernameValue" value={username} name='usernameValue' onChange={handleChange} className={`form-control ${s.inputPassword}`} />
-                                            <IonIcon icon={alertCircleOutline} className={s.iconDumb} onClick={() => description ? setDescription(false) : setDescription(true)}></IonIcon>
-                                        </div>
-
-                                    </div>
-                                    {description ? <small className={s.description}>This field is optional. If you leave it empty, we will assign you one after being registered. If you fill it, we will tell you if it is available.</small> : null}
-
-                                    <div className={errCountry ? '' : 'mb-3'}>
-                                        <label className={s.label} htmlFor="countryValue">Country</label>
-                                        <select id="countryValue" name='countryValue' onChange={handleChange} className={`form-control ${s.input}`}>
-                                            {country ?
-                                                countries.map(c => {
-                                                    if (c === country) {
-                                                        return <option selected value={c}>{c}</option>
-                                                    } else {
-                                                        return <option value={c}>{c}</option>
-                                                    }
-                                                })
-                                                :
-                                                countries.map(c => {
-                                                    return <option value={c}>{c}</option>
-                                                })}
-                                        </select>
-                                    </div>
-                                    {errCountry ? <small className={s.error}>{errCountry}</small> : null}
-
-                                    <div className={errEmail ? '' : 'mb-3'}>
-                                        <label className={s.label} htmlFor="emailValue">Email</label>
-                                        <input id="emailValue" type='email' value={email} name='emailValue' onChange={handleChange} className={`form-control ${s.input}`} />
-                                    </div>
-                                    {errEmail ? <small className={s.error}>{errEmail}</small> : null}
-
-                                    <div className={errPassword ? '' : 'mb-3'}>
-                                        <label className={s.label} htmlFor="passValue">Password</label>
-                                        <div className={s.test}>
-                                            <input id="passValue" value={password} name='passValue' type={showPassword ? 'text' : 'password'} onChange={handleChange} className={`form-control ${s.inputPassword}`} />
-                                            <IonIcon icon={showPassword ? eyeOutline : eyeOffOutline} className={s.iconDumb} onClick={() => showPassword ? setShowPassword(false) : setShowPassword(true)}></IonIcon>
-                                        </div>
-                                    </div>
-                                    {errPassword ? <small className={s.error}>{errPassword}</small> : null}
-
-                                    <input type="submit" value="Sign up" disabled={buttonState} className={`w-100 btn btn-primary mb-3 ${s.colorBoton}`} />
-                                </form>
-                                <p className={s.marginBottom0}>
-                                    Already have an account?
-                                    <Link className={s.registroLink} to='/login'>
-                                        Log in
-                                    </Link>
-                                </p>
-                            </div>
-                        </>
-                        :
-                        <img className={s.loading} src={loading} alt='loadingGig' width="25%"></img>
+                                <input type="submit" value="Sign up" disabled={buttonState} className={`w-100 btn btn-primary mb-3 ${s.colorBoton}`} />
+                            </form>
+                            <p className={s.marginBottom0}>
+                                Already have an account?
+                                <Link className={s.registroLink} to='/login'>
+                                    Log in
+                                </Link>
+                            </p>
+                        </div>
+                    </>
+                    :
+                    <img className={s.loading} src={loading} alt='loadingGif' width="25%"></img>
                 }
             </div>
         </div>

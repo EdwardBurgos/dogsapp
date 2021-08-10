@@ -43,17 +43,16 @@
 }
 
 .logo {
-  width: 90%;
-  margin-right: 10%;
+  width: 80%;
+  margin-right: 20%;
 }
 .image {
   width: 25%;
   box-sizing: border-box;
 }
 
-
 .form {
-  margin: 20px 0;
+  margin: 30px 0;
 }
 .image, .form {
   width: 30%;
@@ -79,14 +78,27 @@
   .logo {margin-right: 0;}
 }
 
-.input, .inputPassword {
+.input {
   border-radius: 5px !important;
 }
 
 .inputPassword {
+  border-radius: 5px !important;
   padding-right: 2.5rem !important;
-  margin: 0;
+  margin: 0 !important;
 }
+
+.errorInput {
+  border-radius: 5px !important;
+  border: 1px solid #fc9696 !important;
+}
+
+.errorInput:focus {
+  border-color: #fe8686 !important;
+  outline: 0 !important;;
+  box-shadow: 0 0 0 0.25rem rgba(253, 13, 13, 0.25) !important;
+}
+
 
 .iconDumb {
   vertical-align: middle;
@@ -115,9 +127,18 @@
 .error, .description{
   margin-top: 0.5rem;
   color:red;
-  font-weight:400;
   display: inline-block;
   margin-bottom: 16px;
+}
+
+.errorGlobal {
+  background-color: #f8d7da;
+  border: 1px #f5c2c7 solid;
+  color: #842029;
+  display: block;
+  padding: 10px 0;
+  margin-bottom: 16px;
+  border-radius: 5px;
 }
 
 .description {
@@ -218,3 +239,4 @@ box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
   font-weight: 600;
   font-size: 0.9rem;
 }
+

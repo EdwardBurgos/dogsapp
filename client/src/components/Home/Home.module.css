@@ -16,8 +16,12 @@
 }
 
 .marginTop {
-    margin-top: 20px;
+    margin-top: 16px;
     text-align: left;
+    flex-wrap: wrap;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .marginBottom {
@@ -68,6 +72,10 @@
     font-weight: bold;
 }
 
+.radioOneInput, .radioTwoInput{
+    width: 100%;
+}
+
 .button {
     margin-left: 15px;
     background-color: #2962ff;
@@ -84,11 +92,13 @@
     width: 40%;
     display: flex;
     justify-content: space-around;
+    flex-wrap: wrap;
 }
 
 .title {
     font-weight: 600;
     margin-bottom: 1rem;
+    margin-bottom: 30px;
 }
 
 .radioOne, .radioTwo {
@@ -110,24 +120,10 @@
     .middleContent {
         justify-content: space-between;
     }
-    .marginTop {
-        flex-wrap: wrap;
-    }
 }
 
-/* @media only screen and (max-width: 768px) {
-    .button{
-        width: 70%;
-        margin: 0;
-        margin-top: 15px;
-    }
-    .marginTop {
-        flex-wrap: wrap;
-    }
-} */
-
 @media only screen and (max-width: 768px) {
-    .label, .searchInput, .middleContent, .selectInput, .button{
+    .label, .searchInput, .middleContent, .selectInput, .button {
         width: 100%;
         margin: 0;
         margin-top: 15px;
@@ -135,14 +131,4 @@
     .middleContent {
         justify-content: space-between;
     }
-    .marginTop {
-        flex-wrap: wrap;
-    }
-}
-
-
-
-.marginTop {
-    display: flex;
-    justify-content: center;
 }

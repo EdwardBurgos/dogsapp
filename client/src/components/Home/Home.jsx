@@ -91,8 +91,8 @@ export default function Home(props) {
       <div className={`${s.marginTop} ${s.marginBottom}`}>
         <span className={s.label}>Filter by property</span>
         <div className={s.middleContent}>
-          <label><input type="radio" id="own" name="propertyFilter" checked={property === 'own'} onChange={e => filter(e)} className={s.radioOne}/>Show own dogs</label>
-          <label className={s.radioTwoInput}><input type="radio" id="notOwn" name="propertyFilter" checked={property === 'notOwn'} onChange={e => filter(e)} className={s.radioTwo}/> Not show own dogs</label>
+          <div className={s.radioOneInput}><label htmlFor="own"><input type="radio" id="own" name="propertyFilter" checked={property === 'own'} onChange={e => filter(e)} className={s.radioOne}/>Show dog breeds created by the community</label></div>
+          <div className={s.radioTwoInput}><label htmlFor="notOwn"><input type="radio" id="notOwn" name="propertyFilter" checked={property === 'notOwn'} onChange={e => filter(e)} className={s.radioTwo}/>Do not show dog breeds created by the community</label></div>
         </div>
         <button id="deletePropertyFilter" className={s.button} onClick={e => { filter(e) }}>Delete filter</button>
       </div>

@@ -48,14 +48,14 @@
     
 } */
 
-.enlace, .enlaceLogin {
+.enlace, .enlaceLogin, .enlaceSignup {
     padding: 8px 0;
     color: #a8a7a7 !important;
     text-decoration: none;
     margin-right: 20px;
 }
 
-.enlaceLogin {
+.enlaceLogin, .enlaceSignup {
     margin-right: 0;
     padding-left: 0 !important;
 }
