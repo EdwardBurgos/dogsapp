@@ -7,11 +7,11 @@ import { Navbar, Nav } from 'react-bootstrap'
 import { useSelector } from 'react-redux';
 
 export default function NavBar() {
-  // Own States 
-  const [navExpanded, setNavExpanded] = useState(false);
-
   // Redux states
   const login = useSelector(state => state.login);
+  
+  // Own States 
+  const [navExpanded, setNavExpanded] = useState(false);
   
   return (
     <Navbar expand="md" className={s.navbar} id="navBar" expanded={navExpanded} fixed="top">

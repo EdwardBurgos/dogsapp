@@ -14,6 +14,9 @@ import { useHistory } from "react-router-dom";
 toast.configure();
 
 export default function Create() {
+    // Redux states
+    const login = useSelector(state => state.login);
+    
     // Own states
     const [temperaments, setTemperaments] = useState([])
     const [selectedTemperaments, setSelectedTemperaments] = useState([]);
@@ -34,9 +37,6 @@ export default function Create() {
     const [temperamentErr, setTemperamentErr] = useState('')
     const [buttonState, setButtonState] = useState(true)
     const [errGlobal, setErrGlobal] = useState('')
-
-    // Redux states
-    const login = useSelector(state => state.login);
 
     // Variables
     const history = useHistory();

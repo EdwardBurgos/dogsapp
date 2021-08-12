@@ -7,6 +7,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import PaginationComponent from '../PaginationComponent/PaginationComponent';
 
 export default function Home() {
+  // Redux states
+  const finalResultRedux = useSelector(state => state.finalResult);
+  const actualPageRedux = useSelector(state => state.actualPage);
+
   // Own States
   const [dogs, setDogs] = useState([]);
   const [temperaments, setTemperaments] = useState([]);
@@ -14,10 +18,6 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
   const [temperament, setTemperament] = useState('');
   const [property, setProperty] = useState('');
-
-  // Redux states
-  const finalResultRedux = useSelector(state => state.finalResult);
-  const actualPageRedux = useSelector(state => state.actualPage);
  
   // Variables
   const dispatch = useDispatch();
@@ -54,7 +54,7 @@ export default function Home() {
     if (componentId === 'deleteSearch') { finalResult = dogs; setSearchTerm(''); } else {
       finalResult = dogs.filter((e) => e.name.toLowerCase().includes(actualsearchterm.toLowerCase()))
     }
-    if (componentId === 'deleteTemperamentFilter') { setTemperament('') } else {
+    if (componentId === 'deleteTemperamentFilter' || (componentId === 'temperament' && componentValue === 'default')) { setTemperament('') } else {
       finalResult = finalResult.filter(e => e.temperament ? e.temperament.toLowerCase().includes(actualtemperament.toLowerCase()) : false);
     }
     if (componentId === 'deletePropertyFilter') { setProperty('') } else {

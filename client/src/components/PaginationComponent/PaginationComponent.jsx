@@ -1,31 +1,32 @@
 import React, { useEffect } from 'react';
 import s from './PaginationComponent.module.css';
-import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { changePage } from '../../actions';
-import { Alert, Button, Col, Form,Pagination, Row } from 'react-bootstrap';
+import { Pagination } from 'react-bootstrap';
 import { setClickedNumber } from '../../actions';
+import { chevronForwardOutline, chevronBackOutline } from 'ionicons/icons';
+import { IonIcon } from '@ionic/react';
 
 export default function PaginationComponent(props) {
-
-  const dispatch = useDispatch();
+  // Redux states
   const finalResultRedux = useSelector(state => state.finalResult);
-  const clickedNumber = useSelector(state => state.clickedNumber)
-  const [items, setItems] = useState([]);
+  const currentClickedNumber = useSelector(state => state.clickedNumber);
 
-
+  // Own states
   const [page, setPage] = useState({
     totalPages: null,
     dataStartingIndex: null,
-    currentClickedNumber: clickedNumber,
     pageData: null,
     clickedOnNumber: null,
-    currentClickedPage: null,
   })
 
-  let { currentClickedNumber, pageData, totalPages } = page;
+  // Variables
+  const dispatch = useDispatch();
 
+  // Hooks
+
+  // This hook defines the available pages
   useEffect(() => {
     let paginatedDataObject = {};
     let chunkArray = [];
@@ -47,116 +48,82 @@ export default function PaginationComponent(props) {
       pageData: paginatedDataObject,
       clickedOnNumber: 1
     });
-  }, [finalResultRedux, dispatch])
 
+    dispatch(setClickedNumber(1));
+    dispatch(changePage(paginatedDataObject[1]));
+  }, [finalResultRedux, dispatch, page])
+
+  // This hook change the page 
   useEffect(() => {
     if (page.pageData) {
-      dispatch(changePage(page.pageData[page.currentClickedNumber]));
+      dispatch(changePage(page.pageData[currentClickedNumber]));
     }
-  }, [page.currentClickedNumber, page.pageData])
+  }, [currentClickedNumber, page.pageData, dispatch])
 
-  const setCurrentClickedNumber = (e) => {
-    dispatch(setClickedNumber(parseInt(e.target.innerText)));
-    setPage({
-      ...page,
-      currentClickedNumber: parseInt(e.target.innerText)
-    })
-  };
+  // Functions
 
-  const moveToLastPage = () => {
-    setPage({
-      ...page,
-      currentClickedNumber: page.totalPages,
-      currentClickedPage: page.totalPages
-    });
-  };
-
-  const moveToFirstPage = () => {
-    setPage({
-      ...page,
-      currentClickedNumber: 1,
-      currentClickedPage: 1
-    });
-  };
-
-  const moveOnePageForward = () => {
-    const { dataStartingIndex, totalPages, currentClickedNumber } = page;
-
-    if (dataStartingIndex) {
-      setPage({
-        ...page,
-        dataStartingIndex: null,
-        currentClickedNumber: 2
-      });
-    } else {
-      setPage({
-        ...page,
-        currentClickedNumber:
-          currentClickedNumber + 1 > totalPages
-            ? totalPages
-            : currentClickedNumber + 1
-      });
-    }
-  };
-
-  const moveOnePageBackward = () => {
-    setPage({
-      ...page,
-      currentClickedNumber:
-        page.currentClickedNumber - 1 < 1
-          ? 1
-          : page.currentClickedNumber - 1
-    });
-  };
-
-  const pageNumberRender = () => {
-    const { totalPages, currentClickedNumber } = page;
+  // This function load the pagination items
+  function pageNumberRender() {
     let pages = [];
-
-    for (let i = 1; i < totalPages + 1; i++) {
+    for (let i = 1; i < page.totalPages + 1; i++) {
       pages.push(
-        <Pagination.Item className={s.item} onClick={(e) => setCurrentClickedNumber(e)} key={i + 50}>
+        <Pagination.Item className={s.item} onClick={(e) => dispatch(setClickedNumber(parseInt(e.target.innerText)))} key={i + 50}>
           {i}
         </Pagination.Item>
       );
     }
-    let currentPage = (<Pagination.Item active activeLabel=""
-      className={s.activo}
-      onClick={(e) => { setCurrentClickedNumber(e); }}
-      key={currentClickedNumber}>{currentClickedNumber} </Pagination.Item>)
+    let currentPage = (<Pagination.Item active activeLabel="" className={s.activo} onClick={(e) => { dispatch(setClickedNumber(parseInt(e.target.innerText)))}}
+      key={currentClickedNumber}>{currentClickedNumber}</Pagination.Item>)
 
     let pointsStart = <Pagination.Item className={s.item} key='pointsStart'> ... </Pagination.Item>
-    let pointsEnd = <Pagination.Item  className={s.item} key='pointsEnd'> ... </Pagination.Item>
-    return [pages[currentClickedNumber - 5] ? pointsStart : null, pages[currentClickedNumber - 4], pages[currentClickedNumber - 3], pages[currentClickedNumber - 2], currentPage, pages[currentClickedNumber], 
+    let pointsEnd = <Pagination.Item className={s.item} key='pointsEnd'> ... </Pagination.Item>
+    return [pages[currentClickedNumber - 5] ? pointsStart : null, pages[currentClickedNumber - 4], pages[currentClickedNumber - 3], pages[currentClickedNumber - 2], currentPage, pages[currentClickedNumber],
     pages[currentClickedNumber + 1], pages[currentClickedNumber + 2], pages[currentClickedNumber + 3] ? pointsEnd : null];
+  };
+
+  // This function move us to the next page
+  function moveOnePageForward() {
+    if (page.dataStartingIndex) {
+      dispatch(setClickedNumber(2));
+      setPage({
+        ...page,
+        dataStartingIndex: null
+      });
+    } else {
+      dispatch(setClickedNumber(
+        currentClickedNumber + 1 > page.totalPages
+            ? page.totalPages
+            : currentClickedNumber + 1
+      ));
+    }
   };
 
   return (
     <Pagination className={s.pagination}>
-        {currentClickedNumber > 1 ?
+      {currentClickedNumber > 1 ?
         <>
-              <Pagination.Item className={s.item}
-                onClick={() => moveToFirstPage()} key='first'>
-                &lt;&lt;
-              </Pagination.Item>
-              <Pagination.Item onClick={() => moveOnePageBackward()} key='prev' className={s.item}>
-                &lt;
-              </Pagination.Item>
-            </>
-          :
-          null
-        }
+          <Pagination.Item className={s.item} onClick={() => dispatch(setClickedNumber(1))} key='first'>
+            <IonIcon icon={chevronBackOutline} className={s.iconBack}></IonIcon>
+            <IonIcon icon={chevronBackOutline} className={s.iconBack}></IonIcon>
+          </Pagination.Item>
+          <Pagination.Item className={s.item} onClick={() => dispatch(setClickedNumber(currentClickedNumber - 1 < 1 ? 1 : currentClickedNumber - 1))} key='prev'>
+            <IonIcon icon={chevronBackOutline} className={s.iconBack}></IonIcon>
+          </Pagination.Item>
+        </>
+        :
+        null
+      }
       <>{pageNumberRender()}</>
       <>
-        {currentClickedNumber !== totalPages ?
+        {currentClickedNumber !== page.totalPages ?
           <>
-              <Pagination.Item className={s.item} onClick={() => moveOnePageForward()} key='next'>
-                 &gt;
-              </Pagination.Item>
-              <Pagination.Item className={s.item} onClick={() => moveToLastPage()} key='last'>
-                &gt;&gt;
-              </Pagination.Item>
-            
+            <Pagination.Item className={s.item} onClick={() => moveOnePageForward()} key='next'>
+              <IonIcon icon={chevronForwardOutline} className={s.iconBack}></IonIcon>
+            </Pagination.Item>
+            <Pagination.Item className={s.item} onClick={() => dispatch(setClickedNumber(page.totalPages))} key='last'>
+              <IonIcon icon={chevronForwardOutline} className={s.iconBack}></IonIcon>
+              <IonIcon icon={chevronForwardOutline} className={s.iconBack}></IonIcon>
+            </Pagination.Item>
           </>
           :
           null
