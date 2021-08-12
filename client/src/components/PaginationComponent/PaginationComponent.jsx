@@ -18,7 +18,6 @@ export default function PaginationComponent(props) {
     totalPages: null,
     dataStartingIndex: null,
     pageData: null,
-    clickedOnNumber: null,
   })
 
   // Variables
@@ -42,16 +41,14 @@ export default function PaginationComponent(props) {
     });
 
     setPage({
-      ...page,
       totalPages: (finalResultRedux.length > 0) ? Math.ceil(finalResultRedux.length / 8) : 0,
       dataStartingIndex: 1,
       pageData: paginatedDataObject,
-      clickedOnNumber: 1
     });
 
     dispatch(setClickedNumber(1));
     dispatch(changePage(paginatedDataObject[1]));
-  }, [finalResultRedux, dispatch, page])
+  }, [finalResultRedux, dispatch])
 
   // This hook change the page 
   useEffect(() => {

@@ -1,7 +1,7 @@
 import s from './Create.module.css';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { closeCircleOutline } from 'ionicons/icons';
 import { IonIcon } from '@ionic/react';
 import { Link } from 'react-router-dom';
@@ -10,6 +10,7 @@ import { getTemperaments } from '../../extras/globalFunctions';
 import 'react-toastify/dist/ReactToastify.css';
 import { toast } from 'react-toastify';
 import { useHistory } from "react-router-dom";
+import * as actionsCreators from '../../actions';
 
 toast.configure();
 
@@ -40,6 +41,7 @@ export default function Create() {
 
     // Variables
     const history = useHistory();
+    const dispatch = useDispatch();
 
     // Hooks 
 
@@ -212,6 +214,12 @@ export default function Create() {
             if (response.status === 200) {
                 showMessage(response.data.message);
                 history.push(`/detail/${response.data.id}`);
+                async function requesting() {
+                    const completeDogs = await axios.get(`http://localhost:3001/dogs/all`);
+                    dispatch(actionsCreators.receiveDogs(completeDogs.data));
+                    dispatch(actionsCreators.modifyFinalResult(completeDogs.data));
+                }
+                requesting();
             }
         } catch (e) {
             return setErrGlobal(e.response.data);

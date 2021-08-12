@@ -3,16 +3,16 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Cards from '../Cards/Cards';
 import * as actionsCreators from '../../actions';
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux';
 import PaginationComponent from '../PaginationComponent/PaginationComponent';
 
 export default function Home() {
   // Redux states
   const finalResultRedux = useSelector(state => state.finalResult);
   const actualPageRedux = useSelector(state => state.actualPage);
+  const dogs = useSelector(state => state.dogs)
 
   // Own States
-  const [dogs, setDogs] = useState([]);
   const [temperaments, setTemperaments] = useState([]);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -28,7 +28,7 @@ export default function Home() {
   useEffect(() => {
     async function requesting() {
       const completeDogs = await axios.get(`http://localhost:3001/dogs/all`);
-      setDogs(completeDogs.data);
+      dispatch(actionsCreators.receiveDogs(completeDogs.data));
       dispatch(actionsCreators.modifyFinalResult(completeDogs.data));
       const temperaments = await axios.get('http://localhost:3001/temperament');
       setTemperaments(temperaments.data);

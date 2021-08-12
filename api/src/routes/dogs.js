@@ -55,7 +55,7 @@ router.get('/all', async (req, res) => {
                 temperament: e.dataValues.temperaments.map(e => e.dataValues.name).toString().replace(/,/g,', ') ,
             }})
         }
-        responseNotOwn = responseNotOwn.data.map((e) => { return { id: e.id, image: e.image.url, name: e.name, temperament: e.temperament}})
+        responseNotOwn = responseNotOwn.data.map((e) => { return { id: e.id, image: e.image.url, name: e.name, temperament: e.temperament ? e.temperament : ''}})
         let completeList = [...responseNotOwn, ...responseOwn];
         if (name) {
             var newResponse = completeList.filter((e) => e.name.toLowerCase().includes(name.toLowerCase()))
