@@ -107,4 +107,4 @@ dist
 package-lock.json
 
 # keys for JWT
-.pem 
+*.pem 
