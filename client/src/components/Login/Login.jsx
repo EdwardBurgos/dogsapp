@@ -1,244 +1,365 @@
-import { useEffect, useRef, useState } from 'react';
-import { bindActionCreators } from "redux";
+import { useEffect, useState } from 'react';
 import logo from '../../img/logo.png';
 import { Link } from 'react-router-dom'
-// import CSS from 'csstype';
 import axios from 'axios';
 import { useHistory } from "react-router-dom";
-import { connect, useDispatch, useSelector } from 'react-redux'
-// import getCookieValue from '../../cookieParser';
-import { getUserLoged, modificarUsuarioLogueado } from '../../actions';
 import s from './Login.module.css';
 import { eyeOutline, eyeOffOutline } from "ionicons/icons";
 import { IonIcon } from '@ionic/react';
 import googleLogo from '../../img/googleLogo.png';
-// import Register from '../Register/Register';
-// import { auth, loginWithGoogle} from '../../firebase'
-// import { setRoleOfUser } from '../../functions';
-// import Swal from 'sweetalert2';
-function Login(props) {
-    const [email, setEmail] = useState('')
+import { app, googleAuthProvider } from '../../extras/firebase.js';
+import { Modal } from 'react-bootstrap'
+import { countries } from '../../extras/countries';
+import loading from '../../img/loadingGif.gif';
+import { setLocalStorage } from '../../extras/globalFunctions';
+import { toast } from 'react-toastify';
+
+toast.configure();
+
+export default function Login() {
+    // Own states
+    const [emailUsername, setEmailUsername] = useState('');
+    const [errEmailUsername, setErrEmailUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [errors, setErrors] = useState({ email: null, password: null })
-    const [wrongPassword, setWrongPassword] = useState(false)
-    const [showRegister, setShowRegister] = useState(false)
+    const [errPassword, setErrPassword] = useState('');
+    const [wrongCredentials, setWrongCredentials] = useState('');
+    const [errGlobal, setErrGlobal] = useState('');
+    const [showModal, setShowModal] = useState(false);
+    const [country, setCountry] = useState('');
+    const [buttonState, setButtonState] = useState(true);
+    const [showPassword, setShowPassword] = useState(false);
+    const [googleProfile, setGoogleProfile] = useState({});
+    const [username, setUsername] = useState('');
+    const [errUsername, setErrUsername] = useState('');
+    const [modalButtonState, setModalButtonState] = useState(true);
+    const [onlyPassword, setOnlyPassword] = useState(false);
 
-    const usuario = useSelector(state => state['user'])
+    // Variables
+    const history = useHistory();
 
+    // Hooks
+
+    // This hook set the country of the user
     useEffect(() => {
-        console.log('WHO', usuario)
-    }, [showRegister])
+        async function getCountry() {
+            const response = await axios.get('https://geolocation-db.com/json/');
+            if (response) { setCountry(response.data.country_name); }
+        }
+        getCountry();
+    }, [])
 
-    const history = useHistory()
+    // This hook manage the button state
+    useEffect(() => {
+        if (errEmailUsername || errPassword || !emailUsername || !password) return setButtonState(true);
+        setWrongCredentials(false);
+        setButtonState(false);
+    }, [errEmailUsername, errPassword, emailUsername, password])
 
+
+    // This hook manage the modal button state
+    useEffect(() => {
+        if (errUsername || !username) return setModalButtonState(true);
+        setModalButtonState(false);
+    }, [errUsername, username])
+
+    // This hook update the states buttonState, password, errPassword and wrongCredentials when the form / onlyPassword value change
+    useEffect(() => {
+        setModalButtonState(false);
+        setPassword('');
+        setErrPassword('');
+        setWrongCredentials('');
+    }, [onlyPassword])
+
+    // Functions
+
+    // This function makes the form dynamic
     function handleChange(e) {
-        validateErrors()
+        const value = e.target.value;
         switch (e.target.name) {
-            case 'emailValue':
-                setEmail(e.target.value)
-                break;
+            case 'emailUsernameValue':
+                !value ? setErrEmailUsername('This field is required') : setErrEmailUsername('');
+                return setEmailUsername(value)
             case 'passValue':
-                setPassword(e.target.value)
-                break;
+                if (!value) {
+                    setErrPassword('This field is required')
+                } else {
+                    if (onlyPassword) {
+                        value.length < 21 ?
+                            /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})/.test(value) ?
+                                !/\s/.test(value) ?
+                                    setErrPassword('')
+                                    :
+                                    setErrPassword("The password can't contain white spaces")
+                                :
+                                setErrPassword('The password should have between 8 and 20 characters combining lowercase and uppercase letters, numbers and symbols')
+                            :
+                            setErrPassword("The password can't have more than 20 characters")
+                    } else {
+                        setErrPassword('');
+                    }
+                }
+                return setPassword(value)
+            case 'usernameValue':
+                !value ? setErrUsername('This field is required') : (value.length < 31 ? (/\s/.test(value) ? setErrUsername("The username can't contain white spaces") : (/^[a-z0-9._]+$/g.test(value) ? setErrUsername('') : setErrUsername("The username only can contains lowercase letters, numbers, points and subscripts"))) : setErrUsername("The username can't have more than 30 characters"))
+                return setUsername(value)
+            case 'countryValue':
+                return setCountry(value)
             default:
                 break;
         }
     }
 
-    function validateErrors() {
-        if (!email) {
-            setErrors({ ...errors, email: 'Se necesita un E-mail' })
-        } else if (!/\S+@{1}[a-zA-Z]+\.{1}[a-z]{3}\.?[a-z]*/gm.test(email)) {
-            setErrors({ ...errors, email: 'E-mail inválido' })
-        } else {
-            setErrors({ ...errors, email: null })
-        }
-        if (!/[\S]/.test(password)) {
-            setErrors({ ...errors, password: 'No puede contener espacio blanco' })
-        } else if (password.length < 4 || password.length > 20) {
-            setErrors({ ...errors, password: 'La contraseña debe tener de 4 a 20 caracteres' })
-        } else {
-            setErrors({ ...errors, password: null })
-        }
+    // This function allows us to use the toasts
+    function showMessage(data) {
+        toast(data, { position: toast.POSITION.BOTTOM_LEFT, pauseOnFocusLoss: false })
     }
 
-
-    // const swalWithBootstrapButtons = Swal.mixin({
-    //     customClass: {
-    //         confirmButton: `${s.botonswal}`
-    //     },
-    //     buttonsStyling: false
-    // })
-
-    // ESTA ES LA FUNCIÓN PARA HACER EL LOGIN CON GOOGLE
-
-    // async function loginConGoogle(e) {
-    //     e.preventDefault();
-    //     try {
-    //         await loginWithGoogle();
-    //         let user = {
-    //             lastName: 'GOOGLE',
-    //             mail: auth.currentUser.email,
-    //             name: auth.currentUser.displayName,
-    //             role: 0,
-    //             city: 'GOOGLE',
-    //         }
-    //         let userWithPassword = {
-    //             ...user,
-    //             password: 'google'
-    //         }
-    //         const registro = await axios.post('http://localhost:3001/api/session/register', userWithPassword, { withCredentials: true })
-    //         if (registro.status === 200) {
-    //             const login = await axios.post(`http://localhost:3001/api/login`, {
-    //                 mail: auth.currentUser.email,
-    //                 password: 'google'
-    //             }, { withCredentials: true })
-    //             document.cookie = `token=${JSON.stringify(login.data.token)}`
-    //             localStorage.setItem('login', 'true')
-    //             // const user = await axios.post(`http://localhost:3001/api/verify`, {}, { headers: { Authorization: getCookieValue('token').replaceAll("\"", '') } })
-    //             if (user !== null) props.getUserLoged({ mail: user.data.mail, name: user.data.name, lastName: user.data.lastName })
-    //             // console.log(store.getState())
-    //             // swalWithBootstrapButtons.fire(
-    //             //     'Se inicio sesión correctamente',
-    //             //     '',
-    //             //     'success'
-    //             // )
-    //             history.push('/home');
-    //             // const usuarioActualizado = await setRoleOfUser()
-    //             // dispatch(modificarUsuarioLogueado(usuarioActualizado))
-    //             // const clases = await axios.get(`http://localhost:3001/api/carrito/all/${usuarioActualizado[1].mail}`)
-    //         }
-    //     } catch {
-    //         console.log('Se produjo un error durante la autenticación')
-    //     }
-    // }
-
-    // ESTA ES LA FUNCIÓN PARA REGISTRAR
-
-    // async function handleSubmitRegister(values) {
-    //     console.log(values)
-    //     let user: UserProps = {
-    //       lastName: values.lastName,
-    //       mail: values.mail,
-    //       name: values.name,
-    //       role: values.role,
-    //       city: values.city,
-    //     }
-    //     let userWithPassword = {
-    //       ...user,
-    //       password: values.password
-    //     }
-    //     if (values.mail === 'braiansilva@gmail.com') user.role = Role.ADMIN;
-    //     try {
-    //       const registro = await axios.post('http://localhost:3001/api/session/register', userWithPassword, { withCredentials: true })
-    //       if (registro.status === 200) {
-    //         swalWithBootstrapButtons.fire(
-    //           'Se registró correctamente',
-    //           'Ahora inicie sesión',
-    //           'success'
-    //         )
-    //         handleClose('argument');
-    //         history.push('/login')
-    //       }
-    //     }
-    //     catch (error) {
-    //       if (error.response && error.response.data.type === ErrorType.ALREADY_EXISTS) {
-    //         alert('El usuario ya existe!')
-    //       } else if (error.response && error.response.data.type === ErrorType.INCOMPLETE_INPUTS) {
-    //         alert('Debe ingresar mail, nombre y apellido')
-    //       }
-    //     }
-    //   }
-
-
-    async function handleSubmit(e) {
-        e.preventDefault()
+    // This function allows us to login with Google
+    async function loginConGoogle() {
         try {
-            const login = await axios.post(`http://localhost:3001/api/login`, {
-                mail: email,
-                password: password
-            }, { withCredentials: true })
-            document.cookie = `token=${JSON.stringify(login.data.token)}`
-            localStorage.setItem('login', 'true')
-            // const user = await axios.post(`http://localhost:3001/api/verify`, {}, { headers: { Authorization: getCookieValue('token').replaceAll("\"", '') } })
-            // if (user !== null) props.getUserLoged({ mail: user.data.mail, name: user.data.name, lastName: user.data.lastName })
-            // console.log(store.getState())
-            // const usuarioActualizado = await setRoleOfUser()
-            // dispatch(modificarUsuarioLogueado(usuarioActualizado))
-            // const clases = await axios.get(`http://localhost:3001/api/carrito/all/${usuarioActualizado[1].mail}`)
-            history.push('/home')
-        } catch (error) {
-            setWrongPassword(true)
+            const googleLogin = await app.auth().signInWithPopup(googleAuthProvider);
+            app.auth().signOut();
+            if (Object.keys(googleLogin.additionalUserInfo.profile).length) {
+                const email = googleLogin.additionalUserInfo.profile.email;
+                const availableEmail = await axios.get(`http://localhost:3001/users/availableEmail/${email}`);
+                if (availableEmail.status === 200) {
+                    if (availableEmail.data) {
+                        setGoogleProfile(googleLogin.additionalUserInfo.profile);
+                        setShowModal(true);
+                    } else {
+                        const logged = await axios.post(`http://localhost:3001/users/login`, {
+                            emailORusername: email,
+                            password: '',
+                            type: 'Google'
+                        });
+                        if (logged.status === 200) {
+                            setLocalStorage(logged.data);
+                            showMessage(`${logged.data.user} your login was successful`);
+                            history.push('/home');
+                        } else {
+                            return setErrGlobal('Sorry, an error occurred');
+                        }
+                    }
+                } else { return setErrGlobal('Sorry, an error occurred'); }
+            } else { return setErrGlobal('Sorry, an error occurred'); }
+        } catch (e) { return setErrGlobal('Sorry, an error occurred'); }
+    }
+
+    // This function allows us to register and login with Google
+    async function handleModalSubmit(e) {
+        e.preventDefault();
+        setShowModal(false);
+        if (Object.keys(googleProfile).length) {
+            try {
+                let { name, given_name, family_name, picture, email } = googleProfile;
+                const registered = await axios.post(`http://localhost:3001/users/register`, {
+                    fullname: name,
+                    name: given_name,
+                    lastname: family_name,
+                    profilepic: picture ? picture : "https://firebasestorage.googleapis.com/v0/b/dogsapp-f043d.appspot.com/o/defaultProfilePic.png?alt=media&token=77a0fa3a-c3e3-4e2a-ae91-ac2ffdadbba8",
+                    username,
+                    country,
+                    email: email,
+                    password: 'google',
+                    type: 'Google'
+                });
+                if (registered.status === 200) {
+                    showMessage(`${registered.data.user} your registration was successful`);
+                    const logged = await axios.post(`http://localhost:3001/users/login`, {
+                        emailORusername: email,
+                        password: '',
+                        type: 'Google'
+                    });
+                    if (logged.status === 200) {
+                        setLocalStorage(logged.data);
+                        showMessage(`${logged.data.user} your login was successful`);
+                        history.push('/home');
+                    } else {
+                        return setErrGlobal('Sorry, an error occurred');
+                    }
+                } else {
+                    return setErrGlobal('Sorry, an error occurred');
+                }
+
+            } catch (e) {
+                return setErrGlobal('Sorry, an error occurred');
+            }
+        } else {
+            return setErrGlobal('Sorry, an error occurred');
         }
     }
 
-    const inputRef = useRef()
-    const eyeRef = useRef()
+    // This function allows us to login natively
+    async function handleSubmit(e) {
+        e.preventDefault();
+        try {
+            const login = await axios.post(`http://localhost:3001/users/login`, {
+                emailORusername: emailUsername,
+                password,
+                type: 'Native'
+            })
+            if (login.status === 200) {
+                setLocalStorage(login.data);
+                showMessage(`${login.data.user} your login was successful`);
+                history.push('/home');
+            } else {
+                setButtonState(true);
+                return setErrGlobal('Sorry, an error occurred');
+            }
+        } catch (e) {
+            setButtonState(true);
+            if (e.response.status === 403 && e.response.data.msg.includes('Google')) { setOnlyPassword(true); return setErrGlobal(e.response.data.msg) }
+            if (e.response.status === 403 && e.response.data.msg === 'Incorrect password') return setWrongCredentials(e.response.data.msg);
+            if (e.response.status === 404 && e.response.data.msg === 'There is no user registered with this email') return setWrongCredentials(e.response.data.msg)
+            return setErrGlobal('Sorry, an error occurred');
+        }
+    }
 
-    function myFunction() {
-        let showPassword = inputRef.current
-        let eye = eyeRef.current
-
-        if (showPassword && showPassword.type === "password") {
-            showPassword.type = "text";
-            eye.icon = eyeOutline;
-        } else {
-            showPassword.type = "password";
-            eye.icon = eyeOffOutline;
+    // This function allows us to change the password specifically when the user was registered with Google and do not have one
+    async function handleSubmitOnlyPassword(e) {
+        e.preventDefault();
+        try {
+            const login = await axios.post(`http://localhost:3001/users/changePassword`, {
+                emailORusername: emailUsername,
+                password,
+            })
+            if (login.status === 200) {
+                setLocalStorage(login.data);
+                showMessage(`${login.data.user} your password was updated successfully`);
+                showMessage(`${login.data.user} your login was successful`);
+                history.push('/home');
+            } else {
+                setButtonState(true);
+                return setErrGlobal('Sorry, an error occurred');
+            }
+        } catch (e) {
+            setButtonState(true);
+            if (e.response.status === 500 && e.response.data.msg === 'Password could not be updated') return setErrGlobal(e.response.data.msg);
+            if (e.response.status === 404 && e.response.data.msg === 'There is no user registered with this email') return setWrongCredentials(e.response.data.msg)
+            return setErrGlobal('Sorry, an error occurred');
         }
     }
 
     return (
         <div className={s.container}>
             <div className={s.content}>
-                <div className={s.image}>
-                    <img className={s.logo} src={logo} alt='logo' width="100%"></img>
-                </div>
-                <div className={s.form}>
-                    <form onSubmit={handleSubmit}>
-
-
-                        <h1 className={s.title}>Log in</h1>
-                        <div className="form-floating">
-                            <input type='email' value={email} name='emailValue' onChange={handleChange} placeholder='Email' className={`form-control mb-3 ${s.input}`} />
-                            <label htmlFor="floatingInput">Email</label>
+                {country ?
+                    <>
+                        <div className={s.image}>
+                            <img className={s.logo} src={logo} alt='logo' width="100%"></img>
                         </div>
-                        <div className={`form-floating ${s.test}`} >
-                            <input className={s.inputMargin} ref={inputRef} type='password' value={password} name='passValue' onChange={handleChange} placeholder='Contraseña' className={`form-control mb-3 ${s.inputPassword}`} />
-                            <label htmlFor="floatingPassword">Password</label>
-                            <IonIcon ref={eyeRef} icon={eyeOutline} className={s.iconDumb} onClick={() => myFunction()}></IonIcon>
+                        <div className={s.form}>
+                            <h1 className={s.title}>Log in</h1>
+
+                            <div className={s.errorGlobalContainer}>
+                                {errGlobal ? <small className={s.errorGlobal}>{errGlobal}</small> : null}
+                            </div>
+
+                            {
+                                onlyPassword ?
+                                    <form onSubmit={handleSubmitOnlyPassword}>
+                                        <div className={errPassword ? '' : 'mb-3'}>
+                                            <label className={s.label} htmlFor="passValue">Password</label>
+                                            <div className={s.test}>
+                                                <input id="passValue" value={password} name='passValue' type={showPassword ? 'text' : 'password'} onChange={handleChange} className={`form-control ${s.inputPassword} ${errPassword ? s.errorInput : ''}`} />
+                                                <IonIcon icon={showPassword ? eyeOutline : eyeOffOutline} className={s.iconDumb} onClick={() => showPassword ? setShowPassword(false) : setShowPassword(true)}></IonIcon>
+                                            </div>
+                                        </div>
+                                        {errPassword ? <small className={s.error}>{errPassword}</small> : null}
+
+                                        <input type="submit" value="Log in" disabled={buttonState} className={`w-100 btn btn-primary mb-3 ${s.colorBoton}`} />
+                                    </form>
+                                    :
+                                    <form onSubmit={handleSubmit}>
+                                        <div className={errEmailUsername ? '' : 'mb-3'}>
+                                            <label className={s.label} htmlFor="emailUsernameValue">Email or username</label>
+                                            <input id="emailUsernameValue" value={emailUsername} name='emailUsernameValue' onChange={handleChange} className={`form-control ${s.input} ${errEmailUsername ? s.errorInput : ''}`} />
+                                        </div>
+                                        {errEmailUsername ? <small className={s.error}>{errEmailUsername}</small> : null}
+
+                                        <div className={errPassword ? '' : 'mb-3'}>
+                                            <label className={s.label} htmlFor="passValue">Password</label>
+                                            <div className={s.test}>
+                                                <input id="passValue" value={password} name='passValue' type={showPassword ? 'text' : 'password'} onChange={handleChange} className={`form-control ${s.inputPassword} ${errPassword ? s.errorInput : ''}`} />
+                                                <IonIcon icon={showPassword ? eyeOutline : eyeOffOutline} className={s.iconDumb} onClick={() => showPassword ? setShowPassword(false) : setShowPassword(true)}></IonIcon>
+                                            </div>
+                                        </div>
+                                        {errPassword ? <small className={s.error}>{errPassword}</small> : null}
+
+                                        <input type="submit" value="Log in" disabled={buttonState} className={`w-100 btn btn-primary mb-3 ${s.colorBoton}`} />
+
+                                        {wrongCredentials ?
+                                            <div className={s.center}>
+                                                <small className={s.errorMessage}>{wrongCredentials}</small>
+                                            </div>
+                                            :
+                                            null
+                                        }
+                                    </form>
+                            }
+
+                            <div className={s.division}>
+                                <span>Or</span>
+                            </div>
+
+                            {onlyPassword ?
+                                <div className={`w-100 btn ${s.loginOtherEmail}`} onClick={() => {setEmailUsername(''); setErrEmailUsername(''); setErrGlobal(''); setOnlyPassword(false); }}>
+                                    <span>Log in with other email</span>
+                                </div>
+                                :
+                                null
+                            }
+
+                            <div className={`w-100 btn ${s.loginButton}`} onClick={loginConGoogle}>
+                                <img src={googleLogo} className={s.loginLogo} alt='Google Logo'></img>
+                                <span>Log in with Google</span>
+                            </div>
+
+                            <p className={s.marginBottom0}>
+                                Don't have an account?
+                                <Link className={s.registroLink} to="/signup">
+                                    Sign up
+                                </Link>
+                            </p>
                         </div>
+                        <Modal
+                            show={showModal}
+                            backdrop="static"
+                            aria-labelledby="contained-modal-title-vcenter"
+                            centered
+                            keyboard={false}
+                        >
+                            <Modal.Header>
+                                <Modal.Title id="contained-modal-title-vcenter">
+                                    Complete this form
+                                </Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <form onSubmit={handleModalSubmit}>
+                                    <div className={errUsername ? '' : 'mb-3'}>
+                                        <label className={s.label} htmlFor="usernameValue">Username</label>
+                                        <input id="usernameValue" value={username} name='usernameValue' onChange={handleChange} className={`form-control ${s.input} ${errUsername ? s.errorInput : ''}`} />
+                                    </div>
+                                    {errUsername ? <small className={s.error}>{errUsername}</small> : null}
 
-                        <input type="submit" value="Log in" className={`w-100 btn btn-primary mb-3 ${s.colorBoton}`} />
+                                    <div className='mb-3'>
+                                        <label className={s.label} htmlFor="countryValue">Country</label>
+                                        <select id="countryValue" name='countryValue' value={country} onChange={handleChange} className={`form-control ${s.input}`}>
+                                            {countries.map(c => {
+                                                return <option key={c} value={c}>{c}</option>
+                                            })}
+                                        </select>
+                                    </div>
 
-                        <div className="">
-                            {wrongPassword ? <small className={s.errorMessage}>
-                                Email or password are incorrect</small> : null}
-                        </div>
-
-                    </form>
-
-                    <div className={`w-100 btn mb-3 ${s.googleButton}`} > {/*  onClick={loginConGoogle} */}
-                        <img src={googleLogo} className={s.googleLogo} alt='Google Logo'></img>
-                        <span>Log in with Google</span>
-                    </div>
-
-                    <p className={s.marginBottom0}>
-                        Don't have an account?
-                        <Link className={s.registroLink} to="/signup">
-                            Sign up
-                        </Link>
-                    </p>
-                </div>
+                                    <input type="submit" value="Log in" disabled={modalButtonState} className={`w-100 btn btn-primary mb-3 ${s.colorBoton}`} />
+                                </form>
+                            </Modal.Body>
+                        </Modal>
+                    </>
+                    :
+                    <img className={s.loading} src={loading} alt='loadingGif'></img>
+                }
             </div>
         </div>
     )
 }
-
-const mapDispatchToProps = (dispatch) => {
-    return bindActionCreators({ getUserLoged }, dispatch);
-}
-
-
-export default connect(null, mapDispatchToProps)(Login)
-

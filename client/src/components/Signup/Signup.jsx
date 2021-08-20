@@ -10,14 +10,17 @@ import { eyeOutline, eyeOffOutline } from "ionicons/icons";
 import { IonIcon } from '@ionic/react';
 import { toast } from 'react-toastify';
 import { useHistory } from "react-router-dom";
+import { setLocalStorage } from '../../extras/globalFunctions';
 
 toast.configure();
 
 export default function Signup(props) {
     // Own states
     const [errGlobal, setErrGlobal] = useState('');
-    const [fullname, setFullname] = useState('');
-    const [errFullname, setErrFullname] = useState('');
+    const [name, setName] = useState('');
+    const [errName, setErrName] = useState('');
+    const [lastname, setLastname] = useState('');
+    const [errLastname, setErrLastname] = useState('');
     const [username, setUsername] = useState('');
     const [errUsername, setErrUsername] = useState(false);
     const [country, setCountry] = useState('');
@@ -44,18 +47,22 @@ export default function Signup(props) {
 
     // This hook manage the button state
     useEffect(() => {
-        if (errFullname || errUsername || errEmail || errPassword || !fullname || !username || !email || !password) return setButtonState(true)
+        if (errName || errLastname || errUsername || errEmail || errPassword || !name || !lastname || !username || !email || !password) return setButtonState(true)
         return setButtonState(false)
-    }, [errFullname, errUsername, errEmail, errPassword, fullname, username, email, password])
+    }, [errName, errLastname, errUsername, errEmail, errPassword, name, lastname, username, email, password])
 
     // Functions 
 
+    // This function make the form dynamic
     function handleChange(e) {
         const value = e.target.value;
         switch (e.target.name) {
-            case 'fullnameValue':
-                !value ? setErrFullname('This field is required') : setErrFullname('')
-                return setFullname(value)
+            case 'nameValue':
+                !value ? setErrName('This field is required') : setErrName('')
+                return setName(value)
+            case 'lastnameValue':
+                !value ? setErrLastname('This field is required') : setErrLastname('')
+                return setLastname(value)
             case 'usernameValue':
                 !value ? setErrUsername('This field is required') : (value.length < 31 ? (/\s/.test(value) ? setErrUsername("The username can't contain white spaces") : (/^[a-z0-9._]+$/g.test(value) ? setErrUsername('') : setErrUsername("The username only can contains lowercase letters, numbers, points and subscripts"))) : setErrUsername("The username can't have more than 30 characters"))
                 return setUsername(value)
@@ -85,27 +92,49 @@ export default function Signup(props) {
         }
     }
 
+    // This function allows us to use the toasts
     function showMessage(data) {
         toast(data, { position: toast.POSITION.BOTTOM_LEFT, pauseOnFocusLoss: false })
     }
 
+    // This function allows us to register and login natively
     async function handleSubmit(e) {
         e.preventDefault();
         try {
             const availableUsername = await axios.post(`http://localhost:3001/users/register`, {
-                fullname,
+                fullname: `${name} ${lastname}`,
+                name,
+                lastname,
+                profilepic: 'https://firebasestorage.googleapis.com/v0/b/dogsapp-f043d.appspot.com/o/defaultProfilePic.png?alt=media&token=77a0fa3a-c3e3-4e2a-ae91-ac2ffdadbba8',
                 username,
                 country,
                 email,
-                password
+                password,
+                type: 'Native'
             });
             if (availableUsername.status === 200) {
-                showMessage(availableUsername.data);
-                history.push('/home');
+                showMessage(`${availableUsername.data.user} your registration was successful`);
+                const login = await axios.post(`http://localhost:3001/users/login`, {
+                    emailORusername: email,
+                    password,
+                    type: 'Native'
+                })
+                if (login.status === 200) {
+                    setLocalStorage(login.data);
+                    showMessage(`${login.data.user} your login was successful`);
+                    history.push('/home');
+                } else {
+                    setButtonState(true);
+                    return setErrGlobal('Sorry, an error occurred');
+                }
+            } else {
+                setButtonState(true);
+                return setErrGlobal('Sorry, an error occurred');
             }
         } catch (e) {
-            if (e.response.status === 409 && e.response.data === 'There is already a user with this email') return setErrEmail(e.response.data)
-            if (e.response.status === 409 && e.response.data === 'There is already a user with this username') return setErrUsername(e.response.data)
+            setButtonState(true);
+            if (e.response.status === 409 && e.response.data.msg.includes('email')) return setErrEmail(e.response.data.msg);
+            if (e.response.status === 409 && e.response.data.msg.includes('username')) return setErrUsername(e.response.data.msg);
             return setErrGlobal('Sorry, an error occurred');
         }
     }
@@ -122,11 +151,17 @@ export default function Signup(props) {
                             <h1 className={s.title}>Sign up</h1>
                             {errGlobal ? <small className={s.errorGlobal}>{errGlobal}</small> : null}
                             <form onSubmit={handleSubmit} className={s.infoForm}>
-                                <div className={errFullname ? '' : 'mb-3'}>
-                                    <label className={s.label} htmlFor="fullnameValue">Full Name</label>
-                                    <input id="fullnameValue" value={fullname} name='fullnameValue' onChange={handleChange} className={`form-control ${s.input} ${errFullname ? s.errorInput : ''}`} />
+                                <div className={errName ? '' : 'mb-3'}>
+                                    <label className={s.label} htmlFor="nameValue">Name</label>
+                                    <input id="nameValue" value={name} name='nameValue' onChange={handleChange} className={`form-control ${s.input} ${errName ? s.errorInput : ''}`} />
                                 </div>
-                                {errFullname ? <small className={s.error}>{errFullname}</small> : null}
+                                {errName ? <small className={s.error}>{errName}</small> : null}
+
+                                <div className={errLastname ? '' : 'mb-3'}>
+                                    <label className={s.label} htmlFor="lastnameValue">Last Name</label>
+                                    <input id="lastnameValue" value={lastname} name='lastnameValue' onChange={handleChange} className={`form-control ${s.input} ${errLastname ? s.errorInput : ''}`} />
+                                </div>
+                                {errLastname ? <small className={s.error}>{errLastname}</small> : null}
 
                                 <div className={errUsername ? '' : 'mb-3'}>
                                     <label className={s.label} htmlFor="usernameValue">Username</label>

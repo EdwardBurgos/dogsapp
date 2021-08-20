@@ -18,7 +18,7 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
   const [temperament, setTemperament] = useState('');
   const [property, setProperty] = useState('');
- 
+  const [errorGlobal, setErrorGlobal] = useState('')
   // Variables
   const dispatch = useDispatch();
 
@@ -26,14 +26,21 @@ export default function Home() {
 
   // This hook load the dogs and the temperaments for the filter
   useEffect(() => {
+    const cancelToken = axios.CancelToken;
+    const source = cancelToken.source();
     async function requesting() {
-      const completeDogs = await axios.get(`http://localhost:3001/dogs/all`);
-      dispatch(actionsCreators.receiveDogs(completeDogs.data));
-      dispatch(actionsCreators.modifyFinalResult(completeDogs.data));
-      const temperaments = await axios.get('http://localhost:3001/temperament');
-      setTemperaments(temperaments.data);
+      try {
+        const completeDogs = await axios.get(`http://localhost:3001/dogs/all`, { cancelToken: source.token });
+        dispatch(actionsCreators.receiveDogs(completeDogs.data));
+        dispatch(actionsCreators.modifyFinalResult(completeDogs.data));
+        const temperaments = await axios.get('http://localhost:3001/temperament', { cancelToken: source.token });
+        setTemperaments(temperaments.data);
+      } catch (e) {
+        if (e.message !== "Unmounted") setErrorGlobal('Sorry, an error ocurred');
+      }
     }
     requesting();
+    return () => source.cancel("Unmounted");
   }, [dispatch])
 
   // Functions 
@@ -69,32 +76,43 @@ export default function Home() {
   }
 
   return (
-    <div className={s.container}>
-      <h1 className={s.title}>Dog breeds</h1>
-      <div className={s.marginTop}>
-        <label className={s.label}>Search a breed</label>
-        <input className={s.searchInput} id="searchTerm" placeholder="Insert a dog breed" value={searchTerm}
-          onChange={e => filter(e)} />
-        <button className={s.button} id="deleteSearch" onClick={e => { filter(e) }}>Delete search</button>
-      </div>
-      <div className={s.marginTop}>
-        <label className={s.label}>Filter by temperament</label>
-        <select onChange={e => filter(e)} id="temperament" value={temperament} className={s.selectInput}>
-          <option key='default' value='default'>Select a temperament</option>
-          {temperaments.map((e, i) => <option key={i} value={e}>{e}</option>)}
-        </select>
-        <button className={s.button} id="deleteTemperamentFilter" onClick={e => { filter(e) }}>Delete filter</button>
-      </div>
-      <div className={`${s.marginTop} ${s.marginBottom}`}>
-        <span className={s.label}>Filter by property</span>
-        <div className={s.middleContent}>
-          <div className={s.radioOneInput}><label htmlFor="own"><input type="radio" id="own" name="propertyFilter" checked={property === 'own'} onChange={e => filter(e)} className={s.radioOne} />Show dog breeds created by the community</label></div>
-          <div className={s.radioTwoInput}><label htmlFor="notOwn"><input type="radio" id="notOwn" name="propertyFilter" checked={property === 'notOwn'} onChange={e => filter(e)} className={s.radioTwo} />Do not show dog breeds created by the community</label></div>
-        </div>
-        <button id="deletePropertyFilter" className={s.button} onClick={e => { filter(e) }}>Delete filter</button>
-      </div>
-      {finalResultRedux.length ? <Cards dogs={actualPageRedux}></Cards> : <p>{error}</p>}
-      {finalResultRedux.length ? <PaginationComponent /> : null}
-    </div>
+    <>
+      {
+        errorGlobal ?
+          <div className={s.containerCenter}>
+            <div className={s.contentCenter}>
+                <small className={s.errorGlobal}>{errorGlobal}</small>
+            </div>
+          </div>
+          :
+          <div className={s.container}>
+            <h1 className={s.title}>Dog breeds</h1>
+            <div className={s.marginTop}>
+              <label className={s.label}>Search a breed</label>
+              <input className={s.searchInput} id="searchTerm" placeholder="Insert a dog breed" value={searchTerm}
+                onChange={e => filter(e)} />
+              <button className={s.button} id="deleteSearch" onClick={e => { filter(e) }}>Delete search</button>
+            </div>
+            <div className={s.marginTop}>
+              <label className={s.label}>Filter by temperament</label>
+              <select onChange={e => filter(e)} id="temperament" value={temperament} className={s.selectInput}>
+                <option key='default' value='default'>Select a temperament</option>
+                {temperaments.map((e, i) => <option key={i} value={e}>{e}</option>)}
+              </select>
+              <button className={s.button} id="deleteTemperamentFilter" onClick={e => { filter(e) }}>Delete filter</button>
+            </div>
+            <div className={`${s.marginTop} ${s.marginBottom}`}>
+              <span className={s.label}>Filter by property</span>
+              <div className={s.middleContent}>
+                <div className={s.radioOneInput}><label htmlFor="own"><input type="radio" id="own" name="propertyFilter" checked={property === 'own'} onChange={e => filter(e)} className={s.radioOne} />Show dog breeds created by the community</label></div>
+                <div className={s.radioTwoInput}><label htmlFor="notOwn"><input type="radio" id="notOwn" name="propertyFilter" checked={property === 'notOwn'} onChange={e => filter(e)} className={s.radioTwo} />Do not show dog breeds created by the community</label></div>
+              </div>
+              <button id="deletePropertyFilter" className={s.button} onClick={e => { filter(e) }}>Delete filter</button>
+            </div>
+            {finalResultRedux.length ? <Cards dogs={actualPageRedux}></Cards> : <p>{error}</p>}
+            {finalResultRedux.length ? <PaginationComponent /> : null}
+          </div>
+      }
+    </>
   );
 }

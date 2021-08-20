@@ -1,4 +1,5 @@
 const { DataTypes } = require('sequelize');
+const countries = require('../extras/countries')
 // Exportamos una funcion que define el modelo
 // Luego le injectamos la conexion a sequelize.
 module.exports = (sequelize) => {
@@ -8,17 +9,31 @@ module.exports = (sequelize) => {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        username: {
+        name: {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        country: {
+        lastname: {
             type: DataTypes.STRING,
+            allowNull: false,
+        },
+        profilepic: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        username: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            unique: true,
+        },
+        country: {
+            type: DataTypes.ENUM(countries),
             allowNull: false,
         },
         email: {
             type: DataTypes.STRING,
             allowNull: false,
+            unique: true,
         },
         hash: {
             type: DataTypes.STRING,
@@ -27,7 +42,11 @@ module.exports = (sequelize) => {
         salt: {
             type: DataTypes.STRING,
             allowNull: false,
-        }
+        },
+        type: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
     });
 };
 

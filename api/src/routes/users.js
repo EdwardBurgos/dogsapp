@@ -1,6 +1,11 @@
 const { Router } = require('express');
 const axios = require('axios').default;
 const { Temperament, Dog, DogTemperament, User } = require('../db.js');
+const utils = require('../extras/utils.js');
+const countries = require('../extras/countries')
+const passport = require('passport');
+const { Op } = require('sequelize');
+
 function justImportantInfo(arr, moredetails) {
     if (moredetails) return arr.slice(0, 8).map((e) => {
         return {
@@ -13,45 +18,123 @@ function justImportantInfo(arr, moredetails) {
 
 const router = Router();
 
-router.post('/register', async (req, res) => {
-    const { fullname, username, country, email, password } = req.body;
-    let disponible = false;
+router.get('/protected', passport.authenticate('jwt', { session: false }), (req, res, next) => {
+    res.status(200).json({ success: true, msg: "You are successfully authenticated to this route!" });
+});
+
+// Returns true if there is no user with that email or false is there is one
+router.get('/availableEmail/:email', async (req, res, next) => {
     try {
-        const correos = await User.findOne({
-            attributes: ['email'],
-            where: {
-                email
-            }
-        })
-        if (correos) {
-            return res.status(409).send('There is already a user with this email');
-        } else {
-            const usuarios = await User.findOne({
-                attributes: ['username'],
-                where: {
-                    username
-                }
-            });
-            if (usuarios) {
-                return res.status(409).send('There is already a user with this username');
+        const user = await User.findOne({ where: { email: req.params.email } });
+        return res.send(user ? false : true);
+    } catch (e) {
+        next(e)
+    }
+})
+
+// Returns true if there is no user with that email or false is there is one
+router.get('/availableUsername/:username', async (req, res, next) => {
+    try {
+        const user = await User.findOne({ where: { username: req.params.username } });
+        return res.send(user ? false : true);
+    } catch (e) {
+        next(e)
+    }
+})
+
+router.post('/register', async (req, res) => {
+    let { fullname, name, lastname, profilepic, username, country, email, password, type } = req.body;
+    if (!countries.includes(country)) return res.status(406).send({ success: false, msg: 'This is not a country' })
+    try {
+        const availableUsername = await User.findOne({ where: { username } })
+        if (!availableUsername) {
+            const availableEmail = await User.findOne({ where: { email } })
+            if (!availableEmail) {
+                if (!profilepic) profilepic = "https://firebasestorage.googleapis.com/v0/b/dogsapp-f043d.appspot.com/o/defaultProfilePic.png?alt=media&token=77a0fa3a-c3e3-4e2a-ae91-ac2ffdadbba8";
+                const saltHash = utils.genPassword(password);
+                const salt = saltHash.salt;
+                const hash = saltHash.hash;
+                const user = await User.create({ fullname, name, lastname, profilepic, username, country, email, hash, salt, type });
+                return user ? res.send({ success: true, user: user.fullname }) : res.status(400).send({ success: false, msg: 'Sorry, an error occurred' })
+            } else { return res.status(409).send({ success: false, msg: 'There is already a user with this email' }) }
+        } else { return res.status(409).send({ success: false, msg: 'There is already a user with this username' }) }
+    } catch {
+        return res.status(400).send({ success: false, msg: 'Sorry, an error occurred' })
+    }
+})
+
+// Validate an existing user and issue a JWT
+router.post('/login', async (req, res, next) => {
+    try {
+        const { emailORusername, password, type } = req.body;
+        if (type === 'Google') {
+            const user = await User.findOne({ where: { email: emailORusername } });
+            if (user) {
+                const tokenObject = utils.issueJWT(user);
+                res.send({ success: true, user: user.fullname, token: tokenObject.token, expiresIn: tokenObject.expires });
             } else {
-                disponible = true
+                return res.status(404).send({ success: false, msg: "There is no user registered with this email" });
+            }
+        } else if (type === 'Native') {
+            const user = await User.findOne({
+                where: {
+                    [Op.or]:
+                        [
+                            { email: emailORusername },
+                            { username: emailORusername }
+                        ]
+                }
+            })
+            if (user) {
+                if (user.type === "Native") {
+                    const isValid = utils.validPassword(req.body.password, user.hash, user.salt);
+                    if (isValid) {
+                        const tokenObject = utils.issueJWT(user);
+                        res.send({ success: true, user: user.fullname, token: tokenObject.token, expiresIn: tokenObject.expires });
+                    } else {
+                        res.status(403).send({ success: false, msg: "Incorrect password" });
+                    }
+                } else if (user.type === "Google") {
+                    res.status(403).send({ success: false, msg: `You were registered with ${user.type}, if you want define a password or login with ${user.type} again` });
+                }
+            } else {
+                return res.status(404).send({ success: false, msg: "There is no user registered with this email" });
             }
         }
     } catch (e) {
-        return res.status(400).send('Sorry, an error occurred')
+        next(e);
     }
-    if (disponible) {
-        try {
-            const usuarioCreado = await User.create({ fullname, username, country, email, hash: password, salt: 'salt' });
-            if (usuarioCreado) {
-                return res.send('Your registration was successful')
-            } else {
-                return res.status(400).send('Sorry, errors occurred during your registration')
+});
+
+// Change the password
+router.post('/changePassword', async (req, res) => {
+    try {
+        const { emailORusername, password } = req.body;
+        const user = await User.findOne({
+            where: {
+                [Op.or]:
+                    [
+                        { email: emailORusername },
+                        { username: emailORusername }
+                    ]
             }
-        } catch (e) {
-            return res.status(400).send('Sorry, an error occurred')
+        })
+        if (user) {
+            const saltHash = utils.genPassword(password);
+            const salt = saltHash.salt;
+            const hash = saltHash.hash;
+            const newUser = await user.update({ hash, salt, type: 'Native'});
+            if (newUser) {
+                const tokenObject = utils.issueJWT(newUser);
+                res.send({ success: true, user: user.fullname, token: tokenObject.token, expiresIn: tokenObject.expires });
+            } else {
+                return res.status(500).send({ success: false, msg: "Password could not be updated" });
+            }
+        } else {
+            return res.status(404).send({ success: false, msg: "There is no user registered with this email" });
         }
+    } catch (e) {
+        next(e);
     }
 })
 

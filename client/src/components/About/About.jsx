@@ -19,7 +19,7 @@ export default function About() {
             <p>I want to be part of a company that helps me grow as a person, expand my knowledge and improve my skills.</p>
             <p>You can check my projects in my <a href="https://github.com/EdwardBurgos" target="_blank" rel="noreferrer" className={s.important}>GitHub Profile</a></p>
             <p>You can check my <a href="https://www.linkedin.com/in/edwardburgosdev/" target="_blank" rel="noreferrer" className={s.important}>Linkedin Profile</a></p>
-            <p>If you want to contact me send me a message through Linkedin or an email to <a href="https://mail.google.com/mail/u/0/?tab=rm#inbox?compose=new" target="_blank" rel="noreferrer" className={s.important}>edwardpbn@gmail.com</a></p>
+            <p>If you want to contact me send me a message through Linkedin or an email to <a href="mailto:edwardpbn@gmail.com" rel="noreferrer" className={s.important}>edwardpbn@gmail.com</a></p>
           </div>
         </div>
       </div>

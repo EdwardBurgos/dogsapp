@@ -3,9 +3,37 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  text-align: center;
 } 
-  
+
+.center {
+  text-align: center;
+}
+
+.division {
+  position: relative;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.division:before {
+  content: '';
+  height: 1px;
+  width: 100%;
+  position: absolute;
+  left: 0;
+  top: 12px;
+  background-color: #ededf4;
+}
+
+.division span {
+  background-color: #fff;
+  padding-left: 12px;
+  padding-right: 12px;
+  display: inline-block;
+  line-height: 24px;
+  position: relative;
+  z-index: 1;
+}
 .content {
   display: flex;
   flex-wrap: wrap;
@@ -37,6 +65,7 @@
 
 .marginBottom0 {
   margin-bottom: 0;
+  text-align: center;
 }
 
 .logo {
@@ -96,13 +125,13 @@
 .title {
   margin-bottom: 16px;
   font-weight: 600;
+  text-align: center;
 }
 
 .errorMessage {
   color: red;
   display: block;
   margin-bottom: 16px;
-  font-weight: 600;
 }
 
 .registroLink {
@@ -112,18 +141,27 @@
   color: #2962ff
 }
 
-.googleButton {
+.loginButton {
   display: flex !important;
+  margin-bottom: 16px;
   align-items:center !important;
   justify-content: center !important;
+  border: 1px #d9d9db solid !important;
+}
+
+.loginOtherEmail {
+  margin-bottom: 16px;
+  border: 1px #2962ff solid !important;
+}
+
+.loginButton:hover, .loginOtherEmail:hover {
   box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
   -webkit-box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
 }
 
-
-.googleLogo {
+.loginLogo {
   height: 1.2rem;
-  margin-right: 10px;
+  margin-right: 1rem;
 }
 
 
@@ -154,4 +192,90 @@ box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
   position: relative;
   display: flex;
   align-items: center;
+}
+
+.errorGlobal {
+  background-color: #f8d7da;
+  border: 1px #f5c2c7 solid;
+  color: #842029;
+  width: 100%;
+  display: block;
+  padding: 10px;
+  margin-bottom: 16px;
+  border-radius: 5px;
+}
+
+.errorGlobalContainer {
+  width: 100%;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+
+.label {
+  margin-bottom: 0.5rem;
+  color: rgba(26,26,26,.7);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.input {
+  border-radius: 5px !important;
+}
+
+.colorBoton {
+  background-color: #2962ff !important;
+  font-weight: 600 !important;
+}
+
+.loading {
+  width: 25%;
+}
+
+.label {
+  margin-bottom: 0.5rem;
+  color: rgba(26,26,26,.7);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.test {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.inputPassword {
+  border-radius: 5px !important;
+  padding-right: 2.5rem !important;
+  margin: 0 !important;
+}
+
+.iconDumb {
+  vertical-align: middle;
+  position: absolute;
+  right: 15px;
+  cursor: pointer;
+}
+
+.input {
+  border-radius: 5px !important;
+}
+
+.errorInput {
+  border-radius: 5px !important;
+  border: 1px solid #fc9696 !important;
+}
+
+.errorInput:focus {
+  border-color: #fe8686 !important;
+  outline: 0 !important;;
+  box-shadow: 0 0 0 0.25rem rgba(253, 13, 13, 0.25) !important;
+}
+
+.error, .description{
+  margin-top: 0.5rem;
+  color:red;
+  display: inline-block;
+  margin-bottom: 16px;
 }

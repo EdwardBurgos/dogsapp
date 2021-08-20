@@ -26,7 +26,7 @@ router.post('/dog', async (req, res) => {
                 var foundTemperament = await Temperament.findOne({ where: { name: e } });
                 if (foundTemperament) razaCreada.addTemperament(foundTemperament);
             });
-            res.json({ message: `The dog breed ${name} was created successfully`, id: razaCreada.id });
+            res.send({ message: `The dog breed ${name} was created successfully`, id: razaCreada.id });
         }         
     } catch (e) {
         if (e.original.code === '23505' && e.original.detail.includes('name')) return res.status(400).send(`The dog breed ${req.body.name} already exists`);
