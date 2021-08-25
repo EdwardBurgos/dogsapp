@@ -24,8 +24,8 @@ const axios = require('axios')
 
 // Syncing all the models at once.
 conn.sync({ force: true }).then(async () => {
-  await conn.query("ALTER SEQUENCE dogs_id_seq RESTART WITH 265;")
-  if (!(await Temperament.findAll()).length) { // No existe en base de datos 
+  // await conn.query("ALTER SEQUENCE dogs_id_seq RESTART WITH 265;") > This line allows us to start the registers with id 265
+  if (!(await Temperament.findAll()).length && !(await Dog.findAll()).length) { // No existe en base de datos 
     try {
       let temperaments = [];
       const response = await axios.get('https://api.thedogapi.com/v1/breeds');
@@ -36,7 +36,34 @@ conn.sync({ force: true }).then(async () => {
         temperaments = [...temperaments, ...newArray];
       });
       temperaments = [...new Set(temperaments)]
-      Temperament.bulkCreate(temperaments.sort().map((e) => { return { name: e } }));// Aumentarlo a la base de datos 
+      await Temperament.bulkCreate(temperaments.sort().map((e) => { return { name: e } }));
+      response.data.forEach(async (e) => {
+        const values = [e.height.metric, e.weight.metric, e.life_span].map((e) => {
+          const separated = e.split(' ')
+          if (separated.length === 1) { return isNaN(parseInt(e)) ? [null, null] : [null, parseInt(e)] }
+          if (separated.length === 2) { return [null, parseInt(separated[0])] }
+          if (separated.length >= 3) { return [isNaN(parseInt(separated[0])) ? null : parseInt(separated[0]), isNaN(parseInt(separated[2])) ? null : parseInt(separated[2])] }
+        })
+        const dog = await Dog.create({
+          name: e.name,
+          heightmax: values[0][1],
+          heightmin: values[0][0],
+          weightmax: values[1][1],
+          weightmin: values[1][0],
+          lifespanmax: values[2][1],
+          lifespanmin: values[2][0],
+          image: e.image.url,
+          origin: e.origin ? e.origin : null,
+          breed_group: e.breed_group ? e.breed_group : null,
+          bred_for: e.bred_for ? e.bred_for : null
+        })
+        if (e.temperament) {
+          e.temperament.split(', ').forEach(async (e) => {
+            var foundTemperament = await Temperament.findOne({ where: { name: e } });
+            if (foundTemperament) dog.addTemperament(foundTemperament);
+          });
+        }
+      })
     } catch (e) {
       console.log(e)
     }

@@ -3,7 +3,7 @@ import * as moment from 'moment';
 
 export async function getTemperaments() {
     try {
-        const temperaments = await axios.get('http://localhost:3001/temperament') 
+        const temperaments = await axios.get('http://localhost:3001/temperaments') 
         if (temperaments.status === 200) return temperaments.data
     } catch (e) {
         return []

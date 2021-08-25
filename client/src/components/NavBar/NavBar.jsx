@@ -1,18 +1,47 @@
 import s from './NavBar.module.css';
-import { NavLink } from 'react-router-dom';
-import React from 'react';
+import { NavLink, useHistory } from 'react-router-dom';
+import React, { useEffect } from 'react';
 import logo from '../../img/logo.png';
 import { useState } from 'react';
-import { Navbar, Nav } from 'react-bootstrap'
+import { Navbar, Nav, Dropdown } from 'react-bootstrap'
 import { useSelector } from 'react-redux';
+import { isLoggedIn, logout } from '../../extras/globalFunctions';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../../actions';
+import axios from '../../axiosInterceptor';
+
 
 export default function NavBar() {
   // Redux states
-  const login = useSelector(state => state.login);
-  
+  const user = useSelector(state => state.user)
+
   // Own States 
   const [navExpanded, setNavExpanded] = useState(false);
-  
+
+  // Variables
+  const dispatch = useDispatch();
+  const history = useHistory();
+
+  useEffect(() => {
+    async function request() {
+      if (isLoggedIn()) {
+        try {
+          const infoReq = await axios.get('/users/info')
+          if (infoReq.status === 200) {
+            dispatch(setUser(infoReq.data.user))
+          } else {
+            dispatch(setUser({}))
+          }
+        } catch (e) {
+          dispatch(setUser({}))
+        }
+      } else {
+        dispatch(setUser({}))
+      }
+    }
+    request()
+  }, [dispatch])
+
   return (
     <Navbar expand="md" className={s.navbar} id="navBar" expanded={navExpanded} fixed="top">
       <Navbar.Brand as={NavLink} to="/home" onClick={() => setNavExpanded(false)} className={s.brand}>
@@ -25,10 +54,20 @@ export default function NavBar() {
           <Nav.Link as={NavLink} to="/create" className={s.enlace} activeClassName={s.enlaceActivo} onClick={() => setNavExpanded(false)}>Register a new breed</Nav.Link>
         </Nav>
         {
-          login ?
-            <Navbar.Text className={s.signedInfo}>
-              <a href="#login">Mark Otto</a>
-            </Navbar.Text>
+          Object.keys(user).length ?
+            //   {/* // <Navbar.Text className={s.signedInfo}>
+            // //   <a href="#login">{user.name}</a>
+            // // </Navbar.Text> */}
+            <Dropdown align={{ md: 'end' }}>
+              <Dropdown.Toggle variant="light" id="dropdown-basic" className={s.titleDropdown}>
+                <img className={s.profilePic} src={user.photo} alt='User profile'></img>
+                <span>{user.fullname}</span>
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Dropdown.Item href="#/action-1">Edit my profile</Dropdown.Item>
+                <Dropdown.Item onClick={() => { logout(); dispatch(setUser({})); history.push('/login'); }}>Log out</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
             :
             <>
               <Nav.Link as={NavLink} to="/signup" className={s.enlaceSignup} activeClassName={s.enlaceActivo} onClick={() => setNavExpanded(false)}>Sign up</Nav.Link>

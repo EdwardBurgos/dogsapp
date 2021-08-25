@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import logo from '../../img/logo.png';
 import { Link } from 'react-router-dom'
-import axios from 'axios';
+import axios from '../../axiosInterceptor';
 import { useHistory } from "react-router-dom";
 import s from './Login.module.css';
 import { eyeOutline, eyeOffOutline } from "ionicons/icons";
@@ -13,6 +13,9 @@ import { countries } from '../../extras/countries';
 import loading from '../../img/loadingGif.gif';
 import { setLocalStorage } from '../../extras/globalFunctions';
 import { toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../../actions';
+
 
 toast.configure();
 
@@ -36,6 +39,7 @@ export default function Login() {
 
     // Variables
     const history = useHistory();
+    const dispatch = useDispatch();
 
     // Hooks
 
@@ -118,7 +122,7 @@ export default function Login() {
     async function loginConGoogle() {
         try {
             const googleLogin = await app.auth().signInWithPopup(googleAuthProvider);
-            app.auth().signOut();
+            //app.auth().signOut(googleAuthProvider);
             if (Object.keys(googleLogin.additionalUserInfo.profile).length) {
                 const email = googleLogin.additionalUserInfo.profile.email;
                 const availableEmail = await axios.get(`http://localhost:3001/users/availableEmail/${email}`);
@@ -134,6 +138,12 @@ export default function Login() {
                         });
                         if (logged.status === 200) {
                             setLocalStorage(logged.data);
+                            const infoReq = await axios.get('/users/info')
+                            if (infoReq.status === 200) {
+                                dispatch(setUser(infoReq.data.user))
+                            } else {
+                                dispatch(setUser({}))
+                            }
                             showMessage(`${logged.data.user} your login was successful`);
                             history.push('/home');
                         } else {
@@ -240,6 +250,10 @@ export default function Login() {
         }
     }
 
+    async function axiosReq() {
+        await axios.get('/users/protected')
+    }
+
     return (
         <div className={s.container}>
             <div className={s.content}>
@@ -303,7 +317,7 @@ export default function Login() {
                             </div>
 
                             {onlyPassword ?
-                                <div className={`w-100 btn ${s.loginOtherEmail}`} onClick={() => {setEmailUsername(''); setErrEmailUsername(''); setErrGlobal(''); setOnlyPassword(false); }}>
+                                <div className={`w-100 btn ${s.loginOtherEmail}`} onClick={() => { setEmailUsername(''); setErrEmailUsername(''); setErrGlobal(''); setOnlyPassword(false); }}>
                                     <span>Log in with other email</span>
                                 </div>
                                 :

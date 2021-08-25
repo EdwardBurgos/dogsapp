@@ -16,7 +16,7 @@ toast.configure();
 
 export default function Create() {
     // Redux states
-    const login = useSelector(state => state.login);
+    const user = useSelector(state => state.user);
     
     // Own states
     const [temperaments, setTemperaments] = useState([])
@@ -35,6 +35,9 @@ export default function Create() {
     const [maxLifespanErr, setMaxLifespanErr] = useState('')
     const [minLifespan, setMinLifespan] = useState('')
     const [minLifespanErr, setMinLifespanErr] = useState('')
+    const [bredFor, setBreedFor] = useState('')
+    const [breedGroup, setBreedGroup] = useState('')
+    const [origin, setOrigin] = useState('')
     const [temperamentErr, setTemperamentErr] = useState('')
     const [buttonState, setButtonState] = useState(true)
     const [errGlobal, setErrGlobal] = useState('')
@@ -82,7 +85,7 @@ export default function Create() {
                 return setName(value)
             case 'maxHeight':
                 if (!value) {
-                    setMaxHeightErr('This field is required');
+                    // setMaxHeightErr('This field is required');
                     if (minHeightErr === 'The minimum height must be less than maximum height') setMinHeightErr('');
                 } else {
                     value = value.replace(/[^0-9]/g, '');
@@ -101,7 +104,7 @@ export default function Create() {
                 return setMaxHeight(value)
             case 'minHeight':
                 if (!value) {
-                    setMinHeightErr('This field is required');
+                    // setMinHeightErr('This field is required');
                     if (maxHeightErr === 'The maximum height must be greater than minimum height') setMaxHeightErr('');
                 } else {
                     value = value.replace(/[^0-9]/g, '');
@@ -119,7 +122,7 @@ export default function Create() {
                 return setMinHeight(value)
             case 'maxWeight':
                 if (!value) {
-                    setMaxWeightErr('This field is required');
+                    // setMaxWeightErr('This field is required');
                     if (minWeightErr === 'The minimum weight must be less than maximum weight') setMinWeightErr('');
                 } else {
                     value = value.replace(/[^0-9]/g, '');
@@ -137,7 +140,7 @@ export default function Create() {
                 return setMaxWeight(value)
             case 'minWeight':
                 if (!value) {
-                    setMinWeightErr('This field is required');
+                    // setMinWeightErr('This field is required');
                     if (maxWeightErr === 'The maximum weight must be greater than minimum weight') setMaxWeightErr('');
                 } else {
                     value = value.replace(/[^0-9]/g, '');
@@ -155,7 +158,7 @@ export default function Create() {
                 return setMinWeight(value)
             case 'maxLifespan':
                 if (!value) {
-                    setMaxLifespanErr('This field is required');
+                    // setMaxLifespanErr('This field is required');
                     if (minLifespanErr === 'The minimum lifespan must be less than maximum lifespan') setMinLifespanErr('');
                 } else {
                     value = value.replace(/[^0-9]/g, '');
@@ -173,7 +176,7 @@ export default function Create() {
                 return setMaxLifespan(value)
             case 'minLifespan':
                 if (!value) {
-                    setMinLifespanErr('This field is required');
+                    // setMinLifespanErr('This field is required');
                     if (maxLifespanErr === 'The maximum lifespan must be greater than minimum lifespan') setMaxLifespanErr('');
                 } else {
                     value = value.replace(/[^0-9]/g, '');
@@ -228,7 +231,7 @@ export default function Create() {
 
     return (
         <>
-            {login ?
+            {Object.keys(user).length ?
                 temperaments.length ?
                     <div className={s.container}>
                         <h1 className={s.title}>Register a new breed</h1>
@@ -244,43 +247,60 @@ export default function Create() {
 
 
                             <div className={maxHeightErr ? '' : 'mb-3'}>
-                                <label className={s.label}>Max Height</label>
-                                <input value={maxHeight} placeholder="Insert max height" className={maxHeightErr ? s.errorInput : s.formInput} type="text" onChange={handleChange} name="maxHeight"></input>
+                                <label className={s.label}>Maximum height</label>
+                                <input value={maxHeight} placeholder="Insert maximum height in centimeters" className={maxHeightErr ? s.errorInput : s.formInput} type="text" onChange={handleChange} name="maxHeight"></input>
                             </div>
                             {maxHeightErr ? <small className={s.error}>{maxHeightErr}</small> : null}
 
                             <div className={minHeightErr ? '' : 'mb-3'}>
-                                <label className={s.label}>Min Height</label>
-                                <input value={minHeight} placeholder="Insert min height" className={minHeightErr ? s.errorInput : s.formInput} type="text" onChange={handleChange} name="minHeight"></input>
+                                <label className={s.label}>Minimum height</label>
+                                <input value={minHeight} placeholder="Insert minimum height in centimeters" className={minHeightErr ? s.errorInput : s.formInput} type="text" onChange={handleChange} name="minHeight"></input>
                             </div>
                             {minHeightErr ? <small className={s.error}>{minHeightErr}</small> : null}
 
 
                             <div className={maxWeightErr ? '' : 'mb-3'}>
-                                <label className={s.label}>Max Weight</label>
-                                <input value={maxWeight} placeholder="Insert max weight" className={maxWeightErr ? s.errorInput : s.formInput} type="text" onChange={handleChange} name="maxWeight"></input>
+                                <label className={s.label}>Maximum weight</label>
+                                <input value={maxWeight} placeholder="Insert maximum weight in kilograms" className={maxWeightErr ? s.errorInput : s.formInput} type="text" onChange={handleChange} name="maxWeight"></input>
                             </div>
                             {maxWeightErr ? <small className={s.error}>{maxWeightErr}</small> : null}
 
 
                             <div className={minWeightErr ? '' : 'mb-3'}>
-                                <label className={s.label}>Min Weight</label>
-                                <input value={minWeight} placeholder="Insert min weight" className={minWeightErr ? s.errorInput : s.formInput} type="text" onChange={handleChange} name="minWeight"></input>
+                                <label className={s.label}>Minimum weight</label>
+                                <input value={minWeight} placeholder="Insert minimun weight in kilograms" className={minWeightErr ? s.errorInput : s.formInput} type="text" onChange={handleChange} name="minWeight"></input>
                             </div>
                             {minWeightErr ? <small className={s.error}>{minWeightErr}</small> : null}
 
 
                             <div className={maxLifespanErr ? '' : 'mb-3'}>
-                                <label className={s.label}>Max Lifespan</label>
-                                <input value={maxLifespan} placeholder="Insert max lifespan" className={maxLifespanErr ? s.errorInput : s.formInput} type="text" onChange={handleChange} name="maxLifespan"></input>
+                                <label className={s.label}>Maximum lifespan</label>
+                                <input value={maxLifespan} placeholder="Insert maximum lifespan" className={maxLifespanErr ? s.errorInput : s.formInput} type="text" onChange={handleChange} name="maxLifespan"></input>
                             </div>
                             {maxLifespanErr ? <small className={s.error}>{maxLifespanErr}</small> : null}
 
                             <div className={minLifespanErr ? '' : 'mb-3'}>
-                                <label className={s.label}>Min Lifespan</label>
-                                <input value={minLifespan} placeholder="Insert min lifespan" className={minLifespanErr ? s.errorInput : s.formInput} type="text" onChange={handleChange} name="minLifespan"></input>
+                                <label className={s.label}>Minimum lifespan</label>
+                                <input value={minLifespan} placeholder="Insert minimum lifespan" className={minLifespanErr ? s.errorInput : s.formInput} type="text" onChange={handleChange} name="minLifespan"></input>
                             </div>
                             {minLifespanErr ? <small className={s.error}>{minLifespanErr}</small> : null}
+
+                            <div className={'mb-3'}>
+                                <label className={s.label}>Bred for reason</label>
+                                <input value={bredFor} placeholder="Insert the reason why it is bred" className={s.formInput} type="text" onChange={e => setBreedFor(e.target.value)} name="bredFor"></input>
+                            </div>
+
+                            <div className={'mb-3'}>
+                                <label className={s.label}>Breed group</label>
+                                <input value={breedGroup} placeholder="Insert breed group" className={s.formInput} type="text" onChange={e => setBreedGroup(e.target.value)} name="name"></input>
+                            </div>
+
+                            <div className={'mb-3'}>
+                                <label className={s.label}>Origin</label>
+                                <input value={origin} placeholder="Insert origin" className={s.formInput} type="text" onChange={e => setOrigin(e.target.value)} name="name"></input>
+                            </div>
+
+                            {/* IMAGEN */}
 
                             <div className={temperamentErr ? '' : 'mb-3'}>
                                 <label className={s.label}>Temperaments</label>

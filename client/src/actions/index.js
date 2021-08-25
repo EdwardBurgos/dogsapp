@@ -8,10 +8,17 @@ export function modificarUsuarioLogueado() {
 
 }
 
-export function setLoginOrNot() {
+export function setLoginOrNot(login) {
     return {
         type: 'SET_LOGIN_OR_NOT',
-        login: true
+        login
+    }
+}
+
+export function setUser(user) {
+    return {
+        type: 'SET_USER',
+        user
     }
 }
 
