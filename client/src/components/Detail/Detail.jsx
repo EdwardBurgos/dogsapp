@@ -28,10 +28,9 @@ export default function Detail({ id }) {
     }, [id])
 
     return (
-        <>
+        <div className={s.container}>
             {!errGlobal ?
                 Object.keys(dog).length ?
-                    <div className={s.container}>
                         <div className={s.cardDetail}>
                             <h1 className={s.title}>{dog.name}</h1>
                             <img src={dog.image} className={s.image} alt={dog.name}></img>
@@ -62,21 +61,16 @@ export default function Detail({ id }) {
                                 <p>{dog.lifespan}</p>
                             </div>
                         </div>
-                    </div>
                     :
-                    <div className={s.containerCenter}>
-                        <div className={s.contentCenter}>
-                            <img src={loading} alt='loadingGif' width="25%"></img>
-                        </div>
+                    <div className={s.contentCenter}>
+                        <img className={s.loading} src={loading} alt='loadingGif'></img>
                     </div>
                 :
-                <div className={s.containerCenter}>
-                    <div className={s.contentCenter}>
-                        {errGlobal ? <p className={s.errorGlobal}>{errGlobal}</p> : null}
-                    </div>
+                <div className={s.contentCenter}>
+                    {errGlobal ? <p className={s.errorGlobal}>{errGlobal}</p> : null}
                 </div>
             }
-        </>
+        </div>
 
     );
 }

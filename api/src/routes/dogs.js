@@ -5,6 +5,7 @@ const router = Router();
 const passport = require('passport');
 const { Op } = require('sequelize');
 
+
 // This route allows us to create a new dog breed
 router.post('/', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
     try {

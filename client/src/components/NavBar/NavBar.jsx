@@ -5,11 +5,13 @@ import logo from '../../img/logo.png';
 import { useState } from 'react';
 import { Navbar, Nav, Dropdown } from 'react-bootstrap'
 import { useSelector } from 'react-redux';
-import { isLoggedIn, logout } from '../../extras/globalFunctions';
+import { isLoggedIn, logout, getUserInfo } from '../../extras/globalFunctions';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../../actions';
 import axios from '../../axiosInterceptor';
+import { toast } from 'react-toastify';
 
+toast.configure();
 
 export default function NavBar() {
   // Redux states
@@ -22,25 +24,12 @@ export default function NavBar() {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  useEffect(() => {
-    async function request() {
-      if (isLoggedIn()) {
-        try {
-          const infoReq = await axios.get('/users/info')
-          if (infoReq.status === 200) {
-            dispatch(setUser(infoReq.data.user))
-          } else {
-            dispatch(setUser({}))
-          }
-        } catch (e) {
-          dispatch(setUser({}))
-        }
-      } else {
-        dispatch(setUser({}))
-      }
-    }
-    request()
-  }, [dispatch])
+
+
+  // This function allows us to use the toasts
+  function showMessage(data) {
+    toast(data, { position: toast.POSITION.BOTTOM_LEFT, pauseOnFocusLoss: false })
+}
 
   return (
     <Navbar expand="md" className={s.navbar} id="navBar" expanded={navExpanded} fixed="top">
@@ -60,12 +49,13 @@ export default function NavBar() {
             // // </Navbar.Text> */}
             <Dropdown align={{ md: 'end' }}>
               <Dropdown.Toggle variant="light" id="dropdown-basic" className={s.titleDropdown}>
-                <img className={s.profilePic} src={user.photo} alt='User profile'></img>
+                <img className={s.profilePic} src={user.profilepic} alt='User profile'></img>
                 <span>{user.fullname}</span>
               </Dropdown.Toggle>
-              <Dropdown.Menu>
-                <Dropdown.Item href="#/action-1">Edit my profile</Dropdown.Item>
-                <Dropdown.Item onClick={() => { logout(); dispatch(setUser({})); history.push('/login'); }}>Log out</Dropdown.Item>
+              <Dropdown.Menu> 
+              {/* className={s.enlaceSignup} activeClassName={s.enlaceActivo} */}
+                <Dropdown.Item to="/profile" onClick={() => history.push('/profile')}>Edit my profile</Dropdown.Item>
+                <Dropdown.Item onClick={() => { logout(); dispatch(setUser({})); history.push('/login'); showMessage(`Logged out successfully`);}}>Log out</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
             :

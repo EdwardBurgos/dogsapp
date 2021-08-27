@@ -24,7 +24,6 @@ export default function Card({ name, img, temperament, id }) {
         :
         null
       }
-      <div className={s.detailsButton}>See details</div>
     </div>
   );
 }

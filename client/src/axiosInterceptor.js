@@ -4,7 +4,7 @@ const { isLoggedIn } = require('./extras/globalFunctions');
 
 
 
-const customAxios = axios.create({
+const customAxios = axios.default.create({
     baseURL: `http://localhost:3001`,
     //timeout: 10000, 
     //headers: { 'api-key': 'eyJz-CI6Ikp-4pWY-lhdCI6' }
@@ -47,6 +47,7 @@ customAxios.interceptors.request.use(
     (request) => requestHandler(request)
 );
 
+customAxios.CancelToken = axios.default.CancelToken
 // customAxios.interceptors.response.use(
 //     (response) => responseHandler(response),
 //     (error) => errorHandler(error)

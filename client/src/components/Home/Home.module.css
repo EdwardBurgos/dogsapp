@@ -1,4 +1,4 @@
-.container {
+.content {
     text-align: center;
 }
 
@@ -34,19 +34,25 @@
     border-radius: 5px;
   }
 
+
+  .container{
+    height: var(--height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    text-align: center;
+  } 
+  
   .contentCenter {
     width: 100%;
     max-width: 330px;
     margin: 0 auto;
   }
   
-  .containerCenter{
-    height: var(--height);
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    text-align: center;
-  } 
+  .loading {
+    width: 25%;
+  }  
 
 .searchInput, .selectInput{
     width: 40%;

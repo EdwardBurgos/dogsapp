@@ -1,5 +1,6 @@
 import firebase from 'firebase/app';
 import 'firebase/auth';
+import 'firebase/storage';
 
 export const app = firebase.initializeApp({
     apiKey: "AIzaSyAMspr5TIlQZJHAmQ6TvOjGnePuBGTSzRo",
@@ -12,5 +13,16 @@ export const app = firebase.initializeApp({
 });
 
 export const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
+
+export const storage = app.storage()
+
+export function uploadImageToStorage(path, imageName) {
+    let reference = firebase.storage().ref(imageName);         // 2
+    let task = reference.putFile(path);               // 3
+
+    task.then(() => {                                 // 4
+        console.log('Image uploaded to the bucket!');
+    }).catch((e) => console.log('uploading image error => ', e));
+}
 
 // export {app, googleAuthProvider};

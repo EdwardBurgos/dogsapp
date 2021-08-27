@@ -17,7 +17,7 @@ toast.configure();
 export default function Create() {
     // Redux states
     const user = useSelector(state => state.user);
-    
+
     // Own states
     const [temperaments, setTemperaments] = useState([])
     const [selectedTemperaments, setSelectedTemperaments] = useState([]);
@@ -230,10 +230,10 @@ export default function Create() {
     }
 
     return (
-        <>
+        <div className={s.container}>
             {Object.keys(user).length ?
                 temperaments.length ?
-                    <div className={s.container}>
+                    <div className={s.content}>
                         <h1 className={s.title}>Register a new breed</h1>
                         <div className={s.errorGlobalContainer}>
                             {errGlobal ? <small className={s.errorGlobal}>{errGlobal}</small> : null}
@@ -328,19 +328,15 @@ export default function Create() {
                         </form>
                     </div>
                     :
-                    <div className={s.containerCenter}>
-                        <div className={s.contentCenter}>
-                            <img className={s.loading} src={loading} alt='loadingGif'></img>
-                        </div>
+                    <div className={s.contentCenter}>
+                        <img className={s.loading} src={loading} alt='loadingGif'></img>
                     </div>
                 :
-                <div className={s.containerCenter}>
-                    <div className={s.contentCenter}>
-                        <p>To be able to register a new breed you need to be logged in.</p>
-                        <Link to="/login" className={s.loginButton}>Log in</Link>
-                    </div>
+                <div className={s.contentCenter}>
+                    <p>To be able to register a new breed you need to be logged in.</p>
+                    <Link to="/login" className={s.loginButton}>Log in</Link>
                 </div>
             }
-        </>
+        </div>
     )
 }

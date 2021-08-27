@@ -9,7 +9,8 @@ const router = Router();
 
 // This route allows us to get the email, photo and name of the authentciated user
 router.get('/info', passport.authenticate('jwt', { session: false }), (req, res, next) => {
-    res.status(200).json({ success: true, msg: "You are successfully authenticated to this route!", user: {email: req.user.email, fullname: req.user.fullname, photo: req.user.profilepic}});
+    const { id, fullname, name, lastname, profilepic, username, country, email, type } = req.user;
+    res.status(200).json({ success: true, msg: "You are successfully authenticated to this route!", user: {id, fullname, name, lastname, profilepic, username, country, email}});
 });
 
 // This route returns true (if there is no user with that email) OR false is there is one

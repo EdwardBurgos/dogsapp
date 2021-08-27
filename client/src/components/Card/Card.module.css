@@ -31,19 +31,6 @@
     margin-bottom: 16px;
 }
 
-.detailsButton {
-    background-color: #2962ff;
-    color: white;
-    padding: 10px;
-    width: 100%;
-    text-decoration: none;
-    border-radius: 1rem;
-    border: 1px solid transparent;
-    bottom: 20px;
-    left: 10%;
-    align-self: flex-end;
-}
-
 .temperament {
     background-color: #2962ff;
     color: white;

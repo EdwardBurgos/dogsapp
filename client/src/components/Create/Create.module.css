@@ -1,7 +1,8 @@
-.containerCenter{
+.container {
   height: var(--height);
   display: flex;
   align-items: center;
+  justify-content: center;
   flex-wrap: wrap;
   text-align: center;
 } 
@@ -33,7 +34,7 @@
   margin: 0 auto;
 }
   
-.container {
+.content {
   text-align: left;
   width: 100%;
   box-sizing: border-box;

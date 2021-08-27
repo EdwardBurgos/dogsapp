@@ -1,11 +1,12 @@
-.container{
+.container {
   height: var(--height);
   display: flex;
   align-items: center;
+  justify-content: center;
   flex-wrap: wrap;
   text-align: center;
 } 
-  
+
 .content {
   display: flex;
   flex-wrap: wrap;
@@ -44,8 +45,14 @@
   margin-right: 20%;
 }
 
+.contentCenter {
+  width: 100%;
+  max-width: 330px;
+  margin: 0 auto;
+}
+
 .loading {
-  width: 10%;
+  width: 25%;
 }
 
 .image {
