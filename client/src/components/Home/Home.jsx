@@ -6,12 +6,12 @@ import * as actionsCreators from '../../actions';
 import { useDispatch, useSelector } from 'react-redux';
 import PaginationComponent from '../PaginationComponent/PaginationComponent';
 import loading from '../../img/loadingGif.gif';
+import { getDogs, getTemperaments } from '../../extras/globalFunctions';
 
 export default function Home() {
   // Redux states
   const finalResultRedux = useSelector(state => state.finalResult);
   const actualPageRedux = useSelector(state => state.actualPage);
-  const dogs = useSelector(state => state.dogs)
 
   // Own States
   const [temperaments, setTemperaments] = useState([]);
@@ -20,6 +20,7 @@ export default function Home() {
   const [temperament, setTemperament] = useState('');
   const [property, setProperty] = useState('');
   const [errorGlobal, setErrorGlobal] = useState('')
+  const [dogs, setDogs] = useState([])
   // Variables
   const dispatch = useDispatch();
 
@@ -30,14 +31,14 @@ export default function Home() {
     const cancelToken = axios.CancelToken;
     const source = cancelToken.source();
     async function requesting() {
-      try {
-        const completeDogs = await axios.get(`http://localhost:3001/dogs/all`, { cancelToken: source.token });
-        dispatch(actionsCreators.receiveDogs(completeDogs.data));
-        dispatch(actionsCreators.modifyFinalResult(completeDogs.data));
-        const temperaments = await axios.get('http://localhost:3001/temperaments', { cancelToken: source.token });
-        setTemperaments(temperaments.data);
-      } catch (e) {
-        if (e.message !== "Unmounted") setErrorGlobal('Sorry, an error ocurred');
+      const dogs = await getDogs(source.token);
+      const temperaments = await getTemperaments(source.token);
+      if (temperaments !== "Unmounted" && dogs !== "Unmounted") {
+        if (dogs.length && temperaments.length) {
+          setDogs(dogs)
+          dispatch(actionsCreators.modifyFinalResult(dogs));
+          setTemperaments(temperaments);
+        } else { setErrorGlobal('Sorry, an error ocurred'); }
       }
     }
     requesting();
@@ -81,7 +82,7 @@ export default function Home() {
       {
         errorGlobal ?
           <div className={s.contentCenter}>
-            <small className={s.errorGlobal}>{errorGlobal}</small>
+            <p className={s.errorGlobal}>{errorGlobal}</p>
           </div>
           :
           finalResultRedux.length && temperaments.length ?

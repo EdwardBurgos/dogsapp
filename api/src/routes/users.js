@@ -10,7 +10,7 @@ const router = Router();
 // This route allows us to get the email, photo and name of the authentciated user
 router.get('/info', passport.authenticate('jwt', { session: false }), (req, res, next) => {
     const { id, fullname, name, lastname, profilepic, username, country, email, type } = req.user;
-    res.status(200).json({ success: true, msg: "You are successfully authenticated to this route!", user: {id, fullname, name, lastname, profilepic, username, country, email}});
+    res.status(200).json({ success: true, msg: "You are successfully authenticated to this route!", user: { id, fullname, name, lastname, profilepic, username, country, email } });
 });
 
 // This route returns true (if there is no user with that email) OR false is there is one
@@ -105,7 +105,7 @@ router.post('/changePassword', async (req, res) => {
             const saltHash = utils.genPassword(password);
             const salt = saltHash.salt;
             const hash = saltHash.hash;
-            const newUser = await user.update({ hash, salt, type: 'Native'});
+            const newUser = await user.update({ hash, salt, type: 'Native' });
             if (newUser) {
                 const tokenObject = utils.issueJWT(newUser);
                 res.send({ success: true, user: user.fullname, token: tokenObject.token, expiresIn: tokenObject.expires });
@@ -118,6 +118,36 @@ router.post('/changePassword', async (req, res) => {
     } catch (e) {
         next(e);
     }
+})
+
+router.post('/changePhoto', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try {
+        const user = await User.findOne({ where: { id: req.user.id } });
+        if (user) {
+            const updated = await user.update({ profilepic: req.body.profilePic })
+            return updated ? res.send('Your profile picture was updated successfully') : res.status(500).send('Sorry, your profile picture could not be updated')
+        } else { return res.status(404).send('User not found')}
+    } catch (e) {
+        next()
+    }   
+})
+
+router.put('/updateUserInfo', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try {
+        const {name, lastname, username, country} = req.body;
+        const user = await User.findOne({ where: { id: req.user.id } });
+        if (user) {
+            const userAvailability = await User.findOne({ where: { username } });
+            if (userAvailability && (JSON.stringify(user) !== JSON.stringify(userAvailability))) return res.status(409).send('There is already a user with this username')
+            const updated = await user.update({ fullname: `${name} ${lastname}`, name, lastname, username, country });
+            return updated ? res.send('Your information was updated successfully') : res.status(500).send('Sorry, your information could not be updated')
+        } else { return res.status(404).send('User not found')}
+    } catch (e) {
+        console.log(e)
+        next()
+    }
+    
+    
 })
 
 module.exports = router;

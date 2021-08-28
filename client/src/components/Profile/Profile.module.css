@@ -91,6 +91,12 @@
     box-shadow: 0 0 0 0.25rem rgba(253, 13, 13, 0.25) !important;
   }
   
+  #inputFile {
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    border: none !important;
+  }
+
   .iconDumb {
     vertical-align: middle;
     position: absolute;
@@ -98,15 +104,15 @@
     cursor: pointer;
   }
   
-  .colorBoton {
-    background-color: #2962ff !important;
+  
+  .boton {
     font-weight: 600 !important;
   }
-  
-  .colorBoton:hover {
-    box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%) !important;
-    -webkit-box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%) !important;
-    border: 1px transparent solid !important;
+
+  .boton:hover {
+    box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
+    -webkit-box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
+    border: 1px transparent solid;
   }
   
   
@@ -173,6 +179,7 @@
     border-radius: 1rem;
     border: 1px solid transparent;
   }
+
   
   .botonswal:hover {
   box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
@@ -227,11 +234,16 @@
     border-right-color: rgba( 0, 0, 0, .7);	
   }
   
-  .label, .profilelabel {
+  .label, .labelProfile {
     margin-bottom: 0.5rem;
     color: rgba(26,26,26,.7);
     font-weight: 600;
     font-size: 0.9rem;
+  }
+
+  .labelProfile {
+    display: block;
+    width: 100%;
   }
   
   @media only screen and (max-width: 992px) {
@@ -255,31 +267,85 @@
     }
   }
   
-  .columns {
-    display: flex;
+
+  .errorGlobal {
+    background-color: #f8d7da;
+    border: 1px #f5c2c7 solid;
+    color: #842029;
     width: 100%;
+    display: block;
+    padding: 10px;
+    margin-bottom: 16px;
+    border-radius: 5px;
+  }
+  
+  .errorGlobalContainer {
+    width: 100%;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+  }
+
+  .disabled, .disabled:hover {
+    pointer-events: none !important;
+    opacity: .65 !important;
   }
 
   .title {
-    margin-bottom: 16px;
+    margin-bottom: 32px;
     font-weight: 600;
     width: 100%;
   }
   
   .formContainer {
     width: 50%;
-    padding-right: 10%;
+    padding-left: 5%;
+  }
+
+  .columns {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    flex-wrap: wrap;
   }
 
   .imageContainer {
     width: 50%;
-    padding: 0 5% 0 10%;
+    padding-right: 5%;
+    
+  }
+
+  .profilePictureEditor {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 32px;
   }
 
   .profilePic {
-      width: 130px;
-      height: 130px;
+      width: 200px;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 50%;
+  }
+
+  .containerProfileImage {
+    display: flex;
+    justify-content: center;
+  }
+
+  .uploadingContainer {
+    width: 200px;
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       object-fit: contain;
+      border-radius: 50%;
+  }
+
+  .uploadingGif {
+    width: 50%;
   }
 
   .buttonChangePic {
@@ -290,7 +356,47 @@
       text-align: center;
   }
 
-  .imageDiv {
+  .fileInput {
+    display: none;
+  }
+
+  .bottomContent {
+    align-self: flex-end;
     width: 100%;
     margin-bottom: 16px;
+  }
+
+  .emailInfo {
+    text-align: left;
+    margin-bottom: 32px;
+  }
+
+  
+
+  @media only screen and (min-width: 768px) {
+    .imageContainer {
+      padding: 0 5% 0 5%;
+    }
+    .formContainer {
+      padding: 0 5% 0 5%;
+    }
+  }
+
+  @media only screen and (min-width: 992px) {
+    .imageContainer {
+      padding: 0 5% 0 10%;
+    }
+    .formContainer {
+      padding: 0 10% 0 5%;
+    }
+  }
+
+  @media only screen and (max-width: 576px) {
+    .imageContainer, .formContainer {
+      padding: 0;
+      width: 100%;
+    }
+    .bottomContent {
+      margin-bottom: 32px;
+    }
   }

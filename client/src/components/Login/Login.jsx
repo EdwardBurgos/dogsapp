@@ -11,12 +11,9 @@ import { app, googleAuthProvider } from '../../extras/firebase.js';
 import { Modal } from 'react-bootstrap'
 import { countries } from '../../extras/countries';
 import loading from '../../img/loadingGif.gif';
-import { setLocalStorage } from '../../extras/globalFunctions';
-import { toast } from 'react-toastify';
+import { setLocalStorage, getCountry, getUserInfo, showMessage } from '../../extras/globalFunctions';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../../actions';
-
-toast.configure();
 
 export default function Login() {
     // Own states
@@ -28,7 +25,6 @@ export default function Login() {
     const [errGlobal, setErrGlobal] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [country, setCountry] = useState('');
-    const [errCountry, setErrCountry] = useState('');
     const [buttonState, setButtonState] = useState(true);
     const [showPassword, setShowPassword] = useState(false);
     const [googleProfile, setGoogleProfile] = useState({});
@@ -47,18 +43,14 @@ export default function Login() {
     useEffect(() => {
         const cancelToken = axios.CancelToken;
         const source = cancelToken.source();
-        async function getCountry() {
-            try {
-                const response = await axios.get('https://geolocation-db.com/json/', { cancelToken: source.token });
-                throw 'ROSALÍA'
-                setCountry(response.data.country_name);
-            } catch (e) {
-                if (e.message !== "Unmounted") setCountry('Select a country');
-            }
+        async function getUserCountry() {
+            const response = await getCountry(source.token);
+            setCountry(response);
         }
-        getCountry();
+        getUserCountry();
         return () => source.cancel("Unmounted");
     }, [])
+
 
     // This hook manage the button state
     useEffect(() => {
@@ -70,9 +62,9 @@ export default function Login() {
 
     // This hook manage the modal button state
     useEffect(() => {
-        if (errUsername || errCountry || !username || country === "Select a country") return setModalButtonState(true);
+        if (errUsername || !username || country === "Select a country") return setModalButtonState(true);
         setModalButtonState(false);
-    }, [errUsername, errCountry, username, country])
+    }, [errUsername, username, country])
 
     // This hook update the states buttonState, password, errPassword and wrongCredentials when the form / onlyPassword value change
     useEffect(() => {
@@ -115,16 +107,10 @@ export default function Login() {
                 !value ? setErrUsername('This field is required') : (value.length < 31 ? (/\s/.test(value) ? setErrUsername("The username can't contain white spaces") : (/^[a-z0-9._]+$/g.test(value) ? setErrUsername('') : setErrUsername("The username only can contains lowercase letters, numbers, points and subscripts"))) : setErrUsername("The username can't have more than 30 characters"))
                 return setUsername(value)
             case 'countryValue':
-                !value ? setErrCountry('This field is required') : value === "Select a country" ? setErrCountry('This field is required') : setErrCountry('')
                 return setCountry(value)
             default:
                 break;
         }
-    }
-
-    // This function allows us to use the toasts
-    function showMessage(data) {
-        toast(data, { position: toast.POSITION.BOTTOM_LEFT, pauseOnFocusLoss: false })
     }
 
     // This function allows us to login with Google
@@ -135,39 +121,28 @@ export default function Login() {
             if (Object.keys(googleLogin.additionalUserInfo.profile).length) {
                 const email = googleLogin.additionalUserInfo.profile.email;
                 const availableEmail = await axios.get(`http://localhost:3001/users/availableEmail/${email}`);
-                if (availableEmail.status === 200) {
-                    if (availableEmail.data) {
-                        setGoogleProfile(googleLogin.additionalUserInfo.profile);
-                        setShowModal(true);
-                    } else {
-                        const logged = await axios.post(`http://localhost:3001/users/login`, {
-                            emailORusername: email,
-                            password: '',
-                            type: 'Google'
-                        });
-                        if (logged.status === 200) {
-                            setLocalStorage(logged.data);
-                            const infoReq = await axios.get('/users/info')
-                            if (infoReq.status === 200) {
-                                dispatch(setUser(infoReq.data.user))
-                            } else {
-                                dispatch(setUser({}))
-                            }
-                            showMessage(`${logged.data.user} your login was successful`);
-                            history.push('/home');
-                        } else {
-                            return setErrGlobal('Sorry, an error occurred');
-                        }
-                    }
-                } else { return setErrGlobal('Sorry, an error occurred'); }
-            } else { return setErrGlobal('Sorry, an error occurred'); }
-        } catch (e) { return setErrGlobal('Sorry, an error occurred'); }
+                if (availableEmail.data) {
+                    setGoogleProfile(googleLogin.additionalUserInfo.profile);
+                    setShowModal(true);
+                } else {
+                    const logged = await axios.post(`http://localhost:3001/users/login`, {
+                        emailORusername: email,
+                        password: '',
+                        type: 'Google'
+                    });
+                    setLocalStorage(logged.data);
+                    const user = await getUserInfo();
+                    dispatch(setUser(user))
+                    showMessage(`${logged.data.user} your login was successful`);
+                    history.push('/home');
+                }
+            } else { dispatch(setUser({})); return setErrGlobal('Sorry, an error occurred'); }
+        } catch (e) { dispatch(setUser({})); return setErrGlobal('Sorry, an error occurred'); }
     }
 
     // This function allows us to register and login with Google
     async function handleModalSubmit(e) {
         e.preventDefault();
-        setShowModal(false);
         if (Object.keys(googleProfile).length) {
             try {
                 let { name, given_name, family_name, picture, email } = googleProfile;
@@ -182,35 +157,25 @@ export default function Login() {
                     password: 'google',
                     type: 'Google'
                 });
-                if (registered.status === 200) {
-                    showMessage(`${registered.data.user} your registration was successful`);
-                    const logged = await axios.post(`http://localhost:3001/users/login`, {
-                        emailORusername: email,
-                        password: '',
-                        type: 'Google'
-                    });
-                    if (logged.status === 200) {
-                        setLocalStorage(logged.data);
-                        const infoReq = await axios.get('/users/info')
-                        if (infoReq.status === 200) {
-                            dispatch(setUser(infoReq.data.user))
-                        } else {
-                            dispatch(setUser({}))
-                        }
-                        showMessage(`${logged.data.user} your login was successful`);
-                        history.push('/home');
-                    } else {
-                        return setErrGlobal('Sorry, an error occurred');
-                    }
-                } else {
-                    return setErrGlobal('Sorry, an error occurred');
-                }
-
+                showMessage(`${registered.data.user} your registration was successful`);
+                const logged = await axios.post(`http://localhost:3001/users/login`, {
+                    emailORusername: email,
+                    password: '',
+                    type: 'Google'
+                });
+                setLocalStorage(logged.data);
+                const user = await getUserInfo();
+                dispatch(setUser(user))
+                setShowModal(false);
+                showMessage(`${logged.data.user} your login was successful`);
+                history.push('/home');
             } catch (e) {
-                return setErrGlobal('Sorry, an error occurred');
+                dispatch(setUser({})); 
+                if (e.response.status === 409 && e.response.data.msg === "There is already a user with this username") return setErrUsername(e.response.data.msg)
+                setErrGlobal('Sorry, an error occurred');
             }
         } else {
-            return setErrGlobal('Sorry, an error occurred');
+            dispatch(setUser({})); return setErrGlobal('Sorry, an error occurred');
         }
     }
 
@@ -223,26 +188,18 @@ export default function Login() {
                 password,
                 type: 'Native'
             })
-            if (login.status === 200) {
-                setLocalStorage(login.data);
-                const infoReq = await axios.get('/users/info')
-                if (infoReq.status === 200) {
-                    dispatch(setUser(infoReq.data.user))
-                } else {
-                    dispatch(setUser({}))
-                }
-                showMessage(`${login.data.user} your login was successful`);
-                history.push('/home');
-            } else {
-                setButtonState(true);
-                return setErrGlobal('Sorry, an error occurred');
-            }
+            setLocalStorage(login.data);
+            const user = await getUserInfo();
+            dispatch(setUser(user))
+            showMessage(`${login.data.user} your login was successful`);
+            history.push('/home');
         } catch (e) {
+            dispatch(setUser({}));
             setButtonState(true);
             if (e.response.status === 403 && e.response.data.msg.includes('Google')) { setOnlyPassword(true); return setErrGlobal(e.response.data.msg) }
             if (e.response.status === 403 && e.response.data.msg === 'Incorrect password') return setWrongCredentials(e.response.data.msg);
             if (e.response.status === 404 && e.response.data.msg === 'There is no user registered with this email') return setWrongCredentials(e.response.data.msg)
-            return setErrGlobal('Sorry, an error occurred');
+            setErrGlobal('Sorry, an error occurred');
         }
     }
 
@@ -254,26 +211,18 @@ export default function Login() {
                 emailORusername: emailUsername,
                 password,
             })
-            if (login.status === 200) {
-                setLocalStorage(login.data);
-                const infoReq = await axios.get('/users/info')
-                if (infoReq.status === 200) {
-                    dispatch(setUser(infoReq.data.user))
-                } else {
-                    dispatch(setUser({}))
-                }
-                showMessage(`${login.data.user} your password was updated successfully`);
-                showMessage(`${login.data.user} your login was successful`);
-                history.push('/home');
-            } else {
-                setButtonState(true);
-                return setErrGlobal('Sorry, an error occurred');
-            }
+            setLocalStorage(login.data);
+            const user = await getUserInfo();
+            dispatch(setUser(user))
+            showMessage(`${login.data.user} your password was updated successfully`);
+            showMessage(`${login.data.user} your login was successful`);
+            history.push('/home');
         } catch (e) {
+            dispatch(setUser({}))
             setButtonState(true);
             if (e.response.status === 500 && e.response.data.msg === 'Password could not be updated') return setErrGlobal(e.response.data.msg);
             if (e.response.status === 404 && e.response.data.msg === 'There is no user registered with this email') return setWrongCredentials(e.response.data.msg)
-            return setErrGlobal('Sorry, an error occurred');
+            setErrGlobal('Sorry, an error occurred');
         }
     }
 
@@ -288,7 +237,7 @@ export default function Login() {
                         <h1 className={s.title}>Log in</h1>
 
                         <div className={s.errorGlobalContainer}>
-                            {errGlobal ? <small className={s.errorGlobal}>{errGlobal}</small> : null}
+                            {errGlobal ? <p className={s.errorGlobal}>{errGlobal}</p> : null}
                         </div>
                         {
                             onlyPassword ?
@@ -377,18 +326,17 @@ export default function Login() {
                                 </div>
                                 {errUsername ? <small className={s.error}>{errUsername}</small> : null}
 
-                                <div className={errCountry ? '' : 'mb-3'}>
+                                <div className='mb-3'>
                                     <label className={s.label} htmlFor="countryValue">Country</label>
                                     <select id="countryValue" name='countryValue' value={country} onChange={handleChange} className={`form-control ${s.input}`}>
-                                        <option key="Select a country" value="Select a country">Select a country</option>
+                                        {country === "Select a country" ? <option key="Select a country" value="Select a country">Select a country</option> : null}
                                         {countries.map(c => {
                                             return <option key={c} value={c}>{c}</option>
                                         })}
                                     </select>
                                 </div>
-                                {errCountry ? <small className={s.error}>{errCountry}</small> : null}
 
-                                <input type="submit" value="Log in" disabled={modalButtonState} className={`w-100 btn btn-primary mb-3 ${s.colorBoton}`} />
+                                <input type="submit" value="Log in" disabled={modalButtonState} className={`w-100 btn btn-primary ${s.colorBoton}`} />
                             </form>
                         </Modal.Body>
                     </Modal>

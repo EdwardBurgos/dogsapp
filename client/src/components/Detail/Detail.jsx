@@ -16,13 +16,11 @@ export default function Detail({ id }) {
         async function findDog(id) {
             try {
                 let response = await axios.get(`http://localhost:3001/dogs/${id}`);
-                if (response.status === 200) {
-                    setDog(response.data);
-                }
+                setDog(response.data);
             } catch (e) {
-                return setErrGlobal('Sorry, an error ocurred')
+                if (e.response.status === 404 && e.response.data === `There is no dog breed with the id ${id}`) return setErrGlobal(e.response.data)
+                setErrGlobal('Sorry, an error ocurred')
             }
-
         }
         findDog(id);
     }, [id])

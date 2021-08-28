@@ -1,67 +1,74 @@
 import s from './Profile.module.css';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import logo from '../../img/logo.png';
 import loading from '../../img/loadingGif.gif';
-import { Link } from 'react-router-dom';
 import { countries } from '../../extras/countries';
 import axios from '../../axiosInterceptor';
 import 'react-toastify/dist/ReactToastify.css';
-import { eyeOutline, eyeOffOutline } from "ionicons/icons";
-import { IonIcon } from '@ionic/react';
-import { toast } from 'react-toastify';
-import { useHistory } from "react-router-dom";
-import { setLocalStorage } from '../../extras/globalFunctions';
+import { validURL } from '../../extras/globalFunctions';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../../actions';
-import { app, storage } from '../../extras/firebase';
-import { isLoggedIn, logout, getUserInfo } from '../../extras/globalFunctions';
+import { uploadImage, uploadConfirmedImage } from '../../extras/firebase';
+import { getUserInfo, showMessage } from '../../extras/globalFunctions';
 
 
 export default function Profile() {
-  const user = useSelector(state => state.user)
-  const dispatch = useDispatch();
-  
+  // Redux states
+  const user = useSelector(state => state.user);
 
   // Own states
   const [errGlobal, setErrGlobal] = useState('');
   const [name, setName] = useState('');
   const [errName, setErrName] = useState('');
-  const [lastname, setLastname] = useState(user.lastname);
+  const [lastname, setLastname] = useState('');
   const [errLastname, setErrLastname] = useState('');
-  const [username, setUsername] = useState(user.username);
-  const [errUsername, setErrUsername] = useState(false);
-  const [country, setCountry] = useState(user.country);
-  const [email, setEmail] = useState(user.email);
-  const [errEmail, setErrEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [errPassword, setErrPassword] = useState('');
+  const [username, setUsername] = useState('');
+  const [errUsername, setErrUsername] = useState('');
+  const [country, setCountry] = useState('');
+  const [email, setEmail] = useState('');
   const [buttonState, setButtonState] = useState(true)
-  const [showPassword, setShowPassword] = useState(false)
-  const [photo, setPhoto] = useState(user.profilepic)
+  const [imageFile, setImageFile] = useState(null)
+  const [photo, setPhoto] = useState('')
   const [errPhoto, setErrPhoto] = useState('')
+  const [changedPhoto, setChangedPhoto] = useState(false)
+  const [uploading, setUploading] = useState(false)
 
   // Variables
-  const history = useHistory();
- 
+  const dispatch = useDispatch();
+
+  // Hooks
+
+  // This hook allows us to load the user info and show it in the component
   useEffect(() => {
+    const cancelToken = axios.CancelToken;
+    const source = cancelToken.source();
     async function updateUser() {
-      const userLocal = await getUserInfo();
-      if (Object.keys(userLocal).length) {
-        dispatch(setUser(userLocal))
-        setPhoto(userLocal.profilepic)
-        setName(userLocal.name)
-        setLastname(userLocal.lastname)
-        setUsername(userLocal.username)
-        setCountry(userLocal.country)
-        setEmail(userLocal.email)
+      const user = await getUserInfo(source.token);
+      if (user !== "Unmounted") {
+        dispatch(setUser(user))
+        if (Object.keys(user).length) {
+          setPhoto(user.profilepic)
+          setName(user.name)
+          setLastname(user.lastname)
+          setUsername(user.username)
+          setCountry(user.country)
+          setEmail(user.email)
+        }
       }
     }
     updateUser();
+    return () => source.cancel("Unmounted");
   }, [dispatch])
 
-  
+  // This hook allows us to handle the form submit button status
+  useEffect(() => {
+    if ((name !== user.name || lastname !== user.lastname || username !== user.username || country !== user.country) && !errName && !errLastname && !errUsername) return setButtonState(false)
+    setButtonState(true)
+  }, [name, lastname, username, country, errName, errLastname, errUsername, user])
 
+  // Functions
+
+  // This function allows us to handle the changes in the form
   function handleChange(e) {
     const value = e.target.value;
     switch (e.target.name) {
@@ -76,114 +83,65 @@ export default function Profile() {
         return setUsername(value)
       case 'countryValue':
         return setCountry(value)
-      case 'emailValue':
-        !value ? setErrEmail('This field is required') : (/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(value) ? setErrEmail('') : setErrEmail('Invalid email'))
-        return setEmail(value)
-      case 'passValue':
-        if (!value) {
-          setErrPassword('This field is required')
-        } else {
-          value.length < 21 ?
-            /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})/.test(value) ?
-              !/\s/.test(value) ?
-                setErrPassword('')
-                :
-                setErrPassword("The password can't contain white spaces")
-              :
-              setErrPassword('The password should have between 8 and 20 characters combining lowercase and uppercase letters, numbers and symbols')
-            :
-            setErrPassword("The password can't have more than 20 characters")
-        }
-        return setPassword(value)
       default:
         break;
     }
   }
 
-  function handleSubmit() {
-    alert('fff')
-  }
-
-  useEffect(() => {
-    console.log('TOKI', user)
-  }, [])
-
-  useEffect(() => {
-    if (errName || errLastname || errUsername || errEmail || errPassword || !name || !lastname || !username || !email || !password) return setButtonState(true)
-    return setButtonState(false)
-  }, [errName, errLastname, errUsername, errEmail, errPassword, name, lastname, username, email, password])
-
-  async function changePhoto(e) {
-    if (e.target.files[0]) {
-      const imageAsFile = e.target.files[0]
-      const uploadTask = storage.ref(`/images/${user.username}ProfilePic`).put(imageAsFile)
-      try {
-        await uploadTask
-        const url = await storage.ref('images').child(`${user.username}ProfilePic`).getDownloadURL()
-        setPhoto(url)
-      } catch (e) {
-        setErrPhoto('Sorry, we could not upload your new profile picture')
-      }
-
-
-
-      // var storage = app.storage();
-      // var storageRef = storage.ref();
-      // var uploadTask = storageRef.child('folder/' + e.target.files[0].name).put(e.target.files[0]);
-
-      // uploadTask.on(app.storage().TaskEvent.STATE_CHANGED,
-      //   (snapshot) => {
-      //     var progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes)) * 100
-      //     this.setState({ progress })
-      //   }, (error) => {
-      //     throw error
-      //   }, () => {
-      //     // uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) =>{
-
-      //     uploadTask.snapshot.ref.getDownloadURL().then((url) => {
-      //       this.setState({
-      //         downloadURL: url
-      //       })
-      //       console.log('verg', url)
-      //     })
-      //     document.getElementById("file").value = null
-      //   })
-
-
+  // This function allows us to handle the submit of the form 
+  async function handleSubmit(e) {
+    e.preventDefault();
+    try {
+      const update = await axios.put('/users/updateUserInfo', { name, lastname, username, country });
+      showMessage(update.data)
+      setButtonState(true)
+      const user = await getUserInfo();
+      dispatch(setUser(user))
+    } catch (e) {
+      if (e.response.status === 409 && e.response.data === "There is already a user with this username") return setErrUsername(e.response.data)
+      if (e.response.status === 500 && e.response.data === "Sorry, your information could not be updated") return setErrGlobal(e.response.data)
+      if (e.response.status === 404 && e.response.data === "User not found") return setErrGlobal(e.response.data)
+      setErrGlobal('Sorry, an error ocurred')
     }
   }
 
-  /*
-  
-    // uploadImageToStorage(file)
-  
-  handleUpload = () =>{
-  // console.log(this.state.image);
-  let file = this.state.image;
-  var storage = firebase.storage();
-  var storageRef = storage.ref();
-  var uploadTask = storageRef.child('folder/' + file.name).put(file);
-  
-  uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED,
-    (snapshot) =>{
-      var progress = Math.round((snapshot.bytesTransferred/snapshot.totalBytes))*100
-      this.setState({progress})
-    },(error) =>{
-      throw error
-    },() =>{
-      // uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) =>{
-  
-      uploadTask.snapshot.ref.getDownloadURL().then((url) =>{
-        this.setState({
-          downloadURL: url
-        })
-      })
-    document.getElementById("file").value = null
-  
-   }
-  ) 
+  // This function allows us to upload a test photo for the user profile picture
+  async function changePhoto(e) {
+    if (e.target.files[0]) {
+      setUploading(true)
+      const urlPhoto = await uploadImage(user.username, e.target.files[0])
+      setUploading(false);
+      if (validURL(urlPhoto)) {
+        setImageFile(e.target.files[0]);
+        setPhoto(urlPhoto);
+        setChangedPhoto(true);
+      } else {
+        setErrPhoto(urlPhoto)
+      }
+    }
   }
-  */
+
+  // This function allows us to update the user profile picture
+  async function setNewProfilePic() {
+    try {
+      setUploading(true)
+      const urlPhoto = await uploadConfirmedImage(user.username, imageFile)
+      if (validURL(urlPhoto)) {
+        const upload = await axios.post('/users/changePhoto', { profilePic: urlPhoto })
+        setErrPhoto('')
+        setUploading(false)
+        showMessage(upload.data);
+        setChangedPhoto(false)
+        const user = await getUserInfo();
+        dispatch(setUser(user))
+      } else { setUploading(false); setErrPhoto(urlPhoto) }
+    } catch (e) {
+      setUploading(false)
+      if (e.response.status === 500 && e.response.data === "Sorry, your profile picture could not be updated") return setErrPhoto(e.response.data)
+      if (e.response.status === 404 && e.response.data === "User not found") return setErrPhoto(e.response.data)
+      setErrPhoto('Sorry, an error ocurred')
+    }
+  }
 
   return (
     <div className={s.container}>
@@ -191,17 +149,62 @@ export default function Profile() {
         <h1 className={s.title}>My profile</h1>
         <div className={s.columns}>
           <div className={s.imageContainer}>
-            <label className={s.label} htmlFor="nameValue">Profile picture</label>
-            <div className={s.imageDiv}>
-              <img className={s.profilePic} src={photo} alt='User profile'></img>
+
+            <div className={s.profilePictureEditor}>
+              <label className={s.labelProfile} htmlFor="nameValue">Profile picture</label>
+              <div className={`${s.containerProfileImage} ${errPhoto ? '' : 'mb-3'}`}>
+                {
+                  uploading ?
+                    <div className={s.uploadingContainer}>
+                      <img className={s.uploadingGif} src={loading} alt='User profile'></img>
+                    </div>
+                    :
+                    <img className={s.profilePic} src={photo} alt='User profile'></img>
+                }
+              </div>
+              {errPhoto ? <small className={s.error}>{errPhoto}</small> : null}
+              {
+                !changedPhoto ?
+                  <div className={`w-100 btn btn-primary ${s.boton} ${uploading ? s.disabled : ''}`} onClick={() => document.getElementById('inputFile').click()}>
+                    <span>Upload new profile picture</span>
+                    <input id="inputFile" type="file" className={s.fileInput} onChange={changePhoto} accept="image/png, image/gif, image/jpeg, image/jpg" />
+                  </div>
+                  :
+                  <>
+                    <button className={`w-100 btn btn-success mb-3 ${s.boton}`} disabled={uploading} onClick={() => { setNewProfilePic() }}>Save changes</button>
+
+                    <div className={`w-100 btn btn-secondary mb-3 ${s.boton} ${uploading ? s.disabled : ''}`} onClick={() => { document.getElementById('inputFileExtra').click() }}>
+                      <span>Upload new profile picture</span>
+                      <input id="inputFileExtra" type="file" className={s.fileInput} onChange={changePhoto} accept="image/png, image/gif, image/jpeg, image/jpg" />
+                    </div>
+
+                    <button className={`w-100 btn btn-secondary ${s.boton}`} disabled={uploading} onClick={async () => { dispatch(setUser(await getUserInfo())); setImageFile(null); setUploading(false); setErrPhoto(''); setChangedPhoto(false); setPhoto(user.profilepic); }}>Cancel changes</button>
+
+                  </>
+              }
             </div>
-            <input type="file" className={`w-100 btn btn-primary mb-3 ${s.colorBoton}`} onChange={changePhoto} accept="image/png, image/gif, image/jpeg, image/jpg" />
+
+            <div className={`w-100 ${s.emailInfo}`}>
+              <label className={s.label} htmlFor="emailValue">Email</label>
+              <p className={`form-control mb-0`}>{email}</p>
+            </div>
+
+            <div className={s.bottomContent}>
+              <button className={`w-100 btn btn-primary mb-3 ${s.boton}`} onClick={() => { setNewProfilePic() }}>Change password</button>
+              <button className={`w-100 btn btn-danger ${s.boton}`} onClick={() => { setNewProfilePic() }}>Delete account</button>
+            </div>
+
           </div>
           <div className={s.formContainer}>
+
+            <div className={s.errorGlobalContainer}>
+              {errGlobal ? <p className={s.errorGlobal}>{errGlobal}</p> : null}
+            </div>
+
             <form onSubmit={handleSubmit} className={s.infoForm}>
               <div className={errName ? '' : 'mb-3'}>
                 <label className={s.label} htmlFor="nameValue">Name</label>
-                <input id="nameValue" value={user.name} name='nameValue' onChange={handleChange} className={`form-control ${s.input} ${errName ? s.errorInput : ''}`} />
+                <input id="nameValue" value={name} name='nameValue' onChange={handleChange} className={`form-control ${s.input} ${errName ? s.errorInput : ''}`} />
               </div>
               {errName ? <small className={s.error}>{errName}</small> : null}
 
@@ -226,28 +229,10 @@ export default function Profile() {
                 </select>
               </div>
 
-              <div className={errEmail ? '' : 'mb-3'}>
-                <label className={s.label} htmlFor="emailValue">Email</label>
-                <input id="emailValue" type='email' value={email} name='emailValue' onChange={handleChange} className={`form-control ${s.input} ${errEmail ? s.errorInput : ''}`} />
-              </div>
-              {errEmail ? <small className={s.error}>{errEmail}</small> : null}
-
-              <div className={errPassword ? '' : 'mb-3'}>
-                <label className={s.label} htmlFor="passValue">Password</label>
-                <div className={s.test}>
-                  <input id="passValue" value={password} name='passValue' type={showPassword ? 'text' : 'password'} onChange={handleChange} className={`form-control ${s.inputPassword} ${errPassword ? s.errorInput : ''}`} />
-                  <IonIcon icon={showPassword ? eyeOutline : eyeOffOutline} className={s.iconDumb} onClick={() => showPassword ? setShowPassword(false) : setShowPassword(true)}></IonIcon>
-                </div>
-              </div>
-              {errPassword ? <small className={s.error}>{errPassword}</small> : null}
-
-              <input type="submit" value="Sign up" disabled={buttonState} className={`w-100 btn btn-primary mb-3 ${s.colorBoton}`} />
+              <input type="submit" value="Save changes" disabled={buttonState} className={`w-100 btn btn-primary mb-3 ${s.boton}`} />
             </form>
           </div>
-
-
         </div>
-
       </div>
     </div>
   );

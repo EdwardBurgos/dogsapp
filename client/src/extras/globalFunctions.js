@@ -1,13 +1,42 @@
 import axios from '../axiosInterceptor';
 import * as moment from 'moment';
+import { toast } from 'react-toastify';
 
-export async function getTemperaments() {
+toast.configure();
+
+export function showMessage(data) {
+    toast(data, { position: toast.POSITION.BOTTOM_LEFT, pauseOnFocusLoss: false })
+}
+
+export async function getTemperaments(cancelToken) {
     try {
-        const temperaments = await axios.get('http://localhost:3001/temperaments')
-        if (temperaments.status === 200) return temperaments.data
+        const temperaments = await axios.get('/temperaments', { cancelToken })
+        return temperaments.data
     } catch (e) {
-        return []
+        if (e.message === "Unmounted") return "Unmounted";
+        return [];
     }
+}
+
+export async function getDogs(cancelToken) {
+    try {
+        const dogs = await axios.get(`/dogs/all`, { cancelToken });
+        return dogs.data
+    } catch (e) {
+        if (e.message === "Unmounted") return "Unmounted";
+        return [];
+    }
+}
+export async function getUserInfo(cancelToken) {
+    try {
+        if (!localStorage.getItem("token") && !localStorage.getItem("expiration")) return {}
+        let infoReq = cancelToken ? await axios.get('/users/info', { cancelToken }) : await axios.get('/users/info')
+        return infoReq.data.user
+    } catch (e) {
+        if (e.message === "Unmounted") return "Unmounted";
+        logout(); return {};
+    }
+
 }
 
 export function setLocalStorage(responseObj) {
@@ -32,20 +61,20 @@ export function isLoggedIn() {
     //     if (!Object.keys(response).length) { logout(); return false; }
     //     return true
     // })
- 
+
 
     return moment().isBefore(getExpiration(), "second");
 }
 
-export async function getUserInfo() {
-    if (localStorage.getItem("token") && localStorage.getItem("expiration")) {
-        try {
-            const infoReq = await axios.get('/users/info')
-            if (infoReq.status === 200) {
-                return infoReq.data.user
-            } else { return {} }
-        } catch (e) { return {} }
-    } else { return {} }
+
+
+export async function getCountry(cancelToken) {
+    try {
+        const response = await axios.get('https://geolocation-db.com/json/', { cancelToken });
+        return response.data.country_name;
+    } catch (e) {
+        if (e.message !== "Unmounted") return 'Select a country';
+    }
 }
 
 export function isLoggedOut() {
@@ -60,4 +89,14 @@ export function getExpiration() {
     } else {
         return moment();
     }
+}
+
+export function validURL(str) {
+    var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+        '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+        '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+        '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+    return !!pattern.test(str);
 }

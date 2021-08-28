@@ -8,13 +8,10 @@ import s from './Signup.module.css';
 import 'react-toastify/dist/ReactToastify.css';
 import { eyeOutline, eyeOffOutline } from "ionicons/icons";
 import { IonIcon } from '@ionic/react';
-import { toast } from 'react-toastify';
 import { useHistory } from "react-router-dom";
-import { setLocalStorage } from '../../extras/globalFunctions';
+import { setLocalStorage, getCountry, getUserInfo, showMessage } from '../../extras/globalFunctions';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../../actions';
-
-toast.configure();
 
 export default function Signup() {
     // Own states
@@ -26,7 +23,6 @@ export default function Signup() {
     const [username, setUsername] = useState('');
     const [errUsername, setErrUsername] = useState(false);
     const [country, setCountry] = useState('');
-    const [errCountry, setErrCountry] = useState('');
     const [email, setEmail] = useState('');
     const [errEmail, setErrEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -44,24 +40,19 @@ export default function Signup() {
     useEffect(() => {
         const cancelToken = axios.CancelToken;
         const source = cancelToken.source();
-        async function getCountry() {
-            try {
-                const response = await axios.get('https://geolocation-db.com/json/', { cancelToken: source.token });
-                throw 'toki'
-                setCountry(response.data.country_name);
-            } catch (e) {
-                if (e.message !== "Unmounted") setCountry('Select a country');
-            }
+        async function getUserCountry() {
+            const response = await getCountry(source.token);
+            setCountry(response);
         }
-        getCountry();
+        getUserCountry();
         return () => source.cancel("Unmounted");
     }, [])
 
     // This hook manage the button state
     useEffect(() => {
-        if (errName || errLastname || errUsername || errEmail || errPassword || errCountry || !name || !lastname || !username || !email || !password || country === "Select a country") return setButtonState(true)
+        if (errName || errLastname || errUsername || errEmail || errPassword || !name || !lastname || !username || !email || !password || country === "Select a country") return setButtonState(true)
         return setButtonState(false)
-    }, [errName, errLastname, errUsername, errEmail, errPassword, errCountry, name, lastname, username, email, password, country])
+    }, [errName, errLastname, errUsername, errEmail, errPassword, name, lastname, username, email, password, country])
 
     // Functions 
 
@@ -79,7 +70,6 @@ export default function Signup() {
                 !value ? setErrUsername('This field is required') : (value.length < 31 ? (/\s/.test(value) ? setErrUsername("The username can't contain white spaces") : (/^[a-z0-9._]+$/g.test(value) ? setErrUsername('') : setErrUsername("The username only can contains lowercase letters, numbers, points and subscripts"))) : setErrUsername("The username can't have more than 30 characters"))
                 return setUsername(value)
             case 'countryValue':
-                !value ? setErrCountry('This field is required') : value === "Select a country" ? setErrCountry('This field is required') : setErrCountry('')
                 return setCountry(value)
             case 'emailValue':
                 !value ? setErrEmail('This field is required') : (/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(value) ? setErrEmail('') : setErrEmail('Invalid email'))
@@ -105,11 +95,6 @@ export default function Signup() {
         }
     }
 
-    // This function allows us to use the toasts
-    function showMessage(data) {
-        toast(data, { position: toast.POSITION.BOTTOM_LEFT, pauseOnFocusLoss: false })
-    }
-
     // This function allows us to register and login natively
     async function handleSubmit(e) {
         e.preventDefault();
@@ -125,36 +110,23 @@ export default function Signup() {
                 password,
                 type: 'Native'
             });
-            if (availableUsername.status === 200) {
-                showMessage(`${availableUsername.data.user} your registration was successful`);
-                const login = await axios.post(`http://localhost:3001/users/login`, {
-                    emailORusername: email,
-                    password,
-                    type: 'Native'
-                })
-                if (login.status === 200) {
-                    setLocalStorage(login.data);
-                    const infoReq = await axios.get('/users/info')
-                    if (infoReq.status === 200) {
-                        dispatch(setUser(infoReq.data.user))
-                    } else {
-                        dispatch(setUser({}))
-                    }
-                    showMessage(`${login.data.user} your login was successful`);
-                    history.push('/home');
-                } else {
-                    setButtonState(true);
-                    return setErrGlobal('Sorry, an error occurred');
-                }
-            } else {
-                setButtonState(true);
-                return setErrGlobal('Sorry, an error occurred');
-            }
+            showMessage(`${availableUsername.data.user} your registration was successful`);
+            const login = await axios.post(`http://localhost:3001/users/login`, {
+                emailORusername: email,
+                password,
+                type: 'Native'
+            })
+            setLocalStorage(login.data);
+            const user = await getUserInfo();
+            dispatch(setUser(user))
+            showMessage(`${login.data.user} your login was successful`);
+            history.push('/home');
         } catch (e) {
+            dispatch(setUser({}))
             setButtonState(true);
             if (e.response.status === 409 && e.response.data.msg.includes('email')) return setErrEmail(e.response.data.msg);
             if (e.response.status === 409 && e.response.data.msg.includes('username')) return setErrUsername(e.response.data.msg);
-            return setErrGlobal('Sorry, an error occurred');
+            setErrGlobal('Sorry, an error occurred');
         }
     }
 
@@ -167,7 +139,7 @@ export default function Signup() {
                     </div>
                     <div className={s.form}>
                         <h1 className={s.title}>Sign up</h1>
-                        {errGlobal ? <small className={s.errorGlobal}>{errGlobal}</small> : null}
+                        {errGlobal ? <p className={s.errorGlobal}>{errGlobal}</p> : null}
                         <form onSubmit={handleSubmit} className={s.infoForm}>
                             <div className={errName ? '' : 'mb-3'}>
                                 <label className={s.label} htmlFor="nameValue">Name</label>
@@ -187,16 +159,15 @@ export default function Signup() {
                             </div>
                             {errUsername ? <small className={s.error}>{errUsername}</small> : null}
 
-                            <div className={errCountry ? '' : 'mb-3'}>
+                            <div className='mb-3'>
                                 <label className={s.label} htmlFor="countryValue">Country</label>
                                 <select id="countryValue" name='countryValue' value={country} onChange={handleChange} className={`form-control ${s.input}`}>
-                                    <option key="Select a country" value="Select a country">Select a country</option>
+                                    {country === "Select a country" ? <option key="Select a country" value="Select a country">Select a country</option> : null}
                                     {countries.map(c => {
                                         return <option key={c} value={c}>{c}</option>
                                     })}
                                 </select>
                             </div>
-                            {errCountry ? <small className={s.error}>{errCountry}</small> : null}
 
                             <div className={errEmail ? '' : 'mb-3'}>
                                 <label className={s.label} htmlFor="emailValue">Email</label>

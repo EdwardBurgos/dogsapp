@@ -1,12 +1,9 @@
 import s from './NotFound.module.css';
 import React from 'react';
-import { useHistory } from 'react-router';
 import logo from '../../img/notFound.svg';
 
 
 export default function NotFound() {
-    // Variables
-    const history = useHistory();
 
     return (
         <div className={s.container}>
