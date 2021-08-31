@@ -101,11 +101,18 @@
     border-radius: 50%;
 }
 
+.lastEnlace {
+    margin-bottom: 8px;
+}
+
 @media only screen and (min-width: 768px) {
     .enlace {
         margin-right: 20px
     }
     .enlace, .enlaceLogin, .enlaceSignup {
         padding: 8px !important;
+    }
+    .lastEnlace {
+        margin-bottom: 0;
     }
 }

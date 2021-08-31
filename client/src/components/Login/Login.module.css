@@ -131,10 +131,6 @@
   right: 15px;
 }
 
-.colorBoton {
-  background-color: #2962ff !important;
-}
-
 .title {
   margin-bottom: 32px;
   font-weight: 600;
@@ -178,26 +174,6 @@
   margin-right: 1rem;
 }
 
-
-.botonswal {
-  background-color: #2962ff;
-  color: white;
-  font-weight: 500;
-  padding: 10px;
-  font-size: 1rem;
-  width: 50%;
-  border-radius: 1rem;
-  border: 1px solid transparent;
-}
-
-.botonswal:hover {
-box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
--webkit-box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
-}
-
-.botonswal:disabled {
-  background-color: #99b2f5;
-}
 .inputMargin {
   margin: 0px;
 }
@@ -234,17 +210,6 @@ box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
 
 .input {
   border-radius: 5px !important;
-}
-
-.colorBoton {
-  background-color: #2962ff !important;
-  font-weight: 600 !important;
-}
-
-.colorBoton:hover {
-  box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%) !important;
-  -webkit-box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%) !important;
-  border: 1px transparent solid !important;
 }
 
 .test {

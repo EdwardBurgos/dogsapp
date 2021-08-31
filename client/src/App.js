@@ -15,6 +15,7 @@ import { useEffect } from 'react';
 import { setUser } from './actions';
 import { useDispatch, useSelector } from 'react-redux';
 import loading from './img/loadingGif.gif';
+import Edit from './components/Edit/Edit';
 
 
 function App() {
@@ -49,6 +50,7 @@ function App() {
                 <Route path="/home" component={Home} />
                 <Route path="/detail/:id" render={({ match }) => <Detail id={match.params.id} />} />
                 <Route path="/create" component={Create} />
+                <Route path="/edit/:id" render={({ match }) => Object.keys(user).length ? <Edit id={match.params.id} /> : <Redirect to="/home"/> }></Route>
                 <Route path="/about" component={About} />
                 <Route path="/profile">{Object.keys(user).length ? <Profile /> : <Redirect to="/login" />}</Route>
                 <Route path="/login">{Object.keys(user).length ? <Redirect to="/profile" /> : <Login />}</Route>

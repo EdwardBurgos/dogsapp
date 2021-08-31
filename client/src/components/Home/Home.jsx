@@ -6,7 +6,7 @@ import * as actionsCreators from '../../actions';
 import { useDispatch, useSelector } from 'react-redux';
 import PaginationComponent from '../PaginationComponent/PaginationComponent';
 import loading from '../../img/loadingGif.gif';
-import { getDogs, getTemperaments } from '../../extras/globalFunctions';
+import { getDogs, getTemperaments, getUserInfo} from '../../extras/globalFunctions';
 
 export default function Home() {
   // Redux states
@@ -42,6 +42,20 @@ export default function Home() {
       }
     }
     requesting();
+    return () => source.cancel("Unmounted");
+  }, [dispatch])
+
+  // This hook allow us to load the logued user
+  useEffect(() => {
+    const cancelToken = axios.CancelToken;
+    const source = cancelToken.source();
+    async function updateUser() {
+      const user = await getUserInfo(source.token);
+      if (user !== "Unmounted") {
+        dispatch(actionsCreators.setUser(user))
+      }
+    }
+    updateUser();
     return () => source.cancel("Unmounted");
   }, [dispatch])
 

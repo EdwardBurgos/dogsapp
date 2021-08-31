@@ -6,9 +6,11 @@ import { closeCircleOutline } from 'ionicons/icons';
 import { IonIcon } from '@ionic/react';
 import { Link } from 'react-router-dom';
 import loading from '../../img/loadingGif.gif';
-import { getTemperaments, showMessage } from '../../extras/globalFunctions';
+import { getTemperaments, showMessage, validURL, getUserInfo } from '../../extras/globalFunctions';
+import { setUser } from '../../actions';
 import 'react-toastify/dist/ReactToastify.css';
 import { useHistory } from "react-router-dom";
+import { uploadConfirmedDogBreedImage } from '../../extras/firebase';
 
 export default function Create() {
     // Redux states
@@ -38,12 +40,30 @@ export default function Create() {
     const [buttonState, setButtonState] = useState(true)
     const [errGlobal, setErrGlobal] = useState('')
     const [mainErr, setMainErr] = useState('')
+    const [photo, setPhoto] = useState('https://firebasestorage.googleapis.com/v0/b/dogsapp-f043d.appspot.com/o/folder-open-outline.svg?alt=media&token=e7dacac8-113e-4f25-8339-51c2d49a7181')
+    const [errPhoto, setErrPhoto] = useState('')
+    const [changedPhoto, setChangedPhoto] = useState(false)
+    const [uploading, setUploading] = useState(false)
 
     // Variables
     const history = useHistory();
     const dispatch = useDispatch();
 
     // Hooks 
+
+    // This hook allow us to load the logued user
+    useEffect(() => {
+        const cancelToken = axios.CancelToken;
+        const source = cancelToken.source();
+        async function updateUser() {
+            const user = await getUserInfo(source.token);
+            if (user !== "Unmounted") {
+                dispatch(setUser(user))
+            }
+        }
+        updateUser();
+        return () => source.cancel("Unmounted");
+    }, [dispatch])
 
     // This hook is to get the temperaments when the component mount
     useEffect(() => {
@@ -61,22 +81,25 @@ export default function Create() {
 
     // This hook is to enable or disable the submit button
     useEffect(() => {
-        if (nameErr || maxHeightErr || minHeightErr || maxWeightErr || minWeightErr || maxLifespanErr || minLifespanErr || !name) return setButtonState(true);
+        if (nameErr || maxHeightErr || minHeightErr || maxWeightErr || minWeightErr || maxLifespanErr || minLifespanErr || !name || photo === 'https://firebasestorage.googleapis.com/v0/b/dogsapp-f043d.appspot.com/o/folder-open-outline.svg?alt=media&token=e7dacac8-113e-4f25-8339-51c2d49a7181') return setButtonState(true);
         return setButtonState(false);
-    }, [nameErr, maxHeightErr, minHeightErr, maxWeightErr, minWeightErr, maxLifespanErr, minLifespanErr, name])
+    }, [nameErr, maxHeightErr, minHeightErr, maxWeightErr, minWeightErr, maxLifespanErr, minLifespanErr, name, photo])
 
     // Functions
 
+    // This function allows us to select a temperament
     function selectTemperament(temperament) {
         setTemperamentErr('');
         selectedTemperaments.includes(temperament) ? setTemperamentErr('Temperament already selected') : setSelectedTemperaments([...new Set([...selectedTemperaments, temperament])])
     }
 
+    // This function allows us to delete a temperament
     function deleteTemperament(temperament) {
         let newTemperaments = selectedTemperaments.filter(e => e === temperament ? false : true);
         setSelectedTemperaments(newTemperaments)
     }
 
+    // This function allows us to handle changes in the form
     function handleChange(e) {
         let value = e.target.value;
         switch (e.target.name) {
@@ -85,8 +108,8 @@ export default function Create() {
                 return setName(value)
             case 'maxHeight':
                 if (!value) {
-                    setMaxHeightErr(''); // setMaxHeightErr('This field is required');
-                    if (minHeightErr === 'The minimum height must be less than maximum height') setMinHeightErr('');
+                    setMaxHeightErr('');
+                    setMinHeightErr('');
                 } else {
                     value = value.replace(/[^0-9]/g, '');
                     if (parseInt(value) > parseInt(minHeight)) {
@@ -104,8 +127,8 @@ export default function Create() {
                 return setMaxHeight(value)
             case 'minHeight':
                 if (!value) {
-                    setMinHeightErr(''); // setMinHeightErr('This field is required');
-                    if (maxHeightErr === 'The maximum height must be greater than minimum height') setMaxHeightErr('');
+                    setMinHeightErr('');
+                    setMaxHeightErr('');
                 } else {
                     value = value.replace(/[^0-9]/g, '');
                     if (parseInt(value) < parseInt(maxHeight)) {
@@ -122,8 +145,8 @@ export default function Create() {
                 return setMinHeight(value)
             case 'maxWeight':
                 if (!value) {
-                    setMaxWeightErr(''); // setMaxWeightErr('This field is required');
-                    if (minWeightErr === 'The minimum weight must be less than maximum weight') setMinWeightErr('');
+                    setMaxWeightErr('');
+                    setMinWeightErr('');
                 } else {
                     value = value.replace(/[^0-9]/g, '');
                     if (parseInt(value) > parseInt(minWeight)) {
@@ -140,8 +163,8 @@ export default function Create() {
                 return setMaxWeight(value)
             case 'minWeight':
                 if (!value) {
-                    setMinWeightErr(''); // setMinWeightErr('This field is required');
-                    if (maxWeightErr === 'The maximum weight must be greater than minimum weight') setMaxWeightErr('');
+                    setMinWeightErr('');
+                    setMaxWeightErr('');
                 } else {
                     value = value.replace(/[^0-9]/g, '');
                     if (parseInt(value) < parseInt(maxWeight)) {
@@ -158,8 +181,8 @@ export default function Create() {
                 return setMinWeight(value)
             case 'maxLifespan':
                 if (!value) {
-                    setMaxLifespanErr(''); // setMaxLifespanErr('This field is required');
-                    if (minLifespanErr === 'The minimum lifespan must be less than maximum lifespan') setMinLifespanErr('');
+                    setMaxLifespanErr('');
+                    setMinLifespanErr('');
                 } else {
                     value = value.replace(/[^0-9]/g, '');
                     if (parseInt(value) > parseInt(minLifespan)) {
@@ -176,8 +199,8 @@ export default function Create() {
                 return setMaxLifespan(value)
             case 'minLifespan':
                 if (!value) {
-                    setMinLifespanErr(''); // setMinLifespanErr('This field is required');
-                    if (maxLifespanErr === 'The maximum lifespan must be greater than minimum lifespan') setMaxLifespanErr('');
+                    setMinLifespanErr('');
+                    setMaxLifespanErr('');
                 } else {
                     value = value.replace(/[^0-9]/g, '');
                     if (parseInt(value) < parseInt(maxLifespan)) {
@@ -203,23 +226,48 @@ export default function Create() {
         }
     }
 
+    // This function allows us to handle the submit of the form
     async function handleSubmit(e) {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:3001/dog', {
+            const response = await axios.post('/dogs', {
                 name: name,
-                heightmax: maxHeight,
-                heightmin: minHeight,
-                weightmax: maxWeight,
-                weightmin: minWeight,
-                lifespanmax: maxLifespan,
-                lifespanmin: minLifespan,
-                temperaments: selectedTemperaments
+                image: photo,
+                heightmax: maxHeight ? maxHeight : null,
+                heightmin: minHeight ? minHeight : null,
+                weightmax: maxWeight ? maxWeight : null,
+                weightmin: minWeight ? minWeight : null,
+                lifespanmax: maxLifespan ? maxLifespan : null,
+                lifespanmin: minLifespan ? minLifespan : null,
+                temperaments: selectedTemperaments,
+                bred_for: bredFor ? bredFor : null,
+                breed_group: breedGroup ? breedGroup : null,
+                origin: origin ? origin : null
             })
             showMessage(response.data.message);
             history.push(`/detail/${response.data.id}`);
         } catch (e) {
             return setErrGlobal(e.response.data);
+        }
+    }
+
+    // This function allows us to upload the dog breed picture
+    async function changePhoto(e) {
+        if (e.target.files[0]) {
+            if (name) {
+                setUploading(true)
+                const urlPhoto = await uploadConfirmedDogBreedImage(name, e.target.files[0])
+                setUploading(false);
+                if (validURL(urlPhoto)) {
+                    setPhoto(urlPhoto);
+                    setChangedPhoto(true);
+                } else {
+                    setErrPhoto(urlPhoto)
+                }
+            } else {
+                setnameErr('Fill this field')
+            }
+
         }
     }
 
@@ -229,10 +277,12 @@ export default function Create() {
                 user && temperaments.length ?
                     Object.keys(user).length ?
                         <div className={s.content}>
-                            <h1 className={s.title}>Register a breed</h1>
+                            <h1 className={s.title}>Register a dog breed</h1>
+
                             <div className={s.errorGlobalContainer}>
                                 {errGlobal ? <p className={s.errorGlobal}>{errGlobal}</p> : null}
                             </div>
+
                             <form onSubmit={handleSubmit} className={s.form}>
                                 <div className={nameErr ? '' : 'mb-3'}>
                                     <label className={s.label}>Name</label>
@@ -240,6 +290,34 @@ export default function Create() {
                                 </div>
                                 {nameErr ? <small className={s.error}>{nameErr}</small> : null}
 
+                                <div className={s.profilePictureEditor}>
+                                    <label className={s.labelProfile} htmlFor="nameValue">Image</label>
+                                    <div className={`${s.containerProfileImage} ${errPhoto ? '' : 'mb-3'}`}>
+                                        {
+                                            uploading ?
+                                                <div className={s.uploadingContainer}>
+                                                    <img className={s.uploadingGif} src={loading} alt='Dog breed'></img>
+                                                </div>
+                                                :
+                                                <img className={s.profilePic} src={photo} alt='Dog breed'></img>
+                                        }
+                                    </div>
+                                    {errPhoto ? <small className={s.error}>{errPhoto}</small> : null}
+                                    {
+                                        !changedPhoto ?
+                                            <div className={`w-100 btn btn-primary ${uploading || !name ? 'disabled' : ''}`} onClick={() => document.getElementById('inputFile').click()}>
+                                                <span>Upload an image</span>
+                                                <input id="inputFile" type="file" className={s.fileInput} onChange={changePhoto} accept="image/png, image/gif, image/jpeg, image/jpg" />
+                                            </div>
+                                            :
+                                            <>
+                                                <div className={`w-100 btn btn-secondary mb-3 ${uploading ? 'disabled' : ''}`} onClick={() => { document.getElementById('inputFileExtra').click() }}>
+                                                    <span>Upload another image</span>
+                                                    <input id="inputFileExtra" type="file" className={s.fileInput} onChange={changePhoto} accept="image/png, image/gif, image/jpeg, image/jpg" />
+                                                </div>
+                                            </>
+                                    }
+                                </div>
 
                                 <div className={maxHeightErr ? '' : 'mb-3'}>
                                     <label className={s.label}>Maximum height</label>
@@ -259,7 +337,6 @@ export default function Create() {
                                     <input value={maxWeight} placeholder="Insert maximum weight in kilograms" className={maxWeightErr ? s.errorInput : s.formInput} type="text" onChange={handleChange} name="maxWeight"></input>
                                 </div>
                                 {maxWeightErr ? <small className={s.error}>{maxWeightErr}</small> : null}
-
 
                                 <div className={minWeightErr ? '' : 'mb-3'}>
                                     <label className={s.label}>Minimum weight</label>
@@ -295,8 +372,6 @@ export default function Create() {
                                     <input value={origin} placeholder="Insert origin" className={s.formInput} type="text" onChange={e => setOrigin(e.target.value)} name="origin"></input>
                                 </div>
 
-                                {/* CARGA DE IMAGEN */}
-
                                 <div className={temperamentErr ? '' : 'mb-3'}>
                                     <label className={s.label}>Temperaments</label>
                                     <select className={temperamentErr ? s.errorSelect : s.selectInput} id="temperamentSelector" value='default' onChange={e => selectTemperament(e.target.value)} name="temperament">
@@ -319,12 +394,12 @@ export default function Create() {
                                     </div>
                                     : null}
 
-                                <input type="submit" value="Register breed" disabled={buttonState} className={`w-100 btn btn-primary ${s.submit}`} />
+                                <input type="submit" value="Register breed" disabled={buttonState} className={`w-100 btn btn-primary`} />
                             </form>
                         </div>
                         :
                         <div className={s.contentCenter}>
-                            <p>To be able to register a breed you need to be logged in.</p>
+                            <p>To be able to register a dog breed you need to be logged in.</p>
                             <Link to="/login" className={s.loginButton}>Log in</Link>
                         </div>
                     :
@@ -336,7 +411,6 @@ export default function Create() {
                     <div className={s.errorGlobalContainer}>
                         <p className={s.errorMain}>{mainErr}</p>
                     </div>
-
                 </div>
             }
         </div>

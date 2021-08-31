@@ -34,6 +34,26 @@ export async function uploadConfirmedImage(username, imageAsFile) {
         const url = await app.storage().ref('profilePictures').child(`${username}ProfilePic`).getDownloadURL()
         return url
     } catch (e) {
-        return 'Sorry, we could save your new profile picture'
+        return 'Sorry, we could not save your new profile picture'
+    }
+}
+
+export async function uploadDogBreedImage(dogBreed, imageAsFile) {
+    try {
+        await app.storage().ref(`/testsDogBreeds/${dogBreed}`).put(imageAsFile)
+        const url = await app.storage().ref('testsDogBreeds').child(`${dogBreed}`).getDownloadURL()
+        return url
+    } catch (e) {
+        return 'Sorry, we could not upload the dog breed image'
+    }
+}
+
+export async function uploadConfirmedDogBreedImage(dogBreed, imageAsFile) {
+    try {
+        await app.storage().ref(`/dogBreedsImages/${dogBreed}`).put(imageAsFile)
+        const url = await app.storage().ref('dogBreedsImages').child(`${dogBreed}`).getDownloadURL()
+        return url
+    } catch (e) {
+        return 'Sorry, we could not save the dog breed image'
     }
 }

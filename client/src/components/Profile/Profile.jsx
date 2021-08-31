@@ -5,12 +5,11 @@ import loading from '../../img/loadingGif.gif';
 import { countries } from '../../extras/countries';
 import axios from '../../axiosInterceptor';
 import 'react-toastify/dist/ReactToastify.css';
-import { validURL } from '../../extras/globalFunctions';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../../actions';
 import { uploadImage, uploadConfirmedImage } from '../../extras/firebase';
-import { getUserInfo, showMessage } from '../../extras/globalFunctions';
-
+import { getUserInfo, showMessage, validURL } from '../../extras/globalFunctions';
+import loadingHorizontal from '../../img/loadingHorizontalGif.gif'
 
 export default function Profile() {
   // Redux states
@@ -32,6 +31,7 @@ export default function Profile() {
   const [errPhoto, setErrPhoto] = useState('')
   const [changedPhoto, setChangedPhoto] = useState(false)
   const [uploading, setUploading] = useState(false)
+  const [guardando, setGuardando] = useState(false)
 
   // Variables
   const dispatch = useDispatch();
@@ -124,12 +124,12 @@ export default function Profile() {
   // This function allows us to update the user profile picture
   async function setNewProfilePic() {
     try {
-      setUploading(true)
+      setGuardando(true)
       const urlPhoto = await uploadConfirmedImage(user.username, imageFile)
       if (validURL(urlPhoto)) {
         const upload = await axios.post('/users/changePhoto', { profilePic: urlPhoto })
         setErrPhoto('')
-        setUploading(false)
+        setGuardando(false)
         showMessage(upload.data);
         setChangedPhoto(false)
         const user = await getUserInfo();
@@ -165,20 +165,29 @@ export default function Profile() {
               {errPhoto ? <small className={s.error}>{errPhoto}</small> : null}
               {
                 !changedPhoto ?
-                  <div className={`w-100 btn btn-primary ${s.boton} ${uploading ? s.disabled : ''}`} onClick={() => document.getElementById('inputFile').click()}>
+                  <div className={`w-100 btn btn-primary ${uploading ? 'disabled' : ''}`} onClick={() => document.getElementById('inputFile').click()}>
                     <span>Upload new profile picture</span>
                     <input id="inputFile" type="file" className={s.fileInput} onChange={changePhoto} accept="image/png, image/gif, image/jpeg, image/jpg" />
                   </div>
                   :
                   <>
-                    <button className={`w-100 btn btn-success mb-3 ${s.boton}`} disabled={uploading} onClick={() => { setNewProfilePic() }}>Save changes</button>
+                    {
+                      guardando ?
+                        <div className={`w-100 btn btn-primary mb-3 disabled`}>
+                          <img src={loadingHorizontal} className={s.loadingHorizontal} alt='Loading'></img>
+                        </div>
+                        :
+                        <>
+                          <button className={`w-100 btn btn-primary mb-3`} disabled={uploading} onClick={() => { setNewProfilePic() }}>Save changes</button>
+                          
+                          <div className={`w-100 btn btn-secondary mb-3 ${uploading ? 'disabled' : ''}`} onClick={() => { document.getElementById('inputFileExtra').click() }}>
+                            <span>Upload another profile picture</span>
+                            <input id="inputFileExtra" type="file" className={s.fileInput} onChange={changePhoto} accept="image/png, image/gif, image/jpeg, image/jpg" />
+                          </div>
 
-                    <div className={`w-100 btn btn-secondary mb-3 ${s.boton} ${uploading ? s.disabled : ''}`} onClick={() => { document.getElementById('inputFileExtra').click() }}>
-                      <span>Upload new profile picture</span>
-                      <input id="inputFileExtra" type="file" className={s.fileInput} onChange={changePhoto} accept="image/png, image/gif, image/jpeg, image/jpg" />
-                    </div>
-
-                    <button className={`w-100 btn btn-secondary ${s.boton}`} disabled={uploading} onClick={async () => { dispatch(setUser(await getUserInfo())); setImageFile(null); setUploading(false); setErrPhoto(''); setChangedPhoto(false); setPhoto(user.profilepic); }}>Cancel changes</button>
+                          <button className={`w-100 btn btn-secondary`} disabled={uploading} onClick={async () => { dispatch(setUser(await getUserInfo())); setImageFile(null); setUploading(false); setErrPhoto(''); setChangedPhoto(false); setPhoto(user.profilepic); }}>Cancel changes</button>
+                        </>
+                    }
 
                   </>
               }
@@ -190,8 +199,8 @@ export default function Profile() {
             </div>
 
             <div className={s.bottomContent}>
-              <button className={`w-100 btn btn-primary mb-3 ${s.boton}`} onClick={() => { setNewProfilePic() }}>Change password</button>
-              <button className={`w-100 btn btn-danger ${s.boton}`} onClick={() => { setNewProfilePic() }}>Delete account</button>
+              <button className={`w-100 btn btn-primary mb-3`} onClick={() => { setNewProfilePic() }}>Change password</button>
+              <button className={`w-100 btn btn-danger`} onClick={() => { setNewProfilePic() }}>Delete account</button>
             </div>
 
           </div>
@@ -229,7 +238,7 @@ export default function Profile() {
                 </select>
               </div>
 
-              <input type="submit" value="Save changes" disabled={buttonState} className={`w-100 btn btn-primary mb-3 ${s.boton}`} />
+              <input type="submit" value="Save changes" disabled={buttonState} className={`w-100 btn btn-primary mb-3`} />
             </form>
           </div>
         </div>

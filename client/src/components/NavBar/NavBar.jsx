@@ -45,7 +45,7 @@ export default function NavBar() {
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="me-auto" >
           <Nav.Link as={NavLink} to="/about" className={s.enlace} activeClassName={s.enlaceActivo} onClick={() => setNavExpanded(false)}>About the creator</Nav.Link>
-          <Nav.Link as={NavLink} to="/create" className={s.enlace} activeClassName={s.enlaceActivo} onClick={() => setNavExpanded(false)}>Register a breed</Nav.Link>
+          <Nav.Link as={NavLink} to="/create" className={`${s.enlace} ${s.lastEnlace}`} activeClassName={s.enlaceActivo} onClick={() => setNavExpanded(false)}>Register a dog breed</Nav.Link>
         </Nav>
         {
           user ? 

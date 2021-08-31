@@ -48,6 +48,20 @@ export default function Signup() {
         return () => source.cancel("Unmounted");
     }, [])
 
+    // This hook allow us to load the logued user
+    useEffect(() => {
+        const cancelToken = axios.CancelToken;
+        const source = cancelToken.source();
+        async function updateUser() {
+            const user = await getUserInfo(source.token);
+            if (user !== "Unmounted") {
+                dispatch(setUser(user))
+            }
+        }
+        updateUser();
+        return () => source.cancel("Unmounted");
+    }, [dispatch])
+
     // This hook manage the button state
     useEffect(() => {
         if (errName || errLastname || errUsername || errEmail || errPassword || !name || !lastname || !username || !email || !password || country === "Select a country") return setButtonState(true)
@@ -184,7 +198,7 @@ export default function Signup() {
                             </div>
                             {errPassword ? <small className={s.error}>{errPassword}</small> : null}
 
-                            <input type="submit" value="Sign up" disabled={buttonState} className={`w-100 btn btn-primary mb-3 ${s.colorBoton}`} />
+                            <input type="submit" value="Sign up" disabled={buttonState} className={`w-100 btn btn-primary mb-3`} />
                         </form>
                         <p className={s.marginBottom0}>
                             Already have an account?

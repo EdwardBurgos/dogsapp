@@ -1,13 +1,25 @@
 import s from './Detail.module.css';
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import loading from '../../img/loadingGif.gif';
+import axios from '../../axiosInterceptor';
+import { getUserInfo, showMessage } from '../../extras/globalFunctions';
+import { useDispatch, useSelector } from 'react-redux';
+import { setUser } from '../../actions';
+import { useHistory } from 'react-router';
 
 
 export default function Detail({ id }) {
+    // Redux states
+    const user = useSelector(state => state.user);
+
     // Own states
     const [dog, setDog] = useState({});
-    const [errGlobal, setErrGlobal] = useState('')
+    const [errGlobal, setErrGlobal] = useState('');
+    const [errDelete, setErrDelete] = useState('');
+
+    // Variables
+    const dispatch = useDispatch();
+    const history = useHistory();
 
     // Hooks
 
@@ -25,40 +37,122 @@ export default function Detail({ id }) {
         findDog(id);
     }, [id])
 
+    // This hook allow us to load the logued user
+    useEffect(() => {
+        const cancelToken = axios.CancelToken;
+        const source = cancelToken.source();
+        async function updateUser() {
+            const user = await getUserInfo(source.token);
+            if (user !== "Unmounted") {
+                dispatch(setUser(user))
+            }
+        }
+        updateUser();
+        return () => source.cancel("Unmounted");
+    }, [dispatch])
+
+    // Functions
+
+    // This function allows us to delete the dog breed
+    async function deleteBreed() {
+        try {
+            await axios.delete(`/dogs/${dog.id}`)
+            showMessage(`The dog breed ${dog.name} was deleted successfully`);
+            history.push(`/home`);
+        } catch (e) {
+            if ([404, 500].includes(e.response.status) && [`There is no dog breed with the id ${dog.id}`, `You can not delete this dog breed because is not yours`, `Sorry, the dog breed with the id ${dog.id} can not be deleted`].includes(e.response.data)) return setErrDelete(e.response.data);
+            setErrDelete(`Sorry, we could not delete the dog breed ${dog.name}`)
+        }
+    }
+
     return (
         <div className={s.container}>
             {!errGlobal ?
                 Object.keys(dog).length ?
-                        <div className={s.cardDetail}>
-                            <h1 className={s.title}>{dog.name}</h1>
-                            <img src={dog.image} className={s.image} alt={dog.name}></img>
-                            {dog.temperament ?
+                    <div className={s.cardDetail}>
+                        <h1 className={s.title}>{dog.name}</h1>
+                        <img src={dog.image} className={s.image} alt={dog.name}></img>
+                        {dog.temperament ?
+                            <>
+                                <span className={s.label}>Temperament :</span>
+                                <div className={s.temperamentsContainer}>
+                                    {dog.temperament.split(', ').map((e, i) =>
+                                        <div key={i} className={s.test}>
+                                            <div className={s.temperament}>{e}</div>
+                                        </div>
+                                    )}
+                                </div>
+                            </>
+                            :
+                            null
+                        }
+                        {
+                            dog.height ?
+                                <div>
+                                    <span className={s.label}>Height :</span>
+                                    <p>{dog.height}</p>
+                                </div>
+                                :
+                                null
+                        }
+                        {
+                            dog.weight ?
+                                <div>
+                                    <span className={s.label}>Weight :</span>
+                                    <p>{dog.weight}</p>
+                                </div>
+                                :
+                                null
+                        }
+                        {
+                            dog.lifespan ?
+                                <div>
+                                    <span className={s.label}>Lifespan :</span>
+                                    <p>{dog.lifespan}</p>
+                                </div>
+                                :
+                                null
+                        }
+                        {
+                            dog.bred_for ?
+                                <div>
+                                    <span className={s.label}>Bred for reason :</span>
+                                    <p>{dog.bred_for}</p>
+                                </div>
+                                :
+                                null
+                        }
+                        {
+                            dog.breed_group ?
+                                <div>
+                                    <span className={s.label}>Breed group :</span>
+                                    <p>{dog.breed_group}</p>
+                                </div>
+                                :
+                                null
+                        }
+                        {
+                            dog.origin ?
+                                <div>
+                                    <span className={s.label}>Origin :</span>
+                                    <p>{dog.origin}</p>
+                                </div>
+                                :
+                                null
+                        }
+                        {
+                            user.id === dog.userId ?
                                 <>
-                                    <span className={s.label}>Temperament :</span>
-                                    <div className={s.temperamentsContainer}>
-                                        {dog.temperament.split(', ').map((e, i) =>
-                                            <div key={i} className={s.test}>
-                                                <div className={s.temperament}>{e}</div>
-                                            </div>
-                                        )}
+                                    <button className={`w-100 btn btn-primary mb-3 mt-3`} onClick={() => { history.push(`/edit/${id}`) }}>Edit {dog.name} breed</button>
+                                    <button className={`w-100 btn btn-danger`} onClick={() => { deleteBreed() }}>Delete {dog.name} breed</button>
+                                    <div className={s.errorGlobalContainer}>
+                                        {errDelete ? <p className={s.errorGlobal}>{errDelete}</p> : null}
                                     </div>
                                 </>
                                 :
                                 null
-                            }
-                            <div>
-                                <span className={s.label}>Height :</span>
-                                <p>{dog.height} cm</p>
-                            </div>
-                            <div>
-                                <span className={s.label}>Weight :</span>
-                                <p>{dog.weight} kg</p>
-                            </div>
-                            <div>
-                                <span className={s.label}>Lifespan :</span>
-                                <p>{dog.lifespan}</p>
-                            </div>
-                        </div>
+                        }  
+                    </div>
                     :
                     <div className={s.contentCenter}>
                         <img className={s.loading} src={loading} alt='loadingGif'></img>

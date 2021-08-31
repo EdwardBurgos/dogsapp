@@ -39,6 +39,20 @@ export default function Login() {
 
     // Hooks
 
+    // This hook allow us to load the logued user
+    useEffect(() => {
+        const cancelToken = axios.CancelToken;
+        const source = cancelToken.source();
+        async function updateUser() {
+            const user = await getUserInfo(source.token);
+            if (user !== "Unmounted") {
+                dispatch(setUser(user))
+            }
+        }
+        updateUser();
+        return () => source.cancel("Unmounted");
+    }, [dispatch])
+
     // This hook set the country of the user
     useEffect(() => {
         const cancelToken = axios.CancelToken;
@@ -170,7 +184,7 @@ export default function Login() {
                 showMessage(`${logged.data.user} your login was successful`);
                 history.push('/home');
             } catch (e) {
-                dispatch(setUser({})); 
+                dispatch(setUser({}));
                 if (e.response.status === 409 && e.response.data.msg === "There is already a user with this username") return setErrUsername(e.response.data.msg)
                 setErrGlobal('Sorry, an error occurred');
             }
@@ -251,7 +265,7 @@ export default function Login() {
                                     </div>
                                     {errPassword ? <small className={s.error}>{errPassword}</small> : null}
 
-                                    <input type="submit" value="Log in" disabled={buttonState} className={`w-100 btn btn-primary mb-3 ${s.colorBoton}`} />
+                                    <input type="submit" value="Log in" disabled={buttonState} className={`w-100 btn btn-primary mb-3`} />
                                 </form>
                                 :
                                 <form onSubmit={handleSubmit}>
@@ -270,7 +284,7 @@ export default function Login() {
                                     </div>
                                     {errPassword ? <small className={s.error}>{errPassword}</small> : null}
 
-                                    <input type="submit" value="Log in" disabled={buttonState} className={`w-100 btn btn-primary mb-3 ${s.colorBoton}`} />
+                                    <input type="submit" value="Log in" disabled={buttonState} className={`w-100 btn btn-primary mb-3`} />
 
                                     {wrongCredentials ?
                                         <div className={s.center}>
@@ -336,7 +350,7 @@ export default function Login() {
                                     </select>
                                 </div>
 
-                                <input type="submit" value="Log in" disabled={modalButtonState} className={`w-100 btn btn-primary ${s.colorBoton}`} />
+                                <input type="submit" value="Log in" disabled={modalButtonState} className={`w-100 btn btn-primary`} />
                             </form>
                         </Modal.Body>
                     </Modal>
