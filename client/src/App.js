@@ -6,7 +6,7 @@ import About from './components/About/About';
 import NavBar from './components/NavBar/NavBar';
 import Login from './components/Login/Login';
 import Signup from './components/Signup/Signup';
-import { Route } from 'react-router-dom';
+import { Route } from 'react-router-dom'
 
 function App() {
   return (
