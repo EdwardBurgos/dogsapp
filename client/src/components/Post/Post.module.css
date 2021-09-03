@@ -1,4 +1,4 @@
-.post {
+.post, .postFullWidth {
     width: 100%;
     box-sizing: border-box;
     margin-bottom: 16px;
@@ -55,11 +55,19 @@
     margin: 0 4px 8px 4px;
 }
 
-@media only screen and (min-width: 576px) {
+@media only screen and (min-width: 768px) {
     .post {
-        width: 25%;
+        width: 45%;
     }
 }
+@media only screen and (min-width: 992px) {
+    .post {
+        width: 30%;
+    }
+}
+
+
+
 
 /* @media only screen and (max-width: 850px) {
     .card {
@@ -75,6 +83,7 @@
 
 .elipsis {
     cursor: pointer;
+    margin-left: 20px;
 }
 
 .withLikes {

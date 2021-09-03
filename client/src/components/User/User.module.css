@@ -168,8 +168,7 @@
   
   .columns {
     display: flex;
-    width: 100%;
-    justify-content: center;
+    justify-content: space-between;
     align-items: flex-start;
     flex-wrap: wrap;
   }
@@ -229,14 +228,6 @@
     height: 16px;
   }
 
-  .header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    margin-bottom: 32px;
-    flex-wrap: wrap;
-  }
 
   .profilePic {
     height: 150px;
@@ -259,7 +250,7 @@
   }
 
   .photoContainer {
-    width: 20%;
+    width: 100%;
   }
 
   .title {
@@ -281,29 +272,33 @@
 
   .petsTitle {
     margin-bottom: 16px;
+    width: 100%;
   }
+  
 
   .postsContainer {
     display: flex;
+    width: 100%;
     flex-wrap: wrap;
     justify-content: space-around;
   }
 
   .editButton {
-    width: 100%;
     margin-bottom: 16px;
   }
 
-  .headerInfo {
+  .header {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
+    width: 100%;
+    margin-bottom: 32px;
   }
 
   @media only screen and (min-width: 576px) {
-    .editButton {
-      width: 80%;
+    .photoContainer {
+      width: auto;
     }
     .information {
       text-align: left;
@@ -318,23 +313,12 @@
       margin-right: 40px;
       margin-bottom: 0;
     }
-    .headerInfo {
-      width: 100%;
+    .header {
       flex-wrap: nowrap;
     }
   }
 
   @media only screen and (min-width: 768px) {
-    .editButton {
-      width: 50%;
-    }
-    .header {
-      flex-wrap: nowrap;
-      width: 100%;
-    }
-    .headerInfo {
-      margin-bottom: 0;
-    }
   }
 
   @media only screen and (min-width: 992px) {

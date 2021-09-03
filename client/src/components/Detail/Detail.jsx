@@ -15,7 +15,6 @@ export default function Detail({ id }) {
 
     // Own states
     const [errGlobal, setErrGlobal] = useState('');
-    const [errDelete, setErrDelete] = useState('');
 
     // Variables
     const dispatch = useDispatch();
@@ -50,20 +49,6 @@ export default function Detail({ id }) {
         updateUser();
         return () => source.cancel("Unmounted");
     }, [dispatch])
-
-    // Functions
-
-    // This function allows us to delete the dog breed
-    async function deleteBreed() {
-        try {
-            await axios.delete(`/dogs/${dog.id}`)
-            showMessage(`The dog breed ${dog.name} was deleted successfully`);
-            history.push(`/home`);
-        } catch (e) {
-            if ([404, 500].includes(e.response.status) && [`There is no dog breed with the id ${dog.id}`, `You can not delete this dog breed because is not yours`, `Sorry, the dog breed with the id ${dog.id} can not be deleted`].includes(e.response.data)) return setErrDelete(e.response.data);
-            setErrDelete(`Sorry, we could not delete the dog breed ${dog.name}`)
-        }
-    }
 
     return (
         <div className={s.container}>
@@ -145,18 +130,6 @@ export default function Detail({ id }) {
                                 <span>Is your pet of this breed?</span>
                                 <button className="w-100 btn btn-primary mt-2" onClick={() => history.push(`/registerPet/breed/${id}`)}>Register it here</button>
                             </div>
-                            {
-                                user.id === dog.userId ?
-                                    <>
-                                        <button className={`w-100 btn btn-primary mb-3 mt-3`} onClick={() => { history.push(`/edit/${id}`) }}>Edit {dog.name} breed</button>
-                                        <button className={`w-100 btn btn-danger mb-3`} onClick={() => { deleteBreed() }}>Delete {dog.name} breed</button>
-                                        <div className={s.errorGlobalContainer}>
-                                            {errDelete ? <p className={s.errorGlobal}>{errDelete}</p> : null}
-                                        </div>
-                                    </>
-                                    :
-                                    null
-                            }
                         </div>
                         {
                             dog.pets.length ?

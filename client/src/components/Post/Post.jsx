@@ -58,7 +58,7 @@ export default function Post({ name, img, id, likesCount, owner, likes, origin, 
 
 return (
   <>
-    <div id="parentContainer" className={s.post}>
+    <div id="parentContainer" className={origin === "publicProfile"  ? s.post : s.postFullWidth}>
       <div className={s.firstRow}>
         <Link className={`${s.userInfoContainer} linkRR`} to={`/${owner.username}`}>
           <img className={s.profilePic} src={owner.profilepic} alt='User profile'></img>
