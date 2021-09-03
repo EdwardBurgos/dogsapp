@@ -192,8 +192,8 @@
 }
 
 .profilePic {
-  height: 300px;
-  width: 500px;
+  height: 200px;
+  width: 100%;
   object-fit: contain;
 }
 
@@ -218,8 +218,8 @@
 }
 
 .uploadingContainer {
-    height: 300px;
-    width: 500px;
+    height: 200px;
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;

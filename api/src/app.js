@@ -46,7 +46,6 @@ server.use((req, res, next) => {
   next();
 });
 
-
 server.use('/dogs', dogs);
 server.use('/pets', pets);
 server.use('/likes', likes);

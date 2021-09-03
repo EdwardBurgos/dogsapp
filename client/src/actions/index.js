@@ -26,5 +26,18 @@ export function setClickedNumber(clickedNumber) {
     }
 }
 
+export function setPublicUser(publicUser) {
+    return {
+        type: 'SET_PUBLIC_USER',
+        publicUser
+    }
+}
+
+export function setCurrentDog(dog) {
+    return {
+        type: 'SET_CURRENT_DOG',
+        dog
+    }
+}
 
 

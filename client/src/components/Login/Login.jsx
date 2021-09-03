@@ -345,7 +345,7 @@ export default function Login() {
                                     <select id="countryValue" name='countryValue' value={country} onChange={handleChange} className={`form-control ${s.input}`}>
                                         {country === "Select a country" ? <option key="Select a country" value="Select a country">Select a country</option> : null}
                                         {countries.map(c => {
-                                            return <option key={c} value={c}>{c}</option>
+                                            return <option key={c.code} value={c.name}>{c.name}</option>
                                         })}
                                     </select>
                                 </div>

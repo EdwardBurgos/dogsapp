@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const axios = require('axios').default;
-const { Temperament, Dog, DogTemperament } = require('../db.js');
+const { Temperament, Dog, DogTemperament, Pet, Like, User } = require('../db.js');
 const router = Router();
 const passport = require('passport');
 const { Op } = require('sequelize');
@@ -60,6 +60,17 @@ router.get('/all', async (req, res, next) => {
     }
 })
 
+// This route allows us to get all the dogs name to be used in a select input
+router.get('/', async (req, res, next) => {
+    try {
+        const dogs = await Dog.findAll({ attributes: ['id', 'name'] })
+        return res.send(dogs.map(e => e.dataValues))
+    } catch (e) {
+        next()
+    }
+})
+
+
 // This route allows us to get the dog breeds created by a user
 router.get('/own', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
     try {
@@ -76,7 +87,7 @@ router.get('/own', passport.authenticate('jwt', { session: false }), async (req,
                     model: Temperament,
                     as: "temperaments",
                     attributes: ["id", "name"]
-                },
+                }
             ],
         });
         if (responseOwn.length) {
@@ -108,20 +119,41 @@ router.get('/:id', async (req, res, next) => {
                     as: "temperaments",
                     attributes: ["id", "name"]
                 },
+                {
+                    model: Pet,
+                    as: "pets",
+                    attributes: ["id", "name", "photo"],
+                    include: [
+                        {
+                            model: Like,
+                            as: "likes",
+                            include: [
+                                {
+                                    model: User,
+                                    as: "user"
+                                }
+                            ]
+                        },
+                        {
+                            model: User,
+                            as: "user"
+                        }
+                    ]
+                }
             ],
-        });
+        });     
         if (dog) {
-            const { id, name, heightmax, heightmin, weightmax, weightmin, lifespanmax, lifespanmin, bred_for, breed_group, origin, image, temperaments, userId } = dog.dataValues;
+            const { id, name, heightmax, heightmin, weightmax, weightmin, lifespanmax, lifespanmin, bred_for, breed_group, origin, image, temperaments, pets, userId } = dog.dataValues;
             res.send({
                 id,
                 image,
                 name,
                 temperament: temperaments.map(e => e.dataValues.name).toString().replace(/,/g, ', '),
                 temperamentsArray: temperaments.map(e => e.dataValues.name),
-                height: `${heightmin ? heightmin : '' }${heightmin && heightmax ? ' - ' : ''}${heightmax ? heightmax : ''}${heightmin || heightmax ? ' cm' : ''}`,
+                height: `${heightmin ? heightmin : ''}${heightmin && heightmax ? ' - ' : ''}${heightmax ? heightmax : ''}${heightmin || heightmax ? ' cm' : ''}`,
                 heightmin,
                 heightmax,
-                weight: `${weightmin ? weightmin : '' }${weightmin && weightmax ? ' - ' : ''}${weightmax ? weightmax : ''}${weightmin || weightmax ? ' kg' : ''}`,
+                weight: `${weightmin ? weightmin : ''}${weightmin && weightmax ? ' - ' : ''}${weightmax ? weightmax : ''}${weightmin || weightmax ? ' kg' : ''}`,
                 weightmin,
                 weightmax,
                 lifespan: `${lifespanmin ? lifespanmin : ''}${lifespanmin && lifespanmax ? ' - ' : ''}${lifespanmax ? lifespanmax : ''}${lifespanmin || lifespanmax ? ' years' : ''}`,
@@ -129,14 +161,16 @@ router.get('/:id', async (req, res, next) => {
                 lifespanmax,
                 bred_for,
                 breed_group,
-                origin, 
+                origin,
                 image,
+                pets: dog.dataValues.pets.map(e => Object.assign(e.dataValues, {likes: e.dataValues.likes.map(e => e.dataValues ? (({ id, username, fullname, profilepic }) => ({ id, username, fullname, profilepic }))(e.dataValues.user) : null)}, { likesCount: e.dataValues.likes.length }, {user: (({ fullname, profilepic, username }) => ({ fullname, profilepic, username }))(e.dataValues.user)})),
                 userId
             })
         } else {
             res.status(404).send(`There is no dog breed with the id ${req.params.id}`);
         }
     } catch (e) {
+        console.log(e)
         next();
     }
 })
@@ -164,7 +198,7 @@ router.put('/', passport.authenticate('jwt', { session: false }), async (req, re
                         return foundTemperament ? foundTemperament.id : null
                     }))
                     const dogTemperaments = await dogUpdated.setTemperaments(newTemperaments.filter(e => e !== null))
-                    return res.send({ message: `The dog breed ${dogUpdated.name} was updated successfully`, id: dogUpdated.id }) 
+                    return res.send({ message: `The dog breed ${dogUpdated.name} was updated successfully`, id: dogUpdated.id })
                 } else {
                     return res.status(500).send(`Sorry, the dog breed with the id ${id} can not be updated`)
                 }

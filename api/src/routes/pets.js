@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const axios = require('axios').default;
-const { Temperament, Dog, DogTemperament, User, Pet } = require('../db.js');
+const { Temperament, Dog, DogTemperament, User, Pet, Like } = require('../db.js');
 const utils = require('../extras/utils.js');
 const countries = require('../extras/countries')
 const passport = require('passport');
@@ -16,7 +16,7 @@ router.post('/', passport.authenticate('jwt', { session: false }), async (req, r
         if (!name || !photo || !dogId) return res.status(400).send('Please provide a name, a link of a photo and a dog breed');
         if (!validURL(photo)) return res.status(400).send('Please provide a valid link of a photo')
         const petCreated = await Pet.create({ name, photo, dogId, userId: req.user.id });
-        petCreated ? res.send({ message: `Your pet ${name} was registered successfully`, id: petCreated.id }) : next()
+        petCreated ? res.send(`Your pet ${name} was registered successfully`) : next()
     } catch (e) {
         next()
     }
@@ -76,16 +76,27 @@ router.get('/own', passport.authenticate('jwt', { session: false }), async (req,
 router.get('/:id', async (req, res, next) => {
     try {
         const pet = await Pet.findOne({
-            where: { id: parseInt(req.params.id) }
+            where: { id: parseInt(req.params.id) },
+            include: [
+                {
+                    model: Like,
+                    as: "likes",
+                    include: [
+                        {
+                            model: User,
+                            as: "user"
+                        }
+                    ]
+
+                },
+                {
+                    model: Dog,
+                    as: "dog"
+                }
+            ]
         });
         if (pet) {
-            const { id, name, photo, dogId } = pet.dataValues;
-            res.send({
-                id,
-                name,
-                photo,
-                dogId
-            })
+            res.send(Object.assign((({ id, name, photo, dog, likes}) => ({ id, name, photo, dog, likes}))(pet.dataValues), {likes: pet.dataValues.likes.map(e => e.dataValues ? (({ id, username, fullname, profilepic }) => ({ id, username, fullname, profilepic }))(e.dataValues.user) : null)}, {likesCount: pet.dataValues.likes.length}, {dog: (({ id, name}) => ({ id, name}))(pet.dataValues.dog)}));
         } else {
             res.status(404).send(`There is no pet with the id ${req.params.id}`);
         }

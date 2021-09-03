@@ -81,9 +81,9 @@ export default function Create() {
 
     // This hook is to enable or disable the submit button
     useEffect(() => {
-        if (nameErr || maxHeightErr || minHeightErr || maxWeightErr || minWeightErr || maxLifespanErr || minLifespanErr || !name || photo === 'https://firebasestorage.googleapis.com/v0/b/dogsapp-f043d.appspot.com/o/folder-open-outline.svg?alt=media&token=e7dacac8-113e-4f25-8339-51c2d49a7181') return setButtonState(true);
+        if (uploading || nameErr || maxHeightErr || minHeightErr || maxWeightErr || minWeightErr || maxLifespanErr || minLifespanErr || !name || photo === 'https://firebasestorage.googleapis.com/v0/b/dogsapp-f043d.appspot.com/o/folder-open-outline.svg?alt=media&token=e7dacac8-113e-4f25-8339-51c2d49a7181') return setButtonState(true);
         return setButtonState(false);
-    }, [nameErr, maxHeightErr, minHeightErr, maxWeightErr, minWeightErr, maxLifespanErr, minLifespanErr, name, photo])
+    }, [uploading, nameErr, maxHeightErr, minHeightErr, maxWeightErr, minWeightErr, maxLifespanErr, minLifespanErr, name, photo])
 
     // Functions
 
@@ -215,12 +215,6 @@ export default function Create() {
                     }
                 }
                 return setMinLifespan(value);
-            case 'bredFor':
-                return setBreedFor(value);
-            case 'bredGroup':
-                return setBreedGroup(value);
-            case 'origin':
-                return setOrigin(value);
             default:
                 break;
         }
@@ -291,7 +285,7 @@ export default function Create() {
                                 {nameErr ? <small className={s.error}>{nameErr}</small> : null}
 
                                 <div className={s.profilePictureEditor}>
-                                    <label className={s.labelProfile} htmlFor="nameValue">Image</label>
+                                    <label className={s.labelProfile}>Image</label>
                                     <div className={`${s.containerProfileImage} ${errPhoto ? '' : 'mb-3'}`}>
                                         {
                                             uploading ?

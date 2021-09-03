@@ -27,6 +27,17 @@ export async function getDogs(cancelToken) {
         return [];
     }
 }
+
+export async function getDogsNames(cancelToken) {
+    try {
+        const dogs = await axios.get('/dogs', {cancelToken});
+        return dogs.data
+    } catch (e) {
+        if (e.message === "Unmounted") return "Unmounted";
+        return [];
+    }
+}
+
 export async function getUserInfo(cancelToken) {
     try {
         if (!localStorage.getItem("token") && !localStorage.getItem("expiration")) return {}
@@ -36,7 +47,6 @@ export async function getUserInfo(cancelToken) {
         if (e.message === "Unmounted") return "Unmounted";
         logout(); return {};
     }
-
 }
 
 export function setLocalStorage(responseObj) {

@@ -2,7 +2,9 @@ const initialState = {
   actualPage: [],
   finalResult: [],
   clickedNumber: 1,
-  user: null
+  user: null,
+  publicUser: {},
+  dog: {}
 }
 
 export default function reducer (state = initialState, action) {
@@ -26,6 +28,16 @@ export default function reducer (state = initialState, action) {
       return {
         ...state,
         clickedNumber: action.clickedNumber
+      }
+    case 'SET_PUBLIC_USER':
+      return {
+        ...state,
+        publicUser: action.publicUser
+      }
+    case 'SET_CURRENT_DOG':
+      return {
+        ...state,
+        dog: action.dog
       }
     default:
       return { ...state }

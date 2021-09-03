@@ -14,7 +14,7 @@ router.get('/:pet', async (req, res, next) => {
         if (!req.params.pet) return res.status(400).send('Please provide a pet')
         let petFound = await Pet.findOne({
             where: {
-                id: pet
+                id: req.params.pet
             },
             include: [
                 {
@@ -35,7 +35,7 @@ router.post('/:pet', passport.authenticate('jwt', { session: false }), async (re
         if (!req.params.pet) return res.status(400).send('Please provide a pet')
         let petFound = await Pet.findOne({
             where: {
-                id: pet
+                id: req.params.pet
             }
         })
         if (petFound) {
@@ -43,21 +43,24 @@ router.post('/:pet', passport.authenticate('jwt', { session: false }), async (re
                 where: {
                     [Op.and]: [
                         { userId: req.user.id },
-                        { petId: pet }
+                        { petId: req.params.pet }
                     ]
                 }
             })
             if (liked) {
                 const disliked = await liked.destroy();
+                console.log(disliked)
                 disliked ? res.send(`You disliked the pet with the id ${req.params.pet} successfully`) : res.status(500).send(`Sorry, The pet with the if ${req.params.pet} could not be disliked correctly`)
             } else {
-                const created = await Like.create({ userId: req.user.id, petId: pet });
+                const created = await Like.create({ userId: req.user.id, petId: req.params.pet });
+                console.log(created)
                 created ? res.send(`You liked the pet with the id ${req.params.pet} successfully`) : res.status(500).send(`Sorry, The pet with the if ${req.params.pet} could not be liked correctly`)
             }
         } else {
-            res.send(`There is no pet with the id ${req.params.pet}`)
+            res.status(404).send(`There is no pet with the id ${req.params.pet}`)
         }
     } catch (e) {
+        console.log(e)
         next()
     }
 })

@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const axios = require('axios').default;
-const { User } = require('../db.js');
+const { User, Pet, Dog, Temperament, Like } = require('../db.js');
 const utils = require('../extras/utils.js');
 const countries = require('../extras/countries')
 const passport = require('passport');
@@ -9,8 +9,8 @@ const router = Router();
 
 // This route allows us to get the email, photo and name of the authentciated user
 router.get('/info', passport.authenticate('jwt', { session: false }), (req, res, next) => {
-    const { id, fullname, name, lastname, profilepic, username, country, email, type } = req.user;
-    res.status(200).json({ success: true, msg: "You are successfully authenticated to this route!", user: { id, fullname, name, lastname, profilepic, username, country, email } });
+    const { id, fullname, name, lastname, profilepic, username, country, email, dogs, pets, type } = req.user;
+    res.status(200).json({ success: true, msg: "You are successfully authenticated to this route!", user: { id, fullname, name, lastname, profilepic, username, country, email, dogs: dogs.map(e => e.dataValues.id), pets: pets.map(e => e.dataValues.id) } });
 });
 
 // This route returns true (if there is no user with that email) OR false is there is one
@@ -23,10 +23,62 @@ router.get('/availableEmail/:email', async (req, res, next) => {
     }
 })
 
+// This route allows us to get the username, fullname, country, photo, dogs and pets of the especified user
+router.get('/:username', async (req, res, next) => {
+    try {
+        const user = await User.findOne({
+            where: { username: req.params.username },
+            include: [
+                {
+                    model: Dog,
+                    as: "dogs",
+                    include: [
+                        {
+                            model: Temperament,
+                            as: "temperaments"
+                        }
+                    ]
+                },
+                {
+                    model: Pet,
+                    as: "pets",
+                    include: [
+                        {
+                            model: Like,
+                            as: "likes",
+                            include: [
+                                {
+                                    model: User,
+                                    as: "user"
+                                }
+                            ]
+
+                        },
+                        {
+                            model: Dog,
+                            as: "dog"
+                        }
+                    ]
+                }
+            ]
+        })
+        if (user) {
+            let { fullname, profilepic, country, username, pets, dogs } = user.dataValues;
+            pets = pets.map(e => Object.assign((({ id, name, photo, dog, likes}) => ({ id, name, photo, dog, likes}))(e.dataValues), {likes: e.dataValues.likes.map(e => e.dataValues ? (({ id, username, fullname, profilepic }) => ({ id, username, fullname, profilepic }))(e.dataValues.user) : null)}, {likesCount: e.dataValues.likes.length}, {dog: (({ id, name}) => ({ id, name}))(e.dataValues.dog)}));
+            dogs = dogs.map(e => { return { id: e.dataValues.id, image: e.dataValues.image, name: e.dataValues.name, temperament: e.dataValues.temperaments.map(e => e.dataValues.name).toString().replace(/,/g, ', ') } })
+            return res.send({ fullname, profilepic, country, username, pets, dogs })
+        } else {
+            return res.status(500).send('User not found')
+        }
+    } catch (e) {
+        next();
+    }
+})
+
 // This route allows us to register a new user
 router.post('/register', async (req, res) => {
     let { fullname, name, lastname, profilepic, username, country, email, password, type } = req.body;
-    if (!countries.includes(country)) return res.status(406).send({ success: false, msg: 'This is not a country' })
+    if (!countries.map(c => c.name).includes(country)) return res.status(406).send({ success: false, msg: 'This is not a country' })
     try {
         const availableUsername = await User.findOne({ where: { username } })
         if (!availableUsername) {
@@ -126,28 +178,28 @@ router.post('/changePhoto', passport.authenticate('jwt', { session: false }), as
         if (user) {
             const updated = await user.update({ profilepic: req.body.profilePic })
             return updated ? res.send('Your profile picture was updated successfully') : res.status(500).send('Sorry, your profile picture could not be updated')
-        } else { return res.status(404).send('User not found')}
+        } else { return res.status(404).send('User not found') }
     } catch (e) {
         next()
-    }   
+    }
 })
 
 router.put('/updateUserInfo', passport.authenticate('jwt', { session: false }), async (req, res) => {
     try {
-        const {name, lastname, username, country} = req.body;
+        const { name, lastname, username, country } = req.body;
         const user = await User.findOne({ where: { id: req.user.id } });
         if (user) {
             const userAvailability = await User.findOne({ where: { username } });
             if (userAvailability && (JSON.stringify(user) !== JSON.stringify(userAvailability))) return res.status(409).send('There is already a user with this username')
             const updated = await user.update({ fullname: `${name} ${lastname}`, name, lastname, username, country });
             return updated ? res.send('Your information was updated successfully') : res.status(500).send('Sorry, your information could not be updated')
-        } else { return res.status(404).send('User not found')}
+        } else { return res.status(404).send('User not found') }
     } catch (e) {
         console.log(e)
         next()
     }
-    
-    
+
+
 })
 
 module.exports = router;

@@ -233,7 +233,7 @@ export default function Profile() {
                 <label className={s.label} htmlFor="countryValue">Country</label>
                 <select id="countryValue" name='countryValue' value={country} onChange={handleChange} className={`form-control ${s.input}`}>
                   {countries.map(c => {
-                    return <option key={c} value={c}>{c}</option>
+                    return <option key={c.code} value={c.name}>{c.name}</option>
                   })}
                 </select>
               </div>

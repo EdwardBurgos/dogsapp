@@ -37,7 +37,7 @@ export default function NavBar() {
   }, [dispatch])
 
   return (
-    <Navbar expand="md" className={s.navbar} id="navBar" expanded={navExpanded} fixed="top">
+    <Navbar expand="lg" className={s.navbar} id="navBar" expanded={navExpanded} fixed="top">
       <Navbar.Brand as={NavLink} to="/home" onClick={() => setNavExpanded(false)} className={s.brand}>
         <img src={logo} className={s.logo} alt="Cute dog"></img>
       </Navbar.Brand>
@@ -45,7 +45,8 @@ export default function NavBar() {
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="me-auto" >
           <Nav.Link as={NavLink} to="/about" className={s.enlace} activeClassName={s.enlaceActivo} onClick={() => setNavExpanded(false)}>About the creator</Nav.Link>
-          <Nav.Link as={NavLink} to="/create" className={`${s.enlace} ${s.lastEnlace}`} activeClassName={s.enlaceActivo} onClick={() => setNavExpanded(false)}>Register a dog breed</Nav.Link>
+          <Nav.Link as={NavLink} to="/create" className={`${s.enlace}`} activeClassName={s.enlaceActivo} onClick={() => setNavExpanded(false)}>Register a dog breed</Nav.Link>
+          <Nav.Link as={NavLink} to="/registerPet" className={`${s.enlace} ${user && Object.keys(user).length ? s.lastEnlace : ''}`} activeClassName={s.enlaceActivo} onClick={() => setNavExpanded(false)}>Register your pet</Nav.Link>
         </Nav>
         {
           user ? 
@@ -60,8 +61,8 @@ export default function NavBar() {
               </Dropdown.Toggle>
               <Dropdown.Menu> 
               {/* className={s.enlaceSignup} activeClassName={s.enlaceActivo} */}
-                <Dropdown.Item to="/profile" onClick={() => { setNavExpanded(false); history.push('/profile')}}>Edit my profile</Dropdown.Item>
-                <Dropdown.Item onClick={() => { setNavExpanded(false); logout(); dispatch(setUser({})); history.push('/login'); showMessage(`Logged out successfully`);}}>Log out</Dropdown.Item>
+                <Dropdown.Item as={NavLink} to={`/${user.username}`} onClick={() => { setNavExpanded(false);}}>My profile</Dropdown.Item>
+                <Dropdown.Item onClick={() => { setNavExpanded(false); logout(); dispatch(setUser({})); showMessage(`Logged out successfully`);}}>Log out</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
             :

@@ -2,14 +2,14 @@ import s from './Card.module.css';
 import React from 'react';
 import { useHistory } from 'react-router';
 
-export default function Card({ name, img, temperament, id }) {
+export default function Card({ name, img, temperament, id, origin }) {
   // Variables
   const history = useHistory();
 
   return (
-    <div className={s.card} onClick={() => history.push(`/detail/${id}`)}>
+    <div className={`${origin === "publicProfile" ? s.cardPublicProfile : ''} ${s.card}`} onClick={() => history.push(`/detail/${id}`)}>
       <p className={s.title}>{name}</p>
-      <img className={s.image} src={img} alt={name} width="100%" />
+      <img className={`${temperament ? 'mb-3' : ''} ${s.image}`} src={img} alt={name} />
       {temperament ?
         <div className={s.temperaments}>
           <span className={s.label}>Temperaments:</span>

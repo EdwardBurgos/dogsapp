@@ -39,8 +39,11 @@ Dog.belongsToMany(Temperament, {through: "dogtemperament"});
 Temperament.belongsToMany(Dog, {through: "dogtemperament"});
 User.hasMany(Dog);
 User.hasMany(Pet);
+Pet.belongsTo(User);
 Dog.hasMany(Pet);
+Pet.belongsTo(Dog);
 User.hasMany(Like);
+Like.belongsTo(User)
 Pet.hasMany(Like);
 
 // Aca vendrian las relaciones

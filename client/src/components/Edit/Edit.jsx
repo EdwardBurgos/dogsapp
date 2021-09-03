@@ -108,7 +108,7 @@ export default function Edit({ id }) {
 
     // This hook is to enable or disable the submit button
     useEffect(() => {
-        if (nameErr || maxHeightErr || minHeightErr || maxWeightErr || minWeightErr || maxLifespanErr || minLifespanErr || !name || !photo ||
+        if (uploading || nameErr || maxHeightErr || minHeightErr || maxWeightErr || minWeightErr || maxLifespanErr || minLifespanErr || !name || !photo ||
             (name === dog.name && photo === dog.image && JSON.stringify(selectedTemperaments) === JSON.stringify(dog.temperamentsArray) &&
                 maxHeight === (dog.heightmax ? dog.heightmax : '') && minHeight === (dog.heightmin ? dog.heightmin : '') &&
                 minWeight === (dog.weightmin ? dog.weightmin : '') && maxWeight === (dog.weightmax ? dog.weightmax : '') &&
@@ -116,7 +116,7 @@ export default function Edit({ id }) {
                 bredFor === (dog.bred_for ? dog.bred_for : '') && breedGroup === (dog.breed_group ? dog.breed_group : '') &&
                 origin === (dog.origin ? dog.origin : ''))) return setButtonState(true);
         return setButtonState(false);
-    }, [nameErr, maxHeightErr, minHeightErr, maxWeightErr, minWeightErr, maxLifespanErr, minLifespanErr, name, photo, bredFor, breedGroup,
+    }, [uploading, nameErr, maxHeightErr, minHeightErr, maxWeightErr, minWeightErr, maxLifespanErr, minLifespanErr, name, photo, bredFor, breedGroup,
         dog, maxHeight, maxLifespan, maxWeight, minHeight, minLifespan, minWeight, origin, selectedTemperaments])
 
     // Functions
@@ -329,7 +329,7 @@ export default function Edit({ id }) {
                             {nameErr ? <small className={s.error}>{nameErr}</small> : null}
 
                             <div className={s.profilePictureEditor}>
-                                <label className={s.labelProfile} htmlFor="nameValue">Image</label>
+                                <label className={s.labelProfile}>Image</label>
                                 <div className={`${s.containerProfileImage} ${errPhoto ? '' : 'mb-3'}`}>
                                     {
                                         uploading ?

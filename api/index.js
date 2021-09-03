@@ -23,7 +23,7 @@ const { Temperament, Dog, DogTemperament } = require('./src/db.js');
 const axios = require('axios')
 
 // Syncing all the models at once.
-conn.sync({ force: true }).then(async () => {
+conn.sync({ force: false }).then(async () => { // force: false > La información de la base de datos no se borrará al ejecutar el servidor
   // await conn.query("ALTER SEQUENCE dogs_id_seq RESTART WITH 265;") > This line allows us to start the registers with id 265
   if (!(await Temperament.findAll()).length && !(await Dog.findAll()).length) { // No existe en base de datos 
     try {

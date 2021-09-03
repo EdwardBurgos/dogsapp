@@ -1,12 +1,12 @@
 import s from './Home.module.css';
 import React, { useEffect, useState } from 'react';
 import axios from '../../axiosInterceptor';
-import Cards from '../Cards/Cards';
+import Card from '../Card/Card';
 import * as actionsCreators from '../../actions';
 import { useDispatch, useSelector } from 'react-redux';
 import PaginationComponent from '../PaginationComponent/PaginationComponent';
 import loading from '../../img/loadingGif.gif';
-import { getDogs, getTemperaments, getUserInfo} from '../../extras/globalFunctions';
+import { getDogs, getTemperaments, getUserInfo } from '../../extras/globalFunctions';
 
 export default function Home() {
   // Redux states
@@ -124,7 +124,14 @@ export default function Home() {
                 </div>
                 <button id="deletePropertyFilter" className={s.button} onClick={e => { filter(e) }}>Delete filter</button>
               </div>
-              {finalResultRedux.length ? <Cards dogs={actualPageRedux}></Cards> : <p>{error}</p>}
+              {finalResultRedux.length ?
+                <div className={s.cardsContainer}>
+                  {
+                    actualPageRedux.map((e, i) => <Card name={e.name} img={e.image} key={i} temperament={e.temperament} id={e.id}></Card>)
+                  }
+                </div>
+                :
+                <p>{error}</p>}
               {finalResultRedux.length ? <PaginationComponent /> : null}
             </div>
             :
