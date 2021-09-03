@@ -2,11 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import { BrowserRouter} from 'react-router-dom';
+import { BrowserRouter, Route} from 'react-router-dom';
 import storeConfig from './store.js';
 import { Provider } from 'react-redux';
 import App from './App';
-import { Route } from 'react-router-dom';
 import LandingPage from './components/LandingPage/LandingPage';
 import 'bootstrap/dist/css/bootstrap.min.css'
 

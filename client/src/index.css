@@ -6,7 +6,7 @@ body {
   margin: 0;
   color: #000 !important;
   font-size: 14px !important;
-  font-weight: 300 !important;
+  font-weight: 400 !important;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -19,12 +19,12 @@ code {
 
 /*al parecer esto no será necesario cuando unifique los estilos de los formualrios*/
 .btn, .form-control {
-  font-weight: 300 !important;
+  font-weight: 400 !important;
   font-size: 14px !important;
 }
 /*al parecer esto no será necesario cuando unifique los estilos de los formualrios*/
 .form-input {
-  font-weight: 300 !important;
+  font-weight: 400 !important;
   font-size: 14px !important;
 }
 
@@ -61,6 +61,10 @@ code {
     margin-right: 5% !important;
   }
 } 
+
+.modal-content {
+  border-radius: 12px !important;
+}
 
 .linkRR, .linkRR:hover{
   color: #000;

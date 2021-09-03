@@ -16,7 +16,7 @@ router.post('/', passport.authenticate('jwt', { session: false }), async (req, r
         if (!name || !photo || !dogId) return res.status(400).send('Please provide a name, a link of a photo and a dog breed');
         if (!validURL(photo)) return res.status(400).send('Please provide a valid link of a photo')
         const petCreated = await Pet.create({ name, photo, dogId, userId: req.user.id });
-        petCreated ? res.send(`Your pet ${name} was registered successfully`) : next()
+        petCreated ? res.send(`${name} was registered successfully`) : next()
     } catch (e) {
         next()
     }
@@ -116,8 +116,9 @@ router.put('/', passport.authenticate('jwt', { session: false }), async (req, re
         })
         if (pet) {
             if (pet.userId === req.user.id) {
+                const realName = pet.name;
                 const petUpdated = await pet.update({ name, photo, dogId });
-                petUpdated ? res.send({ message: `The dog breed ${petUpdated.name} was updated successfully`, id: petUpdated.id }) : res.status(500).send(`Sorry, the dog breed with the id ${id} can not be updated`)
+                petUpdated ? res.send(`${petUpdated.name} was updated successfully`) : res.status(500).send(`Sorry, ${realName} can not be updated`)
             } else {
                 return res.status(404).send(`You can not edit this pet beacuse is not yours`);
             }
@@ -137,11 +138,12 @@ router.delete('/:pet', passport.authenticate('jwt', { session: false }), async (
             where: { id: req.params.pet }
         })
         if (pet) {
+            const name = pet.name;
             if (pet.userId === req.user.id) {
                 const petDeleted = await pet.destroy();
-                petDeleted ? res.send({ message: `The pet with the id ${req.params.pet} was updated successfully` }) : res.status(500).send(`Sorry, the pet with the id ${req.params.pet} can not be deleted`)
+                !petDeleted.length ? res.send(`${name} was deleted successfully`) : res.status(500).send(`Sorry, ${name} can not be deleted`)
             } else {
-                return res.status(404).send(`You can not delete this pet because is not yours`);
+                return res.status(404).send(`You can not delete ${name} because is not yours`);
             }
         } else {
             res.status(404).send(`There is no pet with the id ${id}`);

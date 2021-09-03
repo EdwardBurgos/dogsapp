@@ -60,7 +60,6 @@ function App() {
                 <Route path="/login">{Object.keys(user).length ? <Redirect to="/profile" /> : <Login />}</Route>
                 <Route path="/signup">{Object.keys(user).length ? <Redirect to="/profile" /> : <Signup />}</Route>
                 <Route path="/:username" render={({ match }) => <User username={match.params.username} /> }/>
-                <Route component={NotFound} />
               </Switch>
             </div>
           </div>

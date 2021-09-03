@@ -47,7 +47,10 @@ export default function Detail({ id }) {
             }
         }
         updateUser();
-        return () => source.cancel("Unmounted");
+        return () => {
+            source.cancel("Unmounted");
+            dispatch(setCurrentDog({}));
+        }
     }, [dispatch])
 
     return (

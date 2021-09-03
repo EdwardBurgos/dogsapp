@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
 import logo from '../../img/logo.png';
 import loading from '../../img/loadingGif.gif';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { countries } from '../../extras/countries';
 import axios from '../../axiosInterceptor';
 import s from './Signup.module.css';
 import 'react-toastify/dist/ReactToastify.css';
 import { eyeOutline, eyeOffOutline } from "ionicons/icons";
 import { IonIcon } from '@ionic/react';
-import { useHistory } from "react-router-dom";
 import { setLocalStorage, getCountry, getUserInfo, showMessage } from '../../extras/globalFunctions';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../../actions';

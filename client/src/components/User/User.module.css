@@ -251,6 +251,8 @@
 
   .photoContainer {
     width: 100%;
+    display: flex;
+    align-items: center;
   }
 
   .title {
@@ -360,4 +362,8 @@
   .emptyVector {
     height: 100px;
     width: 100px;
+  }
+
+  .emptyVectorContainer {
+    width: 100%;
   }

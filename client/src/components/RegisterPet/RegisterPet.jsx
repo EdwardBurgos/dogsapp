@@ -4,12 +4,11 @@ import axios from '../../axiosInterceptor';
 import { useDispatch, useSelector } from 'react-redux';
 import { closeCircleOutline } from 'ionicons/icons';
 import { IonIcon } from '@ionic/react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import loading from '../../img/loadingGif.gif';
 import { getTemperaments, showMessage, validURL, getUserInfo, getDogsNames } from '../../extras/globalFunctions';
 import { setUser } from '../../actions';
 import 'react-toastify/dist/ReactToastify.css';
-import { useHistory } from "react-router-dom";
 import { uploadConfirmedDogBreedImage } from '../../extras/firebase';
 
 export default function RegisterPet({ id }) { // si me psan el di seleccionar la raza automáticmanete si no mostrrar seleccionar raza en el <select

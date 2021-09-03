@@ -15,6 +15,7 @@ import Card from '../Card/Card';
 import emptyVector from '../../img/empty.svg';
 import { useLocation } from 'react-router';
 import { Link } from 'react-router-dom';
+import NotFound from '../NotFound/NotFound';
 
 export default function User({ username }) {
   // Redux states
@@ -100,8 +101,11 @@ export default function User({ username }) {
                   </>
                   :
                   <>
-                    <img className={s.emptyVector} src={emptyVector} alt='Empty vector'></img>
+                    <div className={s.emptyVectorContainer}>
+                      <img className={s.emptyVector} src={emptyVector} alt='Empty vector'></img>
+                    </div>
                     <p className={s.noPets}>No pets published yet</p>
+                    <Link to="/registerPet" className='btn btn-primary'>Register your pet</Link>
                   </>
               }
             </>
@@ -111,11 +115,7 @@ export default function User({ username }) {
             <img className={s.loading} src={loading} alt='loadingGif'></img>
           </div>
         :
-        <div className={s.contentCenter}>
-          <div className={s.errorGlobalContainer}>
-            <p className={s.errorMain}>{errGlobal}</p>
-          </div>
-        </div>
+        <NotFound></NotFound>
       }
     </div>
   );

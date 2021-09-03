@@ -49,18 +49,15 @@ router.post('/:pet', passport.authenticate('jwt', { session: false }), async (re
             })
             if (liked) {
                 const disliked = await liked.destroy();
-                console.log(disliked)
                 disliked ? res.send(`You disliked the pet with the id ${req.params.pet} successfully`) : res.status(500).send(`Sorry, The pet with the if ${req.params.pet} could not be disliked correctly`)
             } else {
                 const created = await Like.create({ userId: req.user.id, petId: req.params.pet });
-                console.log(created)
                 created ? res.send(`You liked the pet with the id ${req.params.pet} successfully`) : res.status(500).send(`Sorry, The pet with the if ${req.params.pet} could not be liked correctly`)
             }
         } else {
             res.status(404).send(`There is no pet with the id ${req.params.pet}`)
         }
     } catch (e) {
-        console.log(e)
         next()
     }
 })
