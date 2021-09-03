@@ -15,6 +15,7 @@ export default store;
 */
 
 
+// ANTES
 
 import { applyMiddleware, compose, createStore } from 'redux'
 import thunkMiddleware from 'redux-thunk'
@@ -31,8 +32,19 @@ export default function configureStore(prealoadedState) {
   const store = createStore(
     reducer,  
     prealoadedState,
-    
+
     composedEnhancers)
 
   return store
 }
+
+// @flow
+
+// import { createStore, compose, applyMiddleware } from 'redux';
+// import reducer from './reducers';
+// import { composeWithDevTools } from 'redux-devtools-extension';
+
+// export default function configureStore(prealoadedState) {
+//   const store = createStore(reducer, prealoadedState, composeWithDevTools());
+//   return store;
+// };

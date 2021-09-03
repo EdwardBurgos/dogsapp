@@ -11,27 +11,35 @@ module.exports = (sequelize) => {
     },
     heightmax: {
       type: DataTypes.INTEGER,
-      allowNull: false,
     },
     heightmin: {
       type: DataTypes.INTEGER,
-      allowNull: false,
     },
     weightmax: {
       type: DataTypes.INTEGER,
-      allowNull: false,
     },
     weightmin: {
       type: DataTypes.INTEGER,
-      allowNull: false,
     },
     lifespanmax: {
       type: DataTypes.INTEGER,
-      allowNull: false,
     },
     lifespanmin: {
       type: DataTypes.INTEGER,
+    },
+    bred_for: {
+      type: DataTypes.STRING,
+    },
+    breed_group: {
+      type: DataTypes.STRING,
+    },
+    origin: {
+      type: DataTypes.STRING,
+    },
+    image: {
+      type: DataTypes.STRING,
       allowNull: false,
+      unique: true
     }
   });
 

@@ -27,7 +27,7 @@ module.exports = (sequelize) => {
             unique: true,
         },
         country: {
-            type: DataTypes.ENUM(countries),
+            type: DataTypes.ENUM(countries.map(c => c.name)),
             allowNull: false,
         },
         email: {
@@ -44,7 +44,7 @@ module.exports = (sequelize) => {
             allowNull: false,
         },
         type: {
-            type: DataTypes.STRING,
+            type: DataTypes.ENUM(["Native", "Google"]),
             allowNull: false,
         },
     });

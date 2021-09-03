@@ -2,8 +2,10 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
-const { router, temperaments } = require('./routes/index.js');
 const dogs = require('./routes/dogs.js');
+const pets = require('./routes/pets.js');
+const likes = require('./routes/likes.js');
+const temperaments = require('./routes/temperaments.js');
 const users = require('./routes/users.js');
 const passport = require('passport');
 
@@ -39,17 +41,19 @@ server.use(morgan('dev'));
 server.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', 'http://localhost:3000'); // update to match the domain you will make the request from
   res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
   next();
 });
 
-server.use('/', router);
 server.use('/dogs', dogs);
+server.use('/pets', pets);
+server.use('/likes', likes);
+server.use('/temperaments', temperaments);
 server.use('/users', users);
 
 // This handle errors
-server.use((err, req, res, next) => {
+server.use((req, res) => {
   return res.status(500).send('Sorry, an error ocurred');
 });
 

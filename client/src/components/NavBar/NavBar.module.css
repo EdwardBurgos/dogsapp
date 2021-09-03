@@ -43,31 +43,21 @@
 }
 
 .enlace, .enlaceLogin, .enlaceSignup {
-    padding: 8px 0;
     color: #a8a7a7 !important;
-    text-decoration: none;
-    margin-right: 20px;
+    margin-right: 0;
+    padding: 8px 0 !important;
 }
 
 .enlaceLogin, .enlaceSignup {
     margin-right: 0;
-    padding-left: 0 !important;
 }
 
-.enlace:hover, .enlaceLogin:hover {
+.enlace:hover, .enlaceLogin:hover, .enlaceSignup:hover {
     color: #646464 !important;
-    text-decoration: none;
-    margin-right: 20px; 
-}
-
-.enlaceLogin:hover {
-    margin-right: 0;
 }
 
 .enlaceActivo, .enlaceActivo:hover {
     color: #000 !important;
-    text-decoration: none;
-    margin-right: 20px;
     font-weight: 600;
 }
 
@@ -95,17 +85,34 @@
    align-items: center; 
 }
 
-@media only screen and (max-width: 768px) {
-    .section {
-        display: none;
+.titleDropdown {
+    display: flex !important;
+    align-items: center !important;
+}
+.titleDropdown::after{
+    margin-left: 10px !important;
+}
+
+.profilePic {
+    height: 20px;
+    width: 20px;
+    object-fit: cover;
+    margin-right: 10px;
+    border-radius: 50%;
+}
+
+.lastEnlace {
+    margin-bottom: 8px;
+}
+
+@media only screen and (min-width: 768px) {
+    .enlace {
+        margin-right: 20px
     }
-    .navbarExpanded {
-        justify-content: space-between;
+    .enlace, .enlaceLogin, .enlaceSignup {
+        padding: 8px !important;
     }
-    .menu {
-        display: block;
-    }
-    .enlaceInferior {
-        width: 100%;
+    .lastEnlace {
+        margin-bottom: 0;
     }
 }

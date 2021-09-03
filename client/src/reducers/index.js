@@ -1,11 +1,10 @@
 const initialState = {
-  login: false,
-  dogs: [],
-  temperaments: [],
-  creationMessage: '',
   actualPage: [],
   finalResult: [],
-  clickedNumber: 1
+  clickedNumber: 1,
+  user: null,
+  publicUser: {},
+  dog: {}
 }
 
 export default function reducer (state = initialState, action) {
@@ -15,40 +14,30 @@ export default function reducer (state = initialState, action) {
         ...state,
         finalResult: action.finalResult
       }
-    case 'RECEIVE_DOGS':
+    case 'SET_USER':
       return {
         ...state,
-        dogs: action.dogs,
+        user: action.user
       }
     case 'CHANGE_PAGE':
       return {
         ...state,
         actualPage: action.actualPage
       }
-    case 'RECEIVE_FULL_DOGS':
-      return {
-        ...state,
-        dogs: action.dogs,
-      }
-    case 'RECEIVE_TEMPERAMENTS':
-      return {
-        ...state,
-        temperaments: action.temperaments
-      }
-    case 'SAVE_CREATION_MESSAGE':
-      return {
-        ...state,
-        creationMessage: action.message
-      }
-    case 'DELETE_CREATION_MESSAGE':
-      return {
-        ...state,
-        creationMessage: ''
-      }
     case 'SET_CLICKED_NUMBER':
       return {
         ...state,
         clickedNumber: action.clickedNumber
+      }
+    case 'SET_PUBLIC_USER':
+      return {
+        ...state,
+        publicUser: action.publicUser
+      }
+    case 'SET_CURRENT_DOG':
+      return {
+        ...state,
+        dog: action.dog
       }
     default:
       return { ...state }

@@ -1,3 +1,22 @@
-.marginTop {
+.margin {
   margin: 86px 5% 0 5%;
 }
+
+.container{
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  text-align: center;
+} 
+
+.contentCenter {
+  width: 100%;
+  max-width: 330px;
+  margin: 0 auto;
+}
+
+.loading {
+  width: 25%;
+}  

@@ -1,38 +1,14 @@
-import axios from 'axios'; // Esta librería también es necesaria para hacer el request al servidor
-
-export function getUserLoged() {
-
-}
-
-export function modificarUsuarioLogueado() {
-
-}
-
-export function setLoginOrNot() {
+export function modifyFinalResult(finalResult) {
     return {
-        type: 'SET_LOGIN_OR_NOT',
-        login: true
+        type: 'MODIFY_FINAL_RESULT',
+        finalResult
     }
 }
 
-export function setClickedNumber(clickedNumber) {
+export function setUser(user) {
     return {
-        type: 'SET_CLICKED_NUMBER',
-        clickedNumber
-    }
-}
-
-export function receiveDogs(dogs) {
-    return {
-        type: 'RECEIVE_DOGS',
-        dogs
-    }
-}
-
-export function receiveFullDogs(dogs) {
-    return {
-        type: 'RECEIVE_FULL_DOGS',
-        dogs
+        type: 'SET_USER',
+        user
     }
 }
 
@@ -43,63 +19,25 @@ export function changePage(actualPage) {
     }
 }
 
-export function receiveTemperaments(temperaments) {
+export function setClickedNumber(clickedNumber) {
     return {
-        type: 'RECEIVE_TEMPERAMENTS',
-        temperaments
+        type: 'SET_CLICKED_NUMBER',
+        clickedNumber
     }
 }
 
-export function deleteCreationMessage() {
+export function setPublicUser(publicUser) {
     return {
-        type: 'DELETE_CREATION_MESSAGE'
+        type: 'SET_PUBLIC_USER',
+        publicUser
     }
 }
-export function saveCreationMessage(message) {
+
+export function setCurrentDog(dog) {
     return {
-        type: 'SAVE_CREATION_MESSAGE',
-        message
+        type: 'SET_CURRENT_DOG',
+        dog
     }
 }
 
-export function modifyFinalResult(finalResult) {
-    return {
-        type: 'MODIFY_FINAL_RESULT',
-        finalResult
-    }
-}
 
-export function axiosDogs() {
-    return async function (dispatch) {
-        try {
-            const response = await axios.get('http://localhost:3001/dogs') 
-            dispatch(receiveDogs(response.data))
-            const responseDos = await axios.get('http://localhost:3001/dogs/all') 
-            dispatch(receiveDogs(responseDos.data))
-        } catch (e) {
-            console.log(e);
-        }
-    }
-}
-
-export function axiosFullDogs() {
-    return async function (dispatch) {
-        try {
-            const response = await axios.get('http://localhost:3001/dogs/all') 
-            dispatch(receiveFullDogs(response.data))
-        } catch (e) {
-            console.log(e);
-        }
-    }
-}
-
-export function axiosTemperaments() {
-    return async function (dispatch) {
-        try {
-            const response = await axios.get('http://localhost:3001/temperament') 
-            dispatch(receiveTemperaments(response.data))
-        } catch (e) {
-            console.log(e);
-        }
-    }
-}

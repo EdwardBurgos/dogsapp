@@ -1,4 +1,4 @@
-.container {
+.content {
     text-align: center;
 }
 
@@ -29,24 +29,30 @@
     color: #842029;
     width: 100%;
     display: block;
-    padding: 10px 0;
+    padding: 10px;
     margin-bottom: 16px;
     border-radius: 5px;
   }
 
+
+  .container{
+    height: var(--height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    text-align: center;
+  } 
+  
   .contentCenter {
     width: 100%;
     max-width: 330px;
     margin: 0 auto;
   }
   
-  .containerCenter{
-    height: var(--height);
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    text-align: center;
-  } 
+  .loading {
+    width: 25%;
+  }  
 
 .searchInput, .selectInput{
     width: 40%;
@@ -87,7 +93,7 @@
 }
 
 .bold {
-    font-weight: bold;
+    font-weight: 600;
 }
 
 .radioOneInput, .radioTwoInput{
@@ -119,8 +125,7 @@
 
 .title {
     font-weight: 600;
-    margin-bottom: 1rem;
-    margin-bottom: 30px;
+    margin-bottom: 32px;
 }
 
 .radioOne, .radioTwo {
@@ -153,4 +158,10 @@
     .middleContent {
         justify-content: space-between;
     }
+}
+
+.cardsContainer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
 }

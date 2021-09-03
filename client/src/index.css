@@ -5,13 +5,27 @@
 body {
   margin: 0;
   color: #000 !important;
+  font-size: 14px !important;
+  font-weight: 300 !important;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  word-wrap: break-word !important;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+/*al parecer esto no será necesario cuando unifique los estilos de los formualrios*/
+.btn, .form-control {
+  font-weight: 300 !important;
+  font-size: 14px !important;
+}
+/*al parecer esto no será necesario cuando unifique los estilos de los formualrios*/
+.form-input {
+  font-weight: 300 !important;
+  font-size: 14px !important;
 }
 
 .Toastify__toast--default {
@@ -28,4 +42,27 @@ code {
 
 .Toastify__progress-bar--default {
   background: #2962ff !important;
+}
+
+.btn:hover {
+  box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%) !important;
+  -webkit-box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%) !important;
+  border: 1px transparent solid !important;
+}
+
+.disabled, .disabled:hover {
+  pointer-events: none !important;
+  opacity: .65 !important;
+}
+
+@media only screen and (max-width: 576px) {
+  .modal-dialog {
+    margin-left: 5% !important;
+    margin-right: 5% !important;
+  }
+} 
+
+.linkRR, .linkRR:hover{
+  color: #000;
+  text-decoration: none;
 }
