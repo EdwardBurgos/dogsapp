@@ -78,13 +78,16 @@ export default function User({ username }) {
               </div>
               <div className={s.information}>
                 <h1 className={s.title}>{publicUser.username}</h1>
-                {user.username === username ? <Link to="/profile" className={`btn btn-primary ${s.editButton}`}>Edit profile</Link> : null}
+                {user.username === username ? <Link to="/profile" className={`btn btn-primary ${s.editButton}`}>Edit my profile</Link> : null}
                 <p className='mb-0'>{publicUser.fullname}</p>
                 <div className={s.countryContainer}>
                   <img className={s.countryFlag} src={images[`${countries.filter(e => e.name === publicUser.country)[0].code.toLowerCase()}.svg`].default} alt='Country flag'></img>
                   <p className='mb-0'>{publicUser.country}</p>
                 </div>
               </div>
+            </div>
+            <div className={s.registerPetButton}>
+              <Link to="/registerPet" className='btn btn-primary'>Register your pet</Link>
             </div>
             <>
               {
@@ -105,7 +108,6 @@ export default function User({ username }) {
                       <img className={s.emptyVector} src={emptyVector} alt='Empty vector'></img>
                     </div>
                     <p className={s.noPets}>No pets published yet</p>
-                    <Link to="/registerPet" className='btn btn-primary'>Register your pet</Link>
                   </>
               }
             </>

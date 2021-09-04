@@ -10,7 +10,6 @@ import Post from '../Post/Post';
 
 export default function Detail({ id }) {
     // Redux states
-    const user = useSelector(state => state.user);
     const dog = useSelector(state => state.dog);
 
     // Own states

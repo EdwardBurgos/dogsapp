@@ -99,7 +99,7 @@ export default function Home() {
             <p className={s.errorGlobal}>{errorGlobal}</p>
           </div>
           :
-          finalResultRedux.length && temperaments.length ?
+          dogs.length && temperaments.length ?
             <div className={s.content}>
               <h1 className={s.title}>Dog breeds</h1>
               <div className={s.marginTop}>
@@ -125,14 +125,16 @@ export default function Home() {
                 <button id="deletePropertyFilter" className={s.button} onClick={e => { filter(e) }}>Delete filter</button>
               </div>
               {finalResultRedux.length ?
-                <div className={s.cardsContainer}>
-                  {
-                    actualPageRedux.map((e, i) => <Card name={e.name} img={e.image} key={i} temperament={e.temperament} id={e.id}></Card>)
-                  }
-                </div>
+                <>
+                  <div className={s.cardsContainer}>
+                    {
+                      actualPageRedux.map((e, i) => <Card name={e.name} img={e.image} key={i} temperament={e.temperament} id={e.id}></Card>)
+                    }
+                  </div>
+                  <PaginationComponent />
+                </>
                 :
                 <p>{error}</p>}
-              {finalResultRedux.length ? <PaginationComponent /> : null}
             </div>
             :
             <div className={s.contentCenter}>

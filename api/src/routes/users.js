@@ -89,7 +89,7 @@ router.post('/register', async (req, res) => {
                 const salt = saltHash.salt;
                 const hash = saltHash.hash;
                 const user = await User.create({ fullname, name, lastname, profilepic, username, country, email, hash, salt, type });
-                user ? res.send({ success: true, user: user.fullname }) : res.status(400).send({ success: false, msg: 'Sorry, an error occurred' })
+                user ? res.send({ success: true, user: user.name }) : res.status(400).send({ success: false, msg: 'Sorry, an error occurred' })
             } else { return res.status(409).send({ success: false, msg: 'There is already a user with this email' }) }
         } else { res.status(409).send({ success: false, msg: 'There is already a user with this username' }) }
     } catch {
@@ -105,7 +105,7 @@ router.post('/login', async (req, res, next) => {
             const user = await User.findOne({ where: { email: emailORusername } });
             if (user) {
                 const tokenObject = utils.issueJWT(user);
-                res.send({ success: true, user: user.fullname, token: tokenObject.token, expiresIn: tokenObject.expires });
+                res.send({ success: true, user: user.name, token: tokenObject.token, expiresIn: tokenObject.expires });
             } else {
                 return res.status(404).send({ success: false, msg: "There is no user registered with this email" });
             }
@@ -124,7 +124,7 @@ router.post('/login', async (req, res, next) => {
                     const isValid = utils.validPassword(req.body.password, user.hash, user.salt);
                     if (isValid) {
                         const tokenObject = utils.issueJWT(user);
-                        res.send({ success: true, user: user.fullname, token: tokenObject.token, expiresIn: tokenObject.expires });
+                        res.send({ success: true, user: user.name, token: tokenObject.token, expiresIn: tokenObject.expires });
                     } else {
                         res.status(403).send({ success: false, msg: "Incorrect password" });
                     }
@@ -160,7 +160,7 @@ router.post('/changePassword', async (req, res) => {
             const newUser = await user.update({ hash, salt, type: 'Native' });
             if (newUser) {
                 const tokenObject = utils.issueJWT(newUser);
-                res.send({ success: true, user: user.fullname, token: tokenObject.token, expiresIn: tokenObject.expires });
+                res.send({ success: true, user: user.name, token: tokenObject.token, expiresIn: tokenObject.expires });
             } else {
                 return res.status(500).send({ success: false, msg: "Password could not be updated" });
             }
@@ -192,7 +192,7 @@ router.put('/updateUserInfo', passport.authenticate('jwt', { session: false }), 
             const userAvailability = await User.findOne({ where: { username } });
             if (userAvailability && (JSON.stringify(user) !== JSON.stringify(userAvailability))) return res.status(409).send('There is already a user with this username')
             const updated = await user.update({ fullname: `${name} ${lastname}`, name, lastname, username, country });
-            return updated ? res.send('Your information was updated successfully') : res.status(500).send('Sorry, your information could not be updated')
+            return updated ? res.send(`${updated.name} your information was updated successfully`) : res.status(500).send('Sorry, your information could not be updated')
         } else { return res.status(404).send('User not found') }
     } catch (e) {
         console.log(e)

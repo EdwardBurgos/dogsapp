@@ -10,6 +10,7 @@ import { setUser } from '../../actions';
 import { uploadImage, uploadConfirmedImage } from '../../extras/firebase';
 import { getUserInfo, showMessage, validURL } from '../../extras/globalFunctions';
 import loadingHorizontal from '../../img/loadingHorizontalGif.gif'
+import { Link } from 'react-router-dom';
 
 export default function Profile() {
   // Redux states
@@ -146,7 +147,8 @@ export default function Profile() {
   return (
     <div className={s.container}>
       <div className={s.content}>
-        <h1 className={s.title}>My profile</h1>
+        <h1 className={s.title}>Edit profile</h1>
+        <Link to={`/${user.username}`} className={`btn btn-primary ${s.goProfileButton}`}>Go to my profile</Link>
         <div className={s.columns}>
           <div className={s.imageContainer}>
 

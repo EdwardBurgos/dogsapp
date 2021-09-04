@@ -210,6 +210,7 @@
   .labelProfile {
     display: block;
     width: 100%;
+    margin-bottom: 16px;
   }
   
   @media only screen and (max-width: 992px) {
@@ -363,4 +364,8 @@
 
   .loadingHorizontal {
     height: 16px;
+  }
+
+  .goProfileButton {
+    margin-bottom: 32px;
   }

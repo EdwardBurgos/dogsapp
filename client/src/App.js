@@ -16,10 +16,7 @@ import Signup from './components/Signup/Signup';
 import RegisterPet from './components/RegisterPet/RegisterPet';
 import EditPet from './components/EditPet/EditPet';
 import User from './components/User/User';
-import NotFound from './components/NotFound/NotFound';
-
-
-
+import Pet from './components/Pet/Pet';
 
 function App() {
   // Redux states
@@ -55,6 +52,7 @@ function App() {
                 <Route path="/registerPet/breed/:id" render={({ match }) => <RegisterPet id={match.params.id} />} />
                 <Route path="/registerPet" component={RegisterPet} />
                 <Route path="/editPet/:id" render={({ match }) => Object.keys(user).length && user.pets.includes(parseInt(match.params.id))? <EditPet id={match.params.id} /> : <Redirect to="/home"/> }></Route>
+                <Route path="/pet/:id" render={({ match }) => <Pet id={match.params.id} /> } />
                 <Route path="/about" component={About} />
                 <Route path="/profile">{Object.keys(user).length ? <Profile /> : <Redirect to="/login" />}</Route>
                 <Route path="/login">{Object.keys(user).length ? <Redirect to="/profile" /> : <Login />}</Route>

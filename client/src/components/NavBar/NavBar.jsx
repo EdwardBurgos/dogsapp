@@ -53,7 +53,7 @@ export default function NavBar() {
             //   {/* // <Navbar.Text className={s.signedInfo}>
             // //   <a href="#login">{user.name}</a>
             // // </Navbar.Text> */}
-            <Dropdown align={{ md: 'end' }}>
+            <Dropdown align={{ lg: 'end' }}>
               <Dropdown.Toggle variant="light" id="dropdown-basic" className={s.titleDropdown}>
                 <img className={s.profilePic} src={user.profilepic} alt='User profile'></img>
                 <span>{user.fullname}</span>
