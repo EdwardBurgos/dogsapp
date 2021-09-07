@@ -86,9 +86,14 @@ export default function User({ username }) {
                 </div>
               </div>
             </div>
-            <div className={s.registerPetButton}>
-              <Link to="/registerPet" className='btn btn-primary'>Register your pet</Link>
-            </div>
+            {
+              user.username === username ?
+                <div className={s.registerPetButton}>
+                  <Link to="/registerPet" className='btn btn-primary'>Register your pet</Link>
+                </div>
+                :
+                null
+            }
             <>
               {
                 publicUser.pets.length ?

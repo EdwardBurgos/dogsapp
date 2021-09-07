@@ -116,7 +116,7 @@ export default function Signup() {
                 fullname: `${name} ${lastname}`,
                 name,
                 lastname,
-                profilepic: 'https://firebasestorage.googleapis.com/v0/b/dogsapp-f043d.appspot.com/o/defaultProfilePic.png?alt=media&token=77a0fa3a-c3e3-4e2a-ae91-ac2ffdadbba8',
+                profilepic: 'https://firebasestorage.googleapis.com/v0/b/dogsapp-f043d.appspot.com/o/defaultProfilePic.jpg?alt=media&token=cfd199e8-c010-45ab-972b-c967c55f3461',
                 username,
                 country,
                 email,

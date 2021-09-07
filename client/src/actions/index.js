@@ -40,4 +40,10 @@ export function setCurrentDog(dog) {
     }
 }
 
+export function setPetBreed(petBreed) {
+    return {
+        type: 'SET_PET_BREED',
+        petBreed
+    }
+}
 

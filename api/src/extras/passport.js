@@ -2,7 +2,7 @@ const JwtStrategy = require('passport-jwt').Strategy
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 const fs = require('fs');
 const path = require('path');
-const { User, Dog, Pet } = require('../db.js');
+const { User, Dog, Pet, Like } = require('../db.js');
 
 
 const pathToKey = path.join(__dirname, '.', 'id_rsa_pub.pem');
@@ -24,7 +24,7 @@ module.exports = (passport) => {
         
         // We will assign the `sub` property on the JWT to the database ID of user
         try {
-            const user = await User.findOne({
+            let user = await User.findOne({
                 where: {id: jwt_payload.sub}, 
                 include: [
                     {
@@ -37,10 +37,15 @@ module.exports = (passport) => {
                         as: "pets",
                         attributes: ["id"]
 
+                    }, 
+                    {
+                        model: Like,
+                        as: "likes"
                     }
                 ],
             });
             if (user) {
+                user = Object.assign(user, {likes: user.likes.map(e => e.dataValues ? e.dataValues.petId : null)});
                 return done(null, user);
             } else {
                 return done(null, false);

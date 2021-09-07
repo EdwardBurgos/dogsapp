@@ -5,6 +5,14 @@ const countries = require('../extras/countries')
 module.exports = (sequelize) => {
     // defino el modelo
     sequelize.define('like', {
+        userId: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+          },
+        petId: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+          },
     });
 };
 

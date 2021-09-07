@@ -1,13 +1,14 @@
 import s from './Card.module.css';
 import React from 'react';
 import { useHistory } from 'react-router';
+import { Link } from 'react-router-dom'
 
 export default function Card({ name, img, temperament, id, origin }) {
   // Variables
   const history = useHistory();
 
   return (
-    <div className={`${origin === "publicProfile" ? s.cardPublicProfile : ''} ${s.card}`} onClick={() => history.push(`/detail/${id}`)}>
+    <Link to={`/detail/${id}`} className={`${origin === "publicProfile" ? s.cardPublicProfile : ''} ${s.card} linkRR`}>
       <p className={s.title}>{name}</p>
       <img className={`${temperament ? 'mb-3' : ''} ${s.image}`} src={img} alt={name} />
       {temperament ?
@@ -24,7 +25,7 @@ export default function Card({ name, img, temperament, id, origin }) {
         :
         null
       }
-    </div>
+    </Link>
   );
 }
 

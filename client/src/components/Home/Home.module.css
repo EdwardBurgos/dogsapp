@@ -1,6 +1,33 @@
 .content {
     text-align: center;
     width: 100%;
+    align-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    min-height: calc(100vh - 341.200px);
+    padding-bottom: 20px;
+}
+
+.emptyVectorContainer {
+    width: 100%;
+}
+
+.emptyVector {
+    height: 100px;
+    width: 100px;
+}
+
+.noDogs {
+    font-size: 1.5rem;
+    font-weight: 300;
+    width: 100%;
+    margin: 16px 0 0 0;
+}
+
+.header {
+    align-self: flex-start;
 }
 
 .marginRight {
@@ -21,7 +48,7 @@
 }
 
 .marginBottom {
-    margin-bottom: 30px;
+    margin-bottom: 32px;
 }
 
 .errorGlobal {
@@ -148,6 +175,9 @@
     .middleContent {
         justify-content: space-between;
     }
+    .content {
+        min-height: calc(100vh - 482.600px);
+    }
 }
 
 @media only screen and (max-width: 768px) {
@@ -159,10 +189,18 @@
     .middleContent {
         justify-content: space-between;
     }
+    .content {
+        min-height: calc(100vh - 632.600px);
+    }
 }
 
 .cardsContainer {
     display: flex;
+    width: 100%;
     flex-wrap: wrap;
     justify-content: space-around;
 }
+
+/* .paginationContainer {
+
+} */

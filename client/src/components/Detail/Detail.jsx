@@ -4,9 +4,10 @@ import loading from '../../img/loadingGif.gif';
 import axios from '../../axiosInterceptor';
 import { getUserInfo, showMessage } from '../../extras/globalFunctions';
 import { useDispatch, useSelector } from 'react-redux';
-import { setUser, setCurrentDog } from '../../actions';
+import { setUser, setCurrentDog, setPetBreed } from '../../actions';
 import { useHistory } from 'react-router';
 import Post from '../Post/Post';
+import { Link } from 'react-router-dom';
 
 export default function Detail({ id }) {
     // Redux states
@@ -130,7 +131,7 @@ export default function Detail({ id }) {
                             }
                             <div className={s.query}>
                                 <span>Is your pet of this breed?</span>
-                                <button className="w-100 btn btn-primary mt-2" onClick={() => history.push(`/registerPet/breed/${id}`)}>Register it here</button>
+                                <Link to='/registerPet' className="w-100 btn btn-primary mt-2" onClick={() => dispatch(setPetBreed(id))}>Register it here</Link>
                             </div>
                         </div>
                         {

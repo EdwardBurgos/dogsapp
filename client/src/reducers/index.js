@@ -4,7 +4,8 @@ const initialState = {
   clickedNumber: 1,
   user: null,
   publicUser: {},
-  dog: {}
+  dog: {},
+  petBreed: ''
 }
 
 export default function reducer (state = initialState, action) {
@@ -38,6 +39,11 @@ export default function reducer (state = initialState, action) {
       return {
         ...state,
         dog: action.dog
+      }
+    case 'SET_PET_BREED':
+      return {
+        ...state,
+        petBreed: action.petBreed
       }
     default:
       return { ...state }

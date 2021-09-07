@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import PaginationComponent from '../PaginationComponent/PaginationComponent';
 import loading from '../../img/loadingGif.gif';
 import { getDogs, getTemperaments, getUserInfo } from '../../extras/globalFunctions';
+import emptyVector from '../../img/empty.svg';
 
 export default function Home() {
   // Redux states
@@ -100,42 +101,52 @@ export default function Home() {
           </div>
           :
           dogs.length && temperaments.length ?
-            <div className={s.content}>
-              <h1 className={s.title}>Dog breeds</h1>
-              <div className={s.marginTop}>
-                <label className={s.label}>Search a breed</label>
-                <input className={s.searchInput} id="searchTerm" placeholder="Insert a dog breed" value={searchTerm}
-                  onChange={e => filter(e)} />
-                <button className={s.button} id="deleteSearch" onClick={e => { filter(e) }}>Delete search</button>
-              </div>
-              <div className={s.marginTop}>
-                <label className={s.label}>Filter by temperament</label>
-                <select onChange={e => filter(e)} id="temperament" value={temperament} className={s.selectInput}>
-                  <option key='default' value='default'>Select a temperament</option>
-                  {temperaments.map((e, i) => <option key={i} value={e}>{e}</option>)}
-                </select>
-                <button className={s.button} id="deleteTemperamentFilter" onClick={e => { filter(e) }}>Delete filter</button>
-              </div>
-              <div className={`${s.marginTop} ${s.marginBottom}`}>
-                <span className={s.label}>Filter by property</span>
-                <div className={s.middleContent}>
-                  <div className={s.radioOneInput}><label htmlFor="own"><input type="radio" id="own" name="propertyFilter" checked={property === 'own'} onChange={e => filter(e)} className={s.radioOne} />Show dog breeds created by the community</label></div>
-                  <div className={s.radioTwoInput}><label htmlFor="notOwn"><input type="radio" id="notOwn" name="propertyFilter" checked={property === 'notOwn'} onChange={e => filter(e)} className={s.radioTwo} />Do not show dog breeds created by the community</label></div>
+            <>
+              <div className={s.header}>
+                <h1 className={s.title}>Dog breeds</h1>
+                <div className={s.marginTop}>
+                  <label className={s.label}>Search a breed</label>
+                  <input className={s.searchInput} id="searchTerm" placeholder="Insert a dog breed" value={searchTerm}
+                    onChange={e => filter(e)} />
+                  <button className={s.button} id="deleteSearch" onClick={e => { filter(e) }}>Delete search</button>
                 </div>
-                <button id="deletePropertyFilter" className={s.button} onClick={e => { filter(e) }}>Delete filter</button>
-              </div>
-              {finalResultRedux.length ?
-                <>
-                  <div className={s.cardsContainer}>
-                    {
-                      actualPageRedux.map((e, i) => <Card name={e.name} img={e.image} key={i} temperament={e.temperament} id={e.id}></Card>)
-                    }
+                <div className={s.marginTop}>
+                  <label className={s.label}>Filter by temperament</label>
+                  <select onChange={e => filter(e)} id="temperament" value={temperament} className={s.selectInput}>
+                    <option key='default' value='default'>Select a temperament</option>
+                    {temperaments.map((e, i) => <option key={i} value={e}>{e}</option>)}
+                  </select>
+                  <button className={s.button} id="deleteTemperamentFilter" onClick={e => { filter(e) }}>Delete filter</button>
+                </div>
+                <div className={`${s.marginTop} ${s.marginBottom}`}>
+                  <span className={s.label}>Filter by property</span>
+                  <div className={s.middleContent}>
+                    <div className={s.radioOneInput}><label htmlFor="own"><input type="radio" id="own" name="propertyFilter" checked={property === 'own'} onChange={e => filter(e)} className={s.radioOne} />Show dog breeds created by the community</label></div>
+                    <div className={s.radioTwoInput}><label htmlFor="notOwn"><input type="radio" id="notOwn" name="propertyFilter" checked={property === 'notOwn'} onChange={e => filter(e)} className={s.radioTwo} />Do not show dog breeds created by the community</label></div>
                   </div>
-                  <PaginationComponent />
-                </>
-                :
-                <p>{error}</p>}
-            </div>
+                  <button id="deletePropertyFilter" className={s.button} onClick={e => { filter(e) }}>Delete filter</button>
+                </div>
+              </div>
+              <div className={s.content}>
+                {finalResultRedux.length ?
+                  <>
+                    <div className={s.cardsContainer}>
+                      {
+                        actualPageRedux.map((e, i) => <Card name={e.name} img={e.image} key={i} temperament={e.temperament} id={e.id}></Card>)
+                      }
+                    </div>
+                    <PaginationComponent />
+                  </>
+                  :
+                  <>
+                    <div className={s.emptyVectorContainer}>
+                      <img className={s.emptyVector} src={emptyVector} alt='Empty vector'></img>
+                      <p className={s.noDogs}>{error}</p>
+                    </div>
+                  </>
+                }
+              </div>
+            </>
             :
             <div className={s.contentCenter}>
               <img className={s.loading} src={loading} alt='loadingGif'></img>

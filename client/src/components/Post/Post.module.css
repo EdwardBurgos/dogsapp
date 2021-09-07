@@ -9,7 +9,7 @@
     text-align: left;
 }
 
-.card:hover {
+.post:hover {
     cursor: pointer;
     box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
     -webkit-box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
@@ -138,6 +138,9 @@
     display: flex;
     align-items: center;
     cursor: pointer;
+}
+
+.boldWeight {
     font-weight: 600;
 }
 
@@ -167,4 +170,9 @@
     font-weight: 600;
     color: #2962ff;
     text-decoration: none;
+}
+
+.centeredInfoModal {
+    display: flex;
+    justify-content: center;
 }

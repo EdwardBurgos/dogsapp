@@ -20,8 +20,8 @@ export const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
 
 export async function uploadImage(username, imageAsFile) {
     try {
-        await app.storage().ref(`/tests/${username}ProfilePic`).put(imageAsFile)
-        const url = await app.storage().ref('tests').child(`${username}ProfilePic`).getDownloadURL()
+        await app.storage().ref(`/testsProfilePictures/${username}ProfilePic`).put(imageAsFile)
+        const url = await app.storage().ref('testsProfilePictures').child(`${username}ProfilePic`).getDownloadURL()
         return url
     } catch (e) {
         return 'Sorry, we could not upload your new profile picture'
@@ -38,22 +38,22 @@ export async function uploadConfirmedImage(username, imageAsFile) {
     }
 }
 
-export async function uploadDogBreedImage(dogBreed, imageAsFile) {
+export async function uploadDogBreedImage(pet, imageAsFile) {
     try {
-        await app.storage().ref(`/testsDogBreeds/${dogBreed}`).put(imageAsFile)
-        const url = await app.storage().ref('testsDogBreeds').child(`${dogBreed}`).getDownloadURL()
+        await app.storage().ref(`/testsPetsPictures/${pet}`).put(imageAsFile)
+        const url = await app.storage().ref('testsPetsPictures').child(`${pet}`).getDownloadURL()
         return url
     } catch (e) {
-        return 'Sorry, we could not upload the dog breed image'
+        return 'Sorry, we could not upload your pet picture'
     }
 }
 
-export async function uploadConfirmedDogBreedImage(dogBreed, imageAsFile) {
+export async function uploadConfirmedDogBreedImage(pet, imageAsFile) {
     try {
-        await app.storage().ref(`/dogBreedsImages/${dogBreed}`).put(imageAsFile)
-        const url = await app.storage().ref('dogBreedsImages').child(`${dogBreed}`).getDownloadURL()
+        await app.storage().ref(`/petsPictures/${pet}`).put(imageAsFile)
+        const url = await app.storage().ref('petsPictures').child(`${pet}`).getDownloadURL()
         return url
     } catch (e) {
-        return 'Sorry, we could not save the dog breed image'
+        return 'Sorry, we could not save your pet picture'
     }
 }

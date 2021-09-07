@@ -1,6 +1,7 @@
 .pagination {
   justify-content: center !important;
   flex-wrap: wrap !important;
+  align-self: flex-end;
 }
 
 .activo span {

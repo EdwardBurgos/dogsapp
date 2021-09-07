@@ -59,8 +59,6 @@
   }
   
   .temperament {
-    display: flex;
-    align-items: center;
     background-color: #2962ff;
     color: white;
     padding: 0.375rem 0.75rem;
@@ -69,11 +67,12 @@
     border: 1px solid transparent;
     margin: 0;
   }
-  
+
   .temperamentsContainer {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    margin: 8px 0;
   }
   
   .error {
@@ -87,7 +86,7 @@
     position: relative;
     display: flex;
     align-items: center;
-    margin: 0 8px 16px 8px;
+    margin: 0 4px 8px 4px;
   }
   
   .formInput, .selectInput, .errorInput, .errorSelect{
@@ -234,6 +233,45 @@
   .fileInput {
     display: none;
   }
+
+  .loadingHorizontal {
+    height: 16px;
+  }
+
+  .breedSelectorContainer {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .breedSelector {
+    margin-bottom: 16px;
+  }
+  
+  .breedMoreInfo {
+    width: 100%;
+  }
+
+  .image {
+    width:100%;
+    margin-bottom: 16px;
+    border-radius: 12px;
+  }
+
+  .modalBody {
+    padding-bottom: 0;
+  }
+
+  @media only screen and (min-width: 1200px) {
+    .breedSelector {
+      width: 70% !important;
+      margin-bottom: 0;
+    }
+    
+    .breedMoreInfo {
+      width: 25%;
+      margin-left: 5%;
+    }
+  }
   
   @media only screen and (min-width: 992px) {
     .imageContainer {
@@ -275,6 +313,4 @@
     }
   }
 
-  .loadingHorizontal {
-    height: 16px;
-  }
+  

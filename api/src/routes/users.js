@@ -9,8 +9,8 @@ const router = Router();
 
 // This route allows us to get the email, photo and name of the authentciated user
 router.get('/info', passport.authenticate('jwt', { session: false }), (req, res, next) => {
-    const { id, fullname, name, lastname, profilepic, username, country, email, dogs, pets, type } = req.user;
-    res.status(200).json({ success: true, msg: "You are successfully authenticated to this route!", user: { id, fullname, name, lastname, profilepic, username, country, email, dogs: dogs.map(e => e.dataValues.id), pets: pets.map(e => e.dataValues.id) } });
+    const { id, fullname, name, lastname, profilepic, username, country, email, dogs, pets, type, likes } = req.user;
+    res.status(200).json({ success: true, msg: "You are successfully authenticated to this route!", user: { id, fullname, name, lastname, profilepic, username, country, email, dogs: dogs.map(e => e.dataValues.id), pets: pets.map(e => e.dataValues.id), likes } });
 });
 
 // This route returns true (if there is no user with that email) OR false is there is one
@@ -84,7 +84,7 @@ router.post('/register', async (req, res) => {
         if (!availableUsername) {
             const availableEmail = await User.findOne({ where: { email } })
             if (!availableEmail) {
-                if (!profilepic) profilepic = "https://firebasestorage.googleapis.com/v0/b/dogsapp-f043d.appspot.com/o/defaultProfilePic.png?alt=media&token=77a0fa3a-c3e3-4e2a-ae91-ac2ffdadbba8";
+                if (!profilepic) profilepic = 'https://firebasestorage.googleapis.com/v0/b/dogsapp-f043d.appspot.com/o/defaultProfilePic.jpg?alt=media&token=cfd199e8-c010-45ab-972b-c967c55f3461';
                 const saltHash = utils.genPassword(password);
                 const salt = saltHash.salt;
                 const hash = saltHash.hash;
@@ -92,7 +92,8 @@ router.post('/register', async (req, res) => {
                 user ? res.send({ success: true, user: user.name }) : res.status(400).send({ success: false, msg: 'Sorry, an error occurred' })
             } else { return res.status(409).send({ success: false, msg: 'There is already a user with this email' }) }
         } else { res.status(409).send({ success: false, msg: 'There is already a user with this username' }) }
-    } catch {
+    } catch (e) {
+        console.log(e)
         res.status(400).send({ success: false, msg: 'Sorry, an error occurred' })
     }
 })
@@ -195,7 +196,6 @@ router.put('/updateUserInfo', passport.authenticate('jwt', { session: false }), 
             return updated ? res.send(`${updated.name} your information was updated successfully`) : res.status(500).send('Sorry, your information could not be updated')
         } else { return res.status(404).send('User not found') }
     } catch (e) {
-        console.log(e)
         next()
     }
 
