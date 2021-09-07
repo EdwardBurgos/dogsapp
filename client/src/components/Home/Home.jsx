@@ -106,7 +106,7 @@ export default function Home() {
                 <h1 className={s.title}>Dog breeds</h1>
                 <div className={s.marginTop}>
                   <label className={s.label}>Search a breed</label>
-                  <input className={s.searchInput} id="searchTerm" placeholder="Insert a dog breed" value={searchTerm}
+                  <input className={s.searchInput} id="searchTerm" value={searchTerm}
                     onChange={e => filter(e)} />
                   <button className={s.button} id="deleteSearch" onClick={e => { filter(e) }}>Delete search</button>
                 </div>

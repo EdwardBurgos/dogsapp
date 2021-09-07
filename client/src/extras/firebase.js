@@ -38,7 +38,7 @@ export async function uploadConfirmedImage(username, imageAsFile) {
     }
 }
 
-export async function uploadDogBreedImage(pet, imageAsFile) {
+export async function uploadPetImage(pet, imageAsFile) {
     try {
         await app.storage().ref(`/testsPetsPictures/${pet}`).put(imageAsFile)
         const url = await app.storage().ref('testsPetsPictures').child(`${pet}`).getDownloadURL()
@@ -48,12 +48,22 @@ export async function uploadDogBreedImage(pet, imageAsFile) {
     }
 }
 
-export async function uploadConfirmedDogBreedImage(pet, imageAsFile) {
+export async function uploadConfirmedPetImage(pet, imageAsFile) {
     try {
         await app.storage().ref(`/petsPictures/${pet}`).put(imageAsFile)
         const url = await app.storage().ref('petsPictures').child(`${pet}`).getDownloadURL()
         return url
     } catch (e) {
         return 'Sorry, we could not save your pet picture'
+    }
+}
+
+export async function deleteImage(origin, fileName) {
+    try {
+        console.log(fileName)
+        if (origin === 'cancelUser') await app.storage().ref('testsProfilePictures').child(`${fileName}ProfilePic`).delete();
+        if (origin === 'cancelPet') await app.storage().ref('testsPetsPictures').child(fileName).delete();
+    } catch (e) {
+        return 'Sorry, we could not delete the image';
     }
 }

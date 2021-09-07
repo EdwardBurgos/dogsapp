@@ -9,9 +9,10 @@ import loading from '../../img/loadingGif.gif';
 import { getTemperaments, showMessage, validURL, getUserInfo, getDogsNames } from '../../extras/globalFunctions';
 import { setUser } from '../../actions';
 import 'react-toastify/dist/ReactToastify.css';
-import { uploadConfirmedDogBreedImage, uploadDogBreedImage } from '../../extras/firebase';
+import { uploadConfirmedPetImage, uploadPetImage } from '../../extras/firebase';
 import loadingHorizontal from '../../img/loadingHorizontalGif.gif';
 import { Modal } from 'react-bootstrap'
+import { deleteImage } from '../../extras/firebase';
 
 export default function EditPet({ id }) { // si me psan el di seleccionar la raza automáticmanete si no mostrrar seleccionar raza en el <select
     // Redux states
@@ -123,7 +124,7 @@ export default function EditPet({ id }) { // si me psan el di seleccionar la raz
             setGuardando(true);
             let confirmedImageUrl = pet.photo;
             if (imageFile) {
-                confirmedImageUrl = await uploadConfirmedDogBreedImage(id, imageFile)
+                confirmedImageUrl = await uploadConfirmedPetImage(id, imageFile)
                 if (!validURL(confirmedImageUrl)) {
                     setPhoto(pet.photo);
                     setErrGlobal(`Sorry, we could not save the image you provided for ${pet.name}`);
@@ -147,7 +148,7 @@ export default function EditPet({ id }) { // si me psan el di seleccionar la raz
     async function changePhoto(e) {
         if (e.target.files[0]) {
                 setUploading(true)
-                const urlPhoto = await uploadDogBreedImage(id, e.target.files[0])
+                const urlPhoto = await uploadPetImage(id, e.target.files[0])
                 setUploading(false);
                 if (validURL(urlPhoto)) {
                     setImageFile(e.target.files[0]);
@@ -176,7 +177,7 @@ export default function EditPet({ id }) { // si me psan el di seleccionar la raz
                                 <form onSubmit={handleSubmit} className={s.form}>
                                     <div className={nameErr ? '' : 'mb-3'}>
                                         <label className={s.label}>Name</label>
-                                        <input value={name} placeholder="Insert name" className={nameErr ? s.errorInput : s.formInput} type="text" onChange={handleChange} name="namePet"></input>
+                                        <input value={name} className={nameErr ? s.errorInput : s.formInput} type="text" onChange={handleChange} name="namePet"></input>
                                     </div>
                                     {nameErr ? <small className={s.error}>{nameErr}</small> : null}
 
@@ -190,7 +191,7 @@ export default function EditPet({ id }) { // si me psan el di seleccionar la raz
                                                             {dogId === 'default' ? <option key='default' value='default'>Select a dog breed</option> : null}
                                                             {dogs.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
                                                         </select>
-                                                        <button disabled={dogId === 'default'} className={`btn btn-primary ${s.breedMoreInfo}`} onClick={e => { e.preventDefault(); setShowModal(true); }}>More information</button>
+                                                        <button disabled={dogId === 'default'} className={`btn btn-secondary ${s.breedMoreInfo}`} onClick={e => { e.preventDefault(); setShowModal(true); }}>More information</button>
                                                     </div>
                                                 </div>
                                             </>
@@ -212,18 +213,18 @@ export default function EditPet({ id }) { // si me psan el di seleccionar la raz
                                         {errPhoto ? <small className={s.error}>{errPhoto}</small> : null}
                                         {
                                             !changedPhoto ?
-                                                <div className={`w-100 btn btn-primary ${uploading ? 'disabled' : ''}`} onClick={() => document.getElementById('inputFile').click()}>
+                                                <div className={`w-100 btn btn-secondary ${uploading ? 'disabled' : ''}`} onClick={() => document.getElementById('inputFile').click()}>
                                                     <span>Change image</span>
                                                     <input id="inputFile" type="file" className={s.fileInput} onChange={changePhoto} accept="image/png, image/gif, image/jpeg, image/jpg" />
                                                 </div>
                                                 :
                                                 <>
-                                                    <div className={`w-100 btn btn-primary mb-3  ${uploading ? 'disabled' : ''}`} onClick={() => { document.getElementById('inputFileExtra').click() }}>
+                                                    <div className={`w-100 btn btn-secondary mb-3  ${uploading ? 'disabled' : ''}`} onClick={() => { document.getElementById('inputFileExtra').click() }}>
                                                         <span>Change image</span>
                                                         <input id="inputFileExtra" type="file" className={s.fileInput} onChange={changePhoto} accept="image/png, image/gif, image/jpeg, image/jpg" />
                                                     </div>
 
-                                                    <button className={`w-100 btn btn-secondary`} disabled={uploading} onClick={async () => { setImageFile(null); setUploading(false); setErrPhoto(''); setChangedPhoto(false); setPhoto(pet.photo); }}>Cancel changes</button>
+                                                    <button className={`w-100 btn btn-secondary`} disabled={uploading} onClick={async () => { setImageFile(null); setUploading(false); setErrPhoto(''); setChangedPhoto(false); setPhoto(pet.photo); deleteImage('cancelPet', id);}}>Cancel changes</button>
                                                 </>
                                         }
                                     </div>

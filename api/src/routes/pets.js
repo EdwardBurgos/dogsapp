@@ -6,6 +6,7 @@ const countries = require('../extras/countries')
 const passport = require('passport');
 const { Op } = require('sequelize');
 const { validURL } = require('../extras/ownUtils')
+const { deleteImage } = require('../extras/firebase')
 
 const router = Router();
 
@@ -96,7 +97,7 @@ router.get('/:id', async (req, res, next) => {
             ]
         });
         if (pet) {
-            res.send(Object.assign((({ id, name, photo, dog, likes}) => ({ id, name, photo, dog, likes}))(pet.dataValues), {likes: pet.dataValues.likes.map(e => e.dataValues ? (({ id, username, fullname, profilepic }) => ({ id, username, fullname, profilepic }))(e.dataValues.user) : null)}, {likesCount: pet.dataValues.likes.length}, {dog: (({ id, name, image}) => ({ id, name, image}))(pet.dataValues.dog)}));
+            res.send(Object.assign((({ id, name, photo, dog, likes }) => ({ id, name, photo, dog, likes }))(pet.dataValues), { likes: pet.dataValues.likes.map(e => e.dataValues ? (({ id, username, fullname, profilepic }) => ({ id, username, fullname, profilepic }))(e.dataValues.user) : null) }, { likesCount: pet.dataValues.likes.length }, { dog: (({ id, name, image }) => ({ id, name, image }))(pet.dataValues.dog) }));
         } else {
             res.status(404).send(`There is no pet with the id ${req.params.id}`);
         }
@@ -118,7 +119,13 @@ router.put('/', passport.authenticate('jwt', { session: false }), async (req, re
             if (pet.userId === req.user.id) {
                 const realName = pet.name;
                 const petUpdated = await pet.update({ name, photo, dogId });
-                petUpdated ? res.send(`${petUpdated.name} was updated successfully`) : res.status(500).send(`Sorry, ${realName} can not be updated`)
+                if (petUpdated) {
+                    deleteImage('pets', /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(pet.photo.slice(87, 123)) ? pet.photo.slice(87, 123) : null);
+                    deleteImage('testsPets', pet.id)
+                    return res.send(`${petUpdated.name} was updated successfully`)
+                } else {
+                    return res.status(500).send(`Sorry, ${realName} can not be updated`)
+                }
             } else {
                 return res.status(404).send(`You can not edit this pet beacuse is not yours`);
             }
@@ -140,8 +147,14 @@ router.delete('/:pet', passport.authenticate('jwt', { session: false }), async (
         if (pet) {
             const name = pet.name;
             if (pet.userId === req.user.id) {
+                const deletedPetId = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(pet.photo.slice(87, 123)) ? pet.photo.slice(87, 123) : pet.id;
                 const petDeleted = await pet.destroy();
-                !petDeleted.length ? res.send(`${name} was deleted successfully`) : res.status(500).send(`Sorry, ${name} can not be deleted`)
+                if (!petDeleted.length) {
+                    deleteImage('deletePet', deletedPetId)
+                    return res.send(`${name} was deleted successfully`)
+                } else {
+                    return res.status(500).send(`Sorry, ${name} can not be deleted`)
+                }
             } else {
                 return res.status(404).send(`You can not delete ${name} because is not yours`);
             }

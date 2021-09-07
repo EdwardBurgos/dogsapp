@@ -45,7 +45,10 @@ export default function User({ username }) {
       }
     }
     updateUser();
-    return () => source.cancel("Unmounted");
+    return () => {
+      dispatch(setPublicUser({}))
+      source.cancel("Unmounted");
+    }
   }, [dispatch])
 
   // This hook allows us to get the information of the user especified through the username parameter

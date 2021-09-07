@@ -8,9 +8,13 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../../actions';
 import { uploadImage, uploadConfirmedImage } from '../../extras/firebase';
-import { getUserInfo, showMessage, validURL } from '../../extras/globalFunctions';
+import { getUserInfo, showMessage, validURL, logout } from '../../extras/globalFunctions';
 import loadingHorizontal from '../../img/loadingHorizontalGif.gif'
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
+import { deleteImage } from '../../extras/firebase';
+import { Modal, Button } from 'react-bootstrap';
+import { eyeOutline, eyeOffOutline } from "ionicons/icons";
+import { IonIcon } from '@ionic/react';
 
 export default function Profile() {
   // Redux states
@@ -33,9 +37,16 @@ export default function Profile() {
   const [changedPhoto, setChangedPhoto] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [guardando, setGuardando] = useState(false)
+  const [showDelete, setShowDelete] = useState(false)
+  const [showConfirmation, setShowConfirmation] = useState(false)
+  const [showEmailSent, setShowEmailSent] = useState(false)
+  const [deletePassword, setDeletePassword] = useState('')
+  const [errDeletePassword, setErrDeletePassword] = useState('')
+  const [showDeletePassword, setShowDeletePassword] = useState(false)
 
   // Variables
   const dispatch = useDispatch();
+  const history = useHistory();
 
   // Hooks
 
@@ -61,6 +72,18 @@ export default function Profile() {
     return () => source.cancel("Unmounted");
   }, [dispatch])
 
+  // This hook allows us to update the user information showed in the component when the first one change
+  useEffect(() => {
+    if (Object.keys(user).length) {
+      setPhoto(user.profilepic)
+      setName(user.name)
+      setLastname(user.lastname)
+      setUsername(user.username)
+      setCountry(user.country)
+      setEmail(user.email)
+    }
+  }, [user])
+
   // This hook allows us to handle the form submit button status
   useEffect(() => {
     if ((name !== user.name || lastname !== user.lastname || username !== user.username || country !== user.country) && !errName && !errLastname && !errUsername) return setButtonState(false)
@@ -84,6 +107,9 @@ export default function Profile() {
         return setUsername(value)
       case 'countryValue':
         return setCountry(value)
+      case 'passDeleteValue':
+        !value ? setErrDeletePassword('This field is required') : setErrDeletePassword('')
+        return setDeletePassword(value)
       default:
         break;
     }
@@ -128,7 +154,7 @@ export default function Profile() {
       setGuardando(true)
       const urlPhoto = await uploadConfirmedImage(user.username, imageFile)
       if (validURL(urlPhoto)) {
-        const upload = await axios.post('/users/changePhoto', { profilePic: urlPhoto })
+        const upload = await axios.put('/users/changePhoto', { profilePic: urlPhoto })
         setErrPhoto('')
         setGuardando(false)
         showMessage(upload.data);
@@ -144,107 +170,213 @@ export default function Profile() {
     }
   }
 
-  return (
-    <div className={s.container}>
-      <div className={s.content}>
-        <h1 className={s.title}>Edit profile</h1>
-        <Link to={`/${user.username}`} className={`btn btn-primary ${s.goProfileButton}`}>Go to my profile</Link>
-        <div className={s.columns}>
-          <div className={s.imageContainer}>
+  // This function allows us to delete an account
+  async function deleteAccount() {
+    alert('PEPAS')
 
-            <div className={s.profilePictureEditor}>
-              <label className={s.labelProfile} htmlFor="nameValue">Profile picture</label>
-              <div className={`${s.containerProfileImage} ${errPhoto ? '' : 'mb-3'}`}>
+    // params: {
+    //   product: this.product
+    // }
+    ///axios.delete(`/users/${}`)
+  }
+
+  async function handleConfirmationSubmit(e) {
+    e.preventDefault();
+    try {
+      const response = await axios.post('/users/verifyPassword', { password: deletePassword })
+      logout();
+      setShowConfirmation(false);
+      dispatch(setUser({}));
+      setDeletePassword('');
+      setErrDeletePassword('');
+      showMessage(response.data);
+      // history.push('/deleteReason')
+    } catch (e) {
+      if (e.response.status === 401 && e.response.data === 'Incorrect password') return setErrDeletePassword(e.response.data);
+      setShowConfirmation(false);
+      setDeletePassword('');
+      setErrDeletePassword('');
+      if (e.response.status === 404 && e.response.data.includes('There is no user with the id')) showMessage(e.response.data)
+      showMessage('Sorry, an error ocurred')
+    }
+  }
+
+  async function changePassword(e) {
+    e.preventDefault();
+
+  }
+
+  return (
+    <>
+      <div className={s.container}>
+        <div className={s.content}>
+          <h1 className={s.title}>Edit profile</h1>
+          <Link to={`/${user.username}`} className={`btn btn-primary ${s.goProfileButton}`}>Go to my profile</Link>
+          <div className={s.columns}>
+            <div className={s.imageContainer}>
+
+              <div className={s.profilePictureEditor}>
+                <label className={s.labelProfile} htmlFor="nameValue">Profile picture</label>
+                <div className={`${s.containerProfileImage} ${errPhoto ? '' : 'mb-3'}`}>
+                  {
+                    uploading ?
+                      <div className={s.uploadingContainer}>
+                        <img className={s.uploadingGif} src={loading} alt='User profile'></img>
+                      </div>
+                      :
+                      <img className={s.profilePic} src={photo} alt='User profile'></img>
+                  }
+                </div>
+                {errPhoto ? <small className={s.error}>{errPhoto}</small> : null}
                 {
-                  uploading ?
-                    <div className={s.uploadingContainer}>
-                      <img className={s.uploadingGif} src={loading} alt='User profile'></img>
+                  !changedPhoto ?
+                    <div className={`w-100 btn btn-primary ${uploading ? 'disabled' : ''}`} onClick={() => document.getElementById('inputFile').click()}>
+                      <span>Upload new profile picture</span>
+                      <input id="inputFile" type="file" className={s.fileInput} onChange={changePhoto} accept="image/png, image/gif, image/jpeg, image/jpg" />
                     </div>
                     :
-                    <img className={s.profilePic} src={photo} alt='User profile'></img>
+                    <>
+                      {
+                        guardando ?
+                          <div className={`w-100 btn btn-primary mb-3 disabled`}>
+                            <img src={loadingHorizontal} className={s.loadingHorizontal} alt='Loading'></img>
+                          </div>
+                          :
+                          <>
+                            <div className={`w-100 btn btn-secondary mb-3 ${uploading ? 'disabled' : ''}`} onClick={() => { document.getElementById('inputFileExtra').click() }}>
+                              <span>Upload another profile picture</span>
+                              <input id="inputFileExtra" type="file" className={s.fileInput} onChange={changePhoto} accept="image/png, image/gif, image/jpeg, image/jpg" />
+                            </div>
+
+                            <button className={`w-100 btn btn-secondary mb-3`} disabled={uploading} onClick={async () => { dispatch(setUser(await getUserInfo())); setImageFile(null); setUploading(false); setErrPhoto(''); setChangedPhoto(false); setPhoto(user.profilepic); deleteImage('cancelUser', user.username); }}>Cancel changes</button>
+
+                            <button className={`w-100 btn btn-primary`} disabled={uploading} onClick={() => { setNewProfilePic() }}>Save changes</button>
+                          </>
+                      }
+
+                    </>
                 }
               </div>
-              {errPhoto ? <small className={s.error}>{errPhoto}</small> : null}
-              {
-                !changedPhoto ?
-                  <div className={`w-100 btn btn-primary ${uploading ? 'disabled' : ''}`} onClick={() => document.getElementById('inputFile').click()}>
-                    <span>Upload new profile picture</span>
-                    <input id="inputFile" type="file" className={s.fileInput} onChange={changePhoto} accept="image/png, image/gif, image/jpeg, image/jpg" />
-                  </div>
-                  :
-                  <>
-                    {
-                      guardando ?
-                        <div className={`w-100 btn btn-primary mb-3 disabled`}>
-                          <img src={loadingHorizontal} className={s.loadingHorizontal} alt='Loading'></img>
-                        </div>
-                        :
-                        <>
-                          <button className={`w-100 btn btn-primary mb-3`} disabled={uploading} onClick={() => { setNewProfilePic() }}>Save changes</button>
-                          
-                          <div className={`w-100 btn btn-secondary mb-3 ${uploading ? 'disabled' : ''}`} onClick={() => { document.getElementById('inputFileExtra').click() }}>
-                            <span>Upload another profile picture</span>
-                            <input id="inputFileExtra" type="file" className={s.fileInput} onChange={changePhoto} accept="image/png, image/gif, image/jpeg, image/jpg" />
-                          </div>
 
-                          <button className={`w-100 btn btn-secondary`} disabled={uploading} onClick={async () => { dispatch(setUser(await getUserInfo())); setImageFile(null); setUploading(false); setErrPhoto(''); setChangedPhoto(false); setPhoto(user.profilepic); }}>Cancel changes</button>
-                        </>
-                    }
-
-                  </>
-              }
-            </div>
-
-            <div className={`w-100 ${s.emailInfo}`}>
-              <label className={s.label} htmlFor="emailValue">Email</label>
-              <p className={`form-control mb-0`}>{email}</p>
-            </div>
-
-            <div className={s.bottomContent}>
-              <button className={`w-100 btn btn-primary mb-3`} onClick={() => { setNewProfilePic() }}>Change password</button>
-              <button className={`w-100 btn btn-danger`} onClick={() => { setNewProfilePic() }}>Delete account</button>
-            </div>
-
-          </div>
-          <div className={s.formContainer}>
-
-            <div className={s.errorGlobalContainer}>
-              {errGlobal ? <p className={s.errorGlobal}>{errGlobal}</p> : null}
-            </div>
-
-            <form onSubmit={handleSubmit} className={s.infoForm}>
-              <div className={errName ? '' : 'mb-3'}>
-                <label className={s.label} htmlFor="nameValue">Name</label>
-                <input id="nameValue" value={name} name='nameValue' onChange={handleChange} className={`form-control ${s.input} ${errName ? s.errorInput : ''}`} />
-              </div>
-              {errName ? <small className={s.error}>{errName}</small> : null}
-
-              <div className={errLastname ? '' : 'mb-3'}>
-                <label className={s.label} htmlFor="lastnameValue">Last Name</label>
-                <input id="lastnameValue" value={lastname} name='lastnameValue' onChange={handleChange} className={`form-control ${s.input} ${errLastname ? s.errorInput : ''}`} />
-              </div>
-              {errLastname ? <small className={s.error}>{errLastname}</small> : null}
-
-              <div className={errUsername ? '' : 'mb-3'}>
-                <label className={s.label} htmlFor="usernameValue">Username</label>
-                <input id="usernameValue" value={username} name='usernameValue' onChange={handleChange} className={`form-control ${s.input} ${errUsername ? s.errorInput : ''}`} />
-              </div>
-              {errUsername ? <small className={s.error}>{errUsername}</small> : null}
-
-              <div className='mb-3'>
-                <label className={s.label} htmlFor="countryValue">Country</label>
-                <select id="countryValue" name='countryValue' value={country} onChange={handleChange} className={`form-control ${s.input}`}>
-                  {countries.map(c => {
-                    return <option key={c.code} value={c.name}>{c.name}</option>
-                  })}
-                </select>
+              <div className={`w-100 ${s.emailInfo}`}>
+                <label className={s.label} htmlFor="emailValue">Email</label>
+                <p className={`form-control mb-0`}>{email}</p>
               </div>
 
-              <input type="submit" value="Save changes" disabled={buttonState} className={`w-100 btn btn-primary mb-3`} />
-            </form>
+              <div className={s.bottomContent}>
+                <button className={`w-100 btn btn-primary mb-3`} onClick={() => { changePassword() }}>Change password</button>
+                <button className={`w-100 btn btn-danger`} onClick={() => setShowDelete(true)}>Delete account</button>
+              </div>
+
+            </div>
+            <div className={s.formContainer}>
+
+              <div className={s.errorGlobalContainer}>
+                {errGlobal ? <p className={s.errorGlobal}>{errGlobal}</p> : null}
+              </div>
+
+              <form onSubmit={handleSubmit} className={s.infoForm}>
+                <div className={errName ? '' : 'mb-3'}>
+                  <label className={s.label} htmlFor="nameValue">Name</label>
+                  <input id="nameValue" value={name} name='nameValue' onChange={handleChange} className={`form-control ${s.input} ${errName ? s.errorInput : ''}`} />
+                </div>
+                {errName ? <small className={s.error}>{errName}</small> : null}
+
+                <div className={errLastname ? '' : 'mb-3'}>
+                  <label className={s.label} htmlFor="lastnameValue">Last Name</label>
+                  <input id="lastnameValue" value={lastname} name='lastnameValue' onChange={handleChange} className={`form-control ${s.input} ${errLastname ? s.errorInput : ''}`} />
+                </div>
+                {errLastname ? <small className={s.error}>{errLastname}</small> : null}
+
+                <div className={errUsername ? '' : 'mb-3'}>
+                  <label className={s.label} htmlFor="usernameValue">Username</label>
+                  <input id="usernameValue" value={username} name='usernameValue' onChange={handleChange} className={`form-control ${s.input} ${errUsername ? s.errorInput : ''}`} />
+                </div>
+                {errUsername ? <small className={s.error}>{errUsername}</small> : null}
+
+                <div className='mb-3'>
+                  <label className={s.label} htmlFor="countryValue">Country</label>
+                  <select id="countryValue" name='countryValue' value={country} onChange={handleChange} className={`form-control ${s.input}`}>
+                    {countries.map(c => {
+                      return <option key={c.code} value={c.name}>{c.name}</option>
+                    })}
+                  </select>
+                </div>
+
+                <input type="submit" value="Save changes" disabled={buttonState} className={`w-100 btn btn-primary mb-3`} />
+              </form>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+
+      <Modal
+        show={showDelete}
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+        backdrop="static"
+        keyboard={false}
+        onHide={() => setShowDelete(false)}
+      >
+        <Modal.Header>
+          <Modal.Title>Delete your account?</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to delete your account?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowDelete(false)}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={() => { setShowDelete(false); user.type === 'Google' ? setShowEmailSent(true) : setShowConfirmation(true) }}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal
+        show={showConfirmation}
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+        keyboard={false}
+        onHide={() => { setErrDeletePassword(''); setDeletePassword(''); setShowConfirmation(false); }}
+      >
+        <Modal.Header>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Please, confirm your password to delete your account
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <form onSubmit={handleConfirmationSubmit}>
+            <div className={errDeletePassword ? '' : 'mb-3'}>
+              <label className={s.label} htmlFor="passDeleteValue">Password</label>
+              <div className={s.test}>
+                <input id="passDeleteValue" value={deletePassword} name='passDeleteValue' type={showDeletePassword ? 'text' : 'password'} onChange={handleChange} className={`form-control ${s.inputPassword} ${errDeletePassword ? s.errorInput : ''}`} />
+                <IonIcon icon={showDeletePassword ? eyeOutline : eyeOffOutline} className={s.iconDumb} onClick={() => showDeletePassword ? setShowDeletePassword(false) : setShowDeletePassword(true)}></IonIcon>
+              </div>
+            </div>
+            {errDeletePassword ? <small className={s.error}>{errDeletePassword}</small> : null}
+
+            <input type="submit" value="Confirm password" disabled={!deletePassword || errDeletePassword} className={`w-100 btn btn-primary`} />
+          </form>
+        </Modal.Body>
+      </Modal>
+
+      <Modal
+        show={showEmailSent}
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+        keyboard={false}
+        onHide={() => setShowEmailSent(false)}
+      >
+        <Modal.Header>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Please, check your email because we have sent you a link to delete your account
+          </Modal.Title>
+        </Modal.Header>
+      </Modal>
+    </>
   );
 }
+
+//disabled={modalButtonState}

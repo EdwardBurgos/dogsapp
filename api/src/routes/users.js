@@ -6,12 +6,32 @@ const countries = require('../extras/countries')
 const passport = require('passport');
 const { Op } = require('sequelize');
 const router = Router();
+const { deleteImage } = require('../extras/firebase')
 
 // This route allows us to get the email, photo and name of the authentciated user
-router.get('/info', passport.authenticate('jwt', { session: false }), (req, res, next) => {
+router.get('/info', passport.authenticate('jwt', { session: false }), (req, res) => {
     const { id, fullname, name, lastname, profilepic, username, country, email, dogs, pets, type, likes } = req.user;
-    res.status(200).json({ success: true, msg: "You are successfully authenticated to this route!", user: { id, fullname, name, lastname, profilepic, username, country, email, dogs: dogs.map(e => e.dataValues.id), pets: pets.map(e => e.dataValues.id), likes } });
+    res.status(200).json({ success: true, msg: "You are successfully authenticated to this route!", user: { id, fullname, name, lastname, profilepic, username, country, email, type, dogs: dogs.map(e => e.dataValues.id), pets: pets.map(e => e.dataValues.id), likes } });
 });
+
+// This route allows us to verify if the password of an user if correct or not
+router.post('/verifyPassword', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+    if (utils.validPassword(req.body.password, req.user.hash, req.user.salt)) {
+        try {
+            const user = await User.findOne({where: {id: req.user.id}})
+            if (user) {
+                await user.destroy();
+                return res.send('Your account was deleted successfully')
+            } else {
+                return res.status(404).send(`There is no user with the id ${id}`)
+            }
+        } catch (e) {
+            next()
+        }
+    } else {
+        return res.status(401).send('Incorrect password')
+    }
+})
 
 // This route returns true (if there is no user with that email) OR false is there is one
 router.get('/availableEmail/:email', async (req, res, next) => {
@@ -173,15 +193,20 @@ router.post('/changePassword', async (req, res) => {
     }
 })
 
-router.post('/changePhoto', passport.authenticate('jwt', { session: false }), async (req, res) => {
+router.put('/changePhoto', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
     try {
         const user = await User.findOne({ where: { id: req.user.id } });
         if (user) {
             const updated = await user.update({ profilepic: req.body.profilePic })
-            return updated ? res.send('Your profile picture was updated successfully') : res.status(500).send('Sorry, your profile picture could not be updated')
+            if (updated) {
+                deleteImage('testsProfilePictures', user.username);
+                return res.send('Your profile picture was updated successfully');
+            } else {
+                return res.status(500).send('Sorry, your profile picture could not be updated')
+            } 
         } else { return res.status(404).send('User not found') }
     } catch (e) {
-        next()
+        next(e)
     }
 })
 
@@ -198,8 +223,10 @@ router.put('/updateUserInfo', passport.authenticate('jwt', { session: false }), 
     } catch (e) {
         next()
     }
-
-
 })
+
+// router.delete('/:user') {
+
+// }
 
 module.exports = router;

@@ -9,7 +9,7 @@ import loading from '../../img/loadingGif.gif';
 import { getTemperaments, showMessage, validURL, getUserInfo, getDogsNames } from '../../extras/globalFunctions';
 import { setPetBreed, setUser } from '../../actions';
 import 'react-toastify/dist/ReactToastify.css';
-import { uploadConfirmedDogBreedImage } from '../../extras/firebase';
+import { uploadConfirmedPetImage } from '../../extras/firebase';
 import { v4 as uuidv4 } from 'uuid';
 import { Modal } from 'react-bootstrap'
 
@@ -122,7 +122,7 @@ export default function RegisterPet() {
         if (e.target.files[0]) {
             if (name) {
                 setUploading(true)
-                const urlPhoto = await uploadConfirmedDogBreedImage(photoImageName, e.target.files[0])
+                const urlPhoto = await uploadConfirmedPetImage(photoImageName, e.target.files[0])
                 setUploading(false);
                 if (validURL(urlPhoto)) {
                     setPhoto(urlPhoto);
@@ -153,7 +153,7 @@ export default function RegisterPet() {
                                 <form onSubmit={handleSubmit} className={s.form}>
                                     <div className={nameErr ? '' : 'mb-3'}>
                                         <label className={s.label}>Name</label>
-                                        <input value={name} placeholder="Insert name" className={nameErr ? s.errorInput : s.formInput} type="text" onChange={handleChange} name="namePet"></input>
+                                        <input value={name} className={nameErr ? s.errorInput : s.formInput} type="text" onChange={handleChange} name="namePet"></input>
                                     </div>
                                     {nameErr ? <small className={s.error}>{nameErr}</small> : null}
 
@@ -167,7 +167,7 @@ export default function RegisterPet() {
                                                             {dogId === 'default' ? <option key='default' value='default'>Select a dog breed</option> : null}
                                                             {dogs.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
                                                         </select>
-                                                        <button disabled={dogId === 'default'} className={`btn btn-primary ${s.breedMoreInfo}`} onClick={e => { e.preventDefault(); setShowModal(true); }}>More information</button>
+                                                        <button disabled={dogId === 'default'} className={`btn btn-secondary ${s.breedMoreInfo}`} onClick={e => { e.preventDefault(); setShowModal(true); }}>More information</button>
                                                     </div>                                                
                                                 </div>
                                             </>
