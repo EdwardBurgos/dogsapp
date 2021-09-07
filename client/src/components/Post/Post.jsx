@@ -35,7 +35,7 @@ export default function Post({ name, img, id, likesCount, owner, likes, origin, 
     if (['ownerInfo', 'ownerInfoPhoto', 'ownerInfoName', 'ownerUsername', 'ownerUsername', 'breed'].includes(elementId)) return;
     if (elementId === 'elipsis') return setShowOptions(true);
     if (elementId === 'likeIcon') return;
-    if (elementId === 'likesTotal') { setTargetOrigin('likesInfo'); return Object.keys(user).length ? setShowModal(true) : setUnauthorized(true); }
+    if (elementId === 'likesTotal') { setTargetOrigin('likesInfo'); return likesCount !== 0 ? Object.keys(user).length ? setShowModal(true) : setUnauthorized(true) : null; }
     if (elementId === 'userInfo') return setShowModal(false);
     history.push(`/pet/${id}`)
   }
