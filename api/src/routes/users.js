@@ -7,6 +7,7 @@ const passport = require('passport');
 const { Op } = require('sequelize');
 const router = Router();
 const { deleteImage } = require('../extras/firebase')
+const { sendMail } = require('../extras/nodemailer')
 
 // This route allows us to get the email, photo and name of the authentciated user
 router.get('/info', passport.authenticate('jwt', { session: false }), (req, res) => {
@@ -15,10 +16,10 @@ router.get('/info', passport.authenticate('jwt', { session: false }), (req, res)
 });
 
 // This route allows us to verify if the password of an user if correct or not
-router.post('/verifyPassword', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+router.delete('/', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
     if (utils.validPassword(req.body.password, req.user.hash, req.user.salt)) {
         try {
-            const user = await User.findOne({where: {id: req.user.id}})
+            const user = await User.findOne({ where: { id: req.user.id } })
             if (user) {
                 await user.destroy();
                 return res.send('Your account was deleted successfully')
@@ -84,7 +85,7 @@ router.get('/:username', async (req, res, next) => {
         })
         if (user) {
             let { fullname, profilepic, country, username, pets, dogs } = user.dataValues;
-            pets = pets.map(e => Object.assign((({ id, name, photo, dog, likes}) => ({ id, name, photo, dog, likes}))(e.dataValues), {likes: e.dataValues.likes.map(e => e.dataValues ? (({ id, username, fullname, profilepic }) => ({ id, username, fullname, profilepic }))(e.dataValues.user) : null)}, {likesCount: e.dataValues.likes.length}, {dog: (({ id, name}) => ({ id, name}))(e.dataValues.dog)}));
+            pets = pets.map(e => Object.assign((({ id, name, photo, dog, likes }) => ({ id, name, photo, dog, likes }))(e.dataValues), { likes: e.dataValues.likes.map(e => e.dataValues ? (({ id, username, fullname, profilepic }) => ({ id, username, fullname, profilepic }))(e.dataValues.user) : null) }, { likesCount: e.dataValues.likes.length }, { dog: (({ id, name }) => ({ id, name }))(e.dataValues.dog) }));
             dogs = dogs.map(e => { return { id: e.dataValues.id, image: e.dataValues.image, name: e.dataValues.name, temperament: e.dataValues.temperaments.map(e => e.dataValues.name).toString().replace(/,/g, ', ') } })
             return res.send({ fullname, profilepic, country, username, pets, dogs })
         } else {
@@ -108,13 +109,69 @@ router.post('/register', async (req, res) => {
                 const saltHash = utils.genPassword(password);
                 const salt = saltHash.salt;
                 const hash = saltHash.hash;
-                const user = await User.create({ fullname, name, lastname, profilepic, username, country, email, hash, salt, type });
-                user ? res.send({ success: true, user: user.name }) : res.status(400).send({ success: false, msg: 'Sorry, an error occurred' })
+                const user = await User.create({ fullname, name, lastname, profilepic, username, country, email, hash, salt, type, verified: type === 'Google' ? true : false });
+                if (user) {
+                    if (type === 'Native') {
+                        const tokenObject = utils.issueJWT(user, 'verifyEmail');
+                        const status = await sendMail(user.name, user.email, 'verifyEmail', tokenObject)
+                        if (status !== 'Sorry, an error ocurred') return res.send({ success: true, user: user.name })
+                        return res.status(400).send({ success: false, msg: 'Sorry, an error occurred' })
+                    } else {
+                        return res.send({ success: true, user: user.name });
+                    }
+                } else {
+                    return res.status(400).send({ success: false, msg: 'Sorry, an error occurred' })
+                }
             } else { return res.status(409).send({ success: false, msg: 'There is already a user with this email' }) }
         } else { res.status(409).send({ success: false, msg: 'There is already a user with this username' }) }
     } catch (e) {
         console.log(e)
         res.status(400).send({ success: false, msg: 'Sorry, an error occurred' })
+    }
+})
+
+// This route allows us to send another verification link to the user
+router.post('/newVerificationEmail', async (req, res, next) => {
+    const { emailUsername } = req.body
+    const user = await User.findOne({
+        where: {
+            [Op.or]:
+                [
+                    { email: emailUsername },
+                    { username: emailUsername }
+                ]
+        }
+    })
+    if (user) {
+        if (user.type === "Native") {
+            if (user.verified) {
+                res.status(403).send({ success: false, msg: "This user is already verified" });
+            } else {
+                const tokenObject = utils.issueJWT(user);
+                const status = await sendMail(user.name, user.email, 'verifyEmail', tokenObject)
+                if (status !== 'Sorry, an error ocurred') return res.send(true)
+                return res.status(400).send({ success: false, msg: 'Sorry, an error occurred' })
+            }
+        } else if (user.type === "Google") {
+            res.status(403).send({ success: false, msg: `You were registered with ${user.type}, if you want define a password or login with ${user.type} again` });
+        }
+    } else {
+        return res.status(404).send({ success: false, msg: "There is no user registered with this email" });
+    }
+})
+
+// This route allows us to mark an user as verified
+router.put('/verifyUser', async (req, res, next) => {
+    try {
+        const user = await User.findOne({ where: { email: req.body.email } })
+        if (user) {
+            await user.update({ verified: true })
+            res.send('Verified')
+        } else {
+            res.status(404).send("There is no user registered with this email");
+        }
+    } catch (e) {
+        next(e)
     }
 })
 
@@ -142,18 +199,22 @@ router.post('/login', async (req, res, next) => {
             })
             if (user) {
                 if (user.type === "Native") {
-                    const isValid = utils.validPassword(req.body.password, user.hash, user.salt);
-                    if (isValid) {
-                        const tokenObject = utils.issueJWT(user);
-                        res.send({ success: true, user: user.name, token: tokenObject.token, expiresIn: tokenObject.expires });
+                    if (user.verified) {
+                        const isValid = utils.validPassword(req.body.password, user.hash, user.salt);
+                        if (isValid) {
+                            const tokenObject = utils.issueJWT(user);
+                            res.send({ success: true, user: user.name, token: tokenObject.token, expiresIn: tokenObject.expires });
+                        } else {
+                            res.status(403).send({ success: false, msg: "Incorrect password" });
+                        }
                     } else {
-                        res.status(403).send({ success: false, msg: "Incorrect password" });
+                        res.status(403).send({ success: false, msg: `Your account is not verified yet` });
                     }
                 } else if (user.type === "Google") {
                     res.status(403).send({ success: false, msg: `You were registered with ${user.type}, if you want define a password or login with ${user.type} again` });
                 }
             } else {
-                return res.status(404).send({ success: false, msg: "There is no user registered with this email" });
+                return res.status(404).send({ success: false, msg: /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(emailORusername) ? "There is no user registered with this email" : "There is no user registered with this username" });
             }
         }
     } catch (e) {
@@ -203,7 +264,7 @@ router.put('/changePhoto', passport.authenticate('jwt', { session: false }), asy
                 return res.send('Your profile picture was updated successfully');
             } else {
                 return res.status(500).send('Sorry, your profile picture could not be updated')
-            } 
+            }
         } else { return res.status(404).send('User not found') }
     } catch (e) {
         next(e)
@@ -224,9 +285,5 @@ router.put('/updateUserInfo', passport.authenticate('jwt', { session: false }), 
         next()
     }
 })
-
-// router.delete('/:user') {
-
-// }
 
 module.exports = router;

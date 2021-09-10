@@ -2,6 +2,8 @@ const crypto = require('crypto');
 const jsonwebtoken = require('jsonwebtoken');
 const fs = require('fs');
 const path = require('path');
+const moment = require('moment');
+
 
 const pathToKey = path.join(__dirname, '.', 'id_rsa_priv.pem');
 const PRIV_KEY = fs.readFileSync(pathToKey, 'utf8');
@@ -53,17 +55,20 @@ function genPassword(password) {
 /**
  * @param {*} user - The user object.  We need this to set the JWT `sub` payload property to the MongoDB user ID
  */
-function issueJWT(user) {
+function issueJWT(user, useCase) {
   const id = user.id;
 
-  const expiresIn = '1d';
-
+  let expiresIn = 30;
+  if (useCase === 'verifyEmail') expiresIn = 4;
+  expiresIn = moment().milliseconds(0).add(expiresIn, expiresIn === 30 ? 'days' : 'hours').valueOf()/1000
+  
   const payload = {
     sub: id,
-    iat: Date.now()
+    iat: Date.now(),
+    exp: expiresIn
   };
 
-  const signedToken = jsonwebtoken.sign(payload, PRIV_KEY, { expiresIn: expiresIn, algorithm: 'RS256' });
+  const signedToken = jsonwebtoken.sign(payload, PRIV_KEY, { algorithm: 'RS256' });
 
   return {
     token: "Bearer " + signedToken,
