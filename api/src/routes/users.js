@@ -147,7 +147,7 @@ router.post('/newVerificationEmail', async (req, res, next) => {
             if (user.verified) {
                 res.status(403).send({ success: false, msg: "This user is already verified" });
             } else {
-                const tokenObject = utils.issueJWT(user);
+                const tokenObject = utils.issueJWT(user, 'verifyEmail');
                 const status = await sendMail(user.name, user.email, 'verifyEmail', tokenObject)
                 if (status !== 'Sorry, an error ocurred') return res.send(true)
                 return res.status(400).send({ success: false, msg: 'Sorry, an error occurred' })

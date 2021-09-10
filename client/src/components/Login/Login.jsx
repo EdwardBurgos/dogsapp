@@ -385,7 +385,7 @@ export default function Login() {
                 onHide={() => { setShowVerify(false); history.push('/home'); }}
             >
                 <Modal.Body>
-                    <p className='mb-0'>Please, check your email because we have sent you another link to verify your email address. When you open it, you will be logged in automatically.</p>
+                    <p className='mb-0'>Please, check your email because we have sent you another link to verify your email address. When you open it, you will be logged in automatically. Remember that it is only valid for 4 hours.</p>
                 </Modal.Body>
             </Modal>
 

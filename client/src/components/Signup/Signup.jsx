@@ -127,16 +127,6 @@ export default function Signup() {
             });
             showMessage(`${availableUsername.data.user} your registration was successful`);
             setShowVerify(true);
-            // const login = await axios.post(`http://localhost:3001/users/login`, {
-            //     emailORusername: email,
-            //     password,
-            //     type: 'Native'
-            // })
-            // setLocalStorage(login.data);
-            // const user = await getUserInfo();
-            // dispatch(setUser(user))
-            // showMessage(`${login.data.user} your login was successful`);
-            // history.push('/home');
         } catch (e) {
             console.log(e)
             dispatch(setUser({}))
@@ -227,7 +217,7 @@ export default function Signup() {
                 onHide={() => {setShowVerify(false); history.push('/home');}}
             >
                 <Modal.Body>
-                    <p className='mb-0'>Please, check your email because we have sent you a link to verify your email address in order to complete your registration. When you open it, you will be logged in automatically.</p>
+                    <p className='mb-0'>Please, check your email because we have sent you a link to verify your email address in order to complete your registration. When you open it, you will be logged in automatically. Remember that it is only valid for 4 hours.</p>
                 </Modal.Body>
             </Modal>
         </>
