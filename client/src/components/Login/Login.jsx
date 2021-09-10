@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import logo from '../../img/logo.png';
-import { Link,useHistory } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import axios from '../../axiosInterceptor';
 import s from './Login.module.css';
 import { eyeOutline, eyeOffOutline } from "ionicons/icons";
@@ -31,6 +31,7 @@ export default function Login() {
     const [errUsername, setErrUsername] = useState('');
     const [modalButtonState, setModalButtonState] = useState(true);
     const [onlyPassword, setOnlyPassword] = useState(false);
+    const [showVerify, setShowVerify] = useState(false)
 
     // Variables
     const history = useHistory();
@@ -133,12 +134,12 @@ export default function Login() {
             app.auth().signOut();
             if (Object.keys(googleLogin.additionalUserInfo.profile).length) {
                 const email = googleLogin.additionalUserInfo.profile.email;
-                const availableEmail = await axios.get(`http://localhost:3001/users/availableEmail/${email}`);
+                const availableEmail = await axios.get(`/users/availableEmail/${email}`);
                 if (availableEmail.data) {
                     setGoogleProfile(googleLogin.additionalUserInfo.profile);
                     setShowModal(true);
                 } else {
-                    const logged = await axios.post(`http://localhost:3001/users/login`, {
+                    const logged = await axios.post(`/users/login`, {
                         emailORusername: email,
                         password: '',
                         type: 'Google'
@@ -150,7 +151,10 @@ export default function Login() {
                     history.push('/home');
                 }
             } else { dispatch(setUser({})); return setErrGlobal('Sorry, an error occurred'); }
-        } catch (e) { dispatch(setUser({})); return setErrGlobal('Sorry, an error occurred'); }
+        } catch (e) {
+            console.log(e)
+            dispatch(setUser({})); return setErrGlobal('Sorry, an error occurred');
+        }
     }
 
     // This function allows us to register and login with Google
@@ -159,7 +163,7 @@ export default function Login() {
         if (Object.keys(googleProfile).length) {
             try {
                 let { name, given_name, family_name, picture, email } = googleProfile;
-                const registered = await axios.post(`http://localhost:3001/users/register`, {
+                const registered = await axios.post(`/users/register`, {
                     fullname: name,
                     name: given_name,
                     lastname: family_name,
@@ -171,7 +175,7 @@ export default function Login() {
                     type: 'Google'
                 });
                 showMessage(`${registered.data.user} your registration was successful`);
-                const logged = await axios.post(`http://localhost:3001/users/login`, {
+                const logged = await axios.post(`/users/login`, {
                     emailORusername: email,
                     password: '',
                     type: 'Google'
@@ -196,7 +200,7 @@ export default function Login() {
     async function handleSubmit(e) {
         e.preventDefault();
         try {
-            const login = await axios.post(`http://localhost:3001/users/login`, {
+            const login = await axios.post(`/users/login`, {
                 emailORusername: emailUsername,
                 password,
                 type: 'Native'
@@ -209,9 +213,10 @@ export default function Login() {
         } catch (e) {
             dispatch(setUser({}));
             setButtonState(true);
+            if (e.response.status === 403 && e.response.data.msg === 'Your account is not verified yet') return setErrGlobal(e.response.data.msg)
             if (e.response.status === 403 && e.response.data.msg.includes('Google')) { setOnlyPassword(true); return setErrGlobal(e.response.data.msg) }
-            if (e.response.status === 403 && e.response.data.msg === 'Incorrect password') return setWrongCredentials(e.response.data.msg);
-            if (e.response.status === 404 && e.response.data.msg === 'There is no user registered with this email') return setWrongCredentials(e.response.data.msg)
+            if (e.response.status === 403 && e.response.data.msg === 'Incorrect password') return setErrPassword(e.response.data.msg);
+            if (e.response.status === 404 && e.response.data.msg.includes('There is no user registered with this')) return setErrEmailUsername(e.response.data.msg)
             setErrGlobal('Sorry, an error occurred');
         }
     }
@@ -220,7 +225,7 @@ export default function Login() {
     async function handleSubmitOnlyPassword(e) {
         e.preventDefault();
         try {
-            const login = await axios.post(`http://localhost:3001/users/changePassword`, {
+            const login = await axios.post(`/users/changePassword`, {
                 emailORusername: emailUsername,
                 password,
             })
@@ -239,126 +244,151 @@ export default function Login() {
         }
     }
 
+    // This function allows us to send another verification link
+    async function newVerificationLink() {
+        try {
+            await axios.post('/users/newVerificationEmail', { emailUsername});
+            setShowVerify(true)
+        } catch (e) {
+            console.log('pardi', e)
+         //   if (e.response.data.msg) return setErrGlobal(e.response.data.msg)
+            setErrGlobal('Sorry, an error occurred');
+        }
+    }
+
     return (
-        <div className={s.container}>
-            {country ?
-                <div className={s.content}>
-                    <div className={s.image}>
-                        <img className={s.logo} src={logo} alt='logo' width="100%"></img>
-                    </div>
-                    <div className={s.form}>
-                        <h1 className={s.title}>Log in</h1>
-
-                        <div className={s.errorGlobalContainer}>
-                            {errGlobal ? <p className={s.errorGlobal}>{errGlobal}</p> : null}
+        <>
+            <div className={s.container}>
+                {country ?
+                    <div className={s.content}>
+                        <div className={s.image}>
+                            <img className={s.logo} src={logo} alt='logo' width="100%"></img>
                         </div>
-                        {
-                            onlyPassword ?
-                                <form onSubmit={handleSubmitOnlyPassword}>
-                                    <div className={errPassword ? '' : 'mb-3'}>
-                                        <label className={s.label} htmlFor="passValue">Password</label>
-                                        <div className={s.test}>
-                                            <input id="passValue" value={password} name='passValue' type={showPassword ? 'text' : 'password'} onChange={handleChange} className={`form-control ${s.inputPassword} ${errPassword ? s.errorInput : ''}`} />
-                                            <IonIcon icon={showPassword ? eyeOutline : eyeOffOutline} className={s.iconDumb} onClick={() => showPassword ? setShowPassword(false) : setShowPassword(true)}></IonIcon>
-                                        </div>
+                        <div className={s.form}>
+                            <h1 className={s.title}>Log in</h1>
+
+                            <div className={s.errorGlobalContainer}>
+                                {errGlobal ?
+                                    <div className={s.errorGlobal}>
+                                        <span>{errGlobal}</span>
+                                        {errGlobal === 'Your account is not verified yet' ? <><span>, please check your email to do it or click </span><a className={`${s.enlaceErr} bold`} onClick={() => newVerificationLink()}>here</a><span> to get another verification link</span></> : null}
                                     </div>
-                                    {errPassword ? <small className={s.error}>{errPassword}</small> : null}
-
-                                    <input type="submit" value="Log in" disabled={buttonState} className={`w-100 btn btn-primary mb-3`} />
-                                </form>
-                                :
-                                <form onSubmit={handleSubmit}>
-                                    <div className={errEmailUsername ? '' : 'mb-3'}>
-                                        <label className={s.label} htmlFor="emailUsernameValue">Email or username</label>
-                                        <input id="emailUsernameValue" value={emailUsername} name='emailUsernameValue' onChange={handleChange} className={`form-control ${s.input} ${errEmailUsername ? s.errorInput : ''}`} />
-                                    </div>
-                                    {errEmailUsername ? <small className={s.error}>{errEmailUsername}</small> : null}
-
-                                    <div className={errPassword ? '' : 'mb-3'}>
-                                        <label className={s.label} htmlFor="passValue">Password</label>
-                                        <div className={s.test}>
-                                            <input id="passValue" value={password} name='passValue' type={showPassword ? 'text' : 'password'} onChange={handleChange} className={`form-control ${s.inputPassword} ${errPassword ? s.errorInput : ''}`} />
-                                            <IonIcon icon={showPassword ? eyeOutline : eyeOffOutline} className={s.iconDumb} onClick={() => showPassword ? setShowPassword(false) : setShowPassword(true)}></IonIcon>
-                                        </div>
-                                    </div>
-                                    {errPassword ? <small className={s.error}>{errPassword}</small> : null}
-
-                                    <input type="submit" value="Log in" disabled={buttonState} className={`w-100 btn btn-primary mb-3`} />
-
-                                    {wrongCredentials ?
-                                        <div className={s.center}>
-                                            <small className={s.errorMessage}>{wrongCredentials}</small>
-                                        </div>
-                                        :
-                                        null
-                                    }
-                                </form>
-                        }
-
-                        <div className={s.division}>
-                            <span>Or</span>
-                        </div>
-
-                        {onlyPassword ?
-                            <div className={`w-100 btn ${s.loginOtherEmail}`} onClick={() => { setEmailUsername(''); setErrEmailUsername(''); setErrGlobal(''); setOnlyPassword(false); }}>
-                                <span>Log in with other email</span>
+                                    : null}
                             </div>
-                            :
-                            null
-                        }
+                            {
+                                onlyPassword ?
+                                    <form onSubmit={handleSubmitOnlyPassword}>
+                                        <div className={errPassword ? '' : 'mb-3'}>
+                                            <label className={s.label} htmlFor="passValue">Password</label>
+                                            <div className={s.test}>
+                                                <input id="passValue" value={password} name='passValue' type={showPassword ? 'text' : 'password'} onChange={handleChange} className={`form-control ${s.inputPassword} ${errPassword ? s.errorInput : ''}`} />
+                                                <IonIcon icon={showPassword ? eyeOutline : eyeOffOutline} className={s.iconDumb} onClick={() => showPassword ? setShowPassword(false) : setShowPassword(true)}></IonIcon>
+                                            </div>
+                                        </div>
+                                        {errPassword ? <small className={s.error}>{errPassword}</small> : null}
 
-                        <div className={`w-100 btn ${s.loginButton}`} onClick={loginConGoogle}>
-                            <img src={googleLogo} className={s.loginLogo} alt='Google Logo'></img>
-                            <span>Log in with Google</span>
+                                        <input type="submit" value="Log in" disabled={buttonState} className={`w-100 btn btn-primary mb-3`} />
+                                    </form>
+                                    :
+                                    <form onSubmit={handleSubmit}>
+                                        <div className={errEmailUsername ? '' : 'mb-3'}>
+                                            <label className={s.label} htmlFor="emailUsernameValue">Email or username</label>
+                                            <input id="emailUsernameValue" value={emailUsername} name='emailUsernameValue' onChange={handleChange} className={`form-control ${s.input} ${errEmailUsername ? s.errorInput : ''}`} />
+                                        </div>
+                                        {errEmailUsername ? <small className={s.error}>{errEmailUsername}</small> : null}
+
+                                        <div className={errPassword ? '' : 'mb-3'}>
+                                            <label className={s.label} htmlFor="passValue">Password</label>
+                                            <div className={s.test}>
+                                                <input id="passValue" value={password} name='passValue' type={showPassword ? 'text' : 'password'} onChange={handleChange} className={`form-control ${s.inputPassword} ${errPassword ? s.errorInput : ''}`} />
+                                                <IonIcon icon={showPassword ? eyeOutline : eyeOffOutline} className={s.iconDumb} onClick={() => showPassword ? setShowPassword(false) : setShowPassword(true)}></IonIcon>
+                                            </div>
+                                        </div>
+                                        {errPassword ? <small className={s.error}>{errPassword}</small> : null}
+
+                                        <input type="submit" value="Log in" disabled={buttonState} className={`w-100 btn btn-primary mb-3`} />
+                                    </form>
+                            }
+
+                            <div className={s.division}>
+                                <span>Or</span>
+                            </div>
+
+                            {onlyPassword ?
+                                <div className={`w-100 btn ${s.loginOtherEmail}`} onClick={() => { setEmailUsername(''); setErrEmailUsername(''); setErrGlobal(''); setOnlyPassword(false); }}>
+                                    <span>Log in with other email</span>
+                                </div>
+                                :
+                                null
+                            }
+
+                            <div className={`w-100 btn ${s.loginButton}`} onClick={loginConGoogle}>
+                                <img src={googleLogo} className={s.loginLogo} alt='Google Logo'></img>
+                                <span>Log in with Google</span>
+                            </div>
+
+                            <p className={s.marginBottom0}>
+                                Don't have an account?
+                                <Link className={s.registroLink} to="/signup">
+                                    Sign up
+                                </Link>
+                            </p>
+                        </div>
+                    </div>
+                    :
+                    <div className={s.contentCenter}>
+                        <img className={s.loading} src={loading} alt='loadingGif'></img>
+                    </div>
+                }
+            </div>
+
+            <Modal
+                show={showModal}
+                backdrop="static"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+                keyboard={false}
+            >
+                <Modal.Header>
+                    <Modal.Title id="contained-modal-title-vcenter">
+                        Complete this form
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <form onSubmit={handleModalSubmit}>
+                        <div className={errUsername ? '' : 'mb-3'}>
+                            <label className={s.label} htmlFor="usernameValue">Username</label>
+                            <input id="usernameValue" value={username} name='usernameValue' onChange={handleChange} className={`form-control ${s.input} ${errUsername ? s.errorInput : ''}`} />
+                        </div>
+                        {errUsername ? <small className={s.error}>{errUsername}</small> : null}
+
+                        <div className='mb-3'>
+                            <label className={s.label} htmlFor="countryValue">Country</label>
+                            <select id="countryValue" name='countryValue' value={country} onChange={handleChange} className={`form-control ${s.input}`}>
+                                {country === "Select a country" ? <option key="Select a country" value="Select a country">Select a country</option> : null}
+                                {countries.map(c => {
+                                    return <option key={c.code} value={c.name}>{c.name}</option>
+                                })}
+                            </select>
                         </div>
 
-                        <p className={s.marginBottom0}>
-                            Don't have an account?
-                            <Link className={s.registroLink} to="/signup">
-                                Sign up
-                            </Link>
-                        </p>
-                    </div>
-                    <Modal
-                        show={showModal}
-                        backdrop="static"
-                        aria-labelledby="contained-modal-title-vcenter"
-                        centered
-                        keyboard={false}
-                    >
-                        <Modal.Header>
-                            <Modal.Title id="contained-modal-title-vcenter">
-                                Complete this form
-                            </Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                            <form onSubmit={handleModalSubmit}>
-                                <div className={errUsername ? '' : 'mb-3'}>
-                                    <label className={s.label} htmlFor="usernameValue">Username</label>
-                                    <input id="usernameValue" value={username} name='usernameValue' onChange={handleChange} className={`form-control ${s.input} ${errUsername ? s.errorInput : ''}`} />
-                                </div>
-                                {errUsername ? <small className={s.error}>{errUsername}</small> : null}
+                        <input type="submit" value="Log in" disabled={modalButtonState} className={`w-100 btn btn-primary`} />
+                    </form>
+                </Modal.Body>
+            </Modal>
 
-                                <div className='mb-3'>
-                                    <label className={s.label} htmlFor="countryValue">Country</label>
-                                    <select id="countryValue" name='countryValue' value={country} onChange={handleChange} className={`form-control ${s.input}`}>
-                                        {country === "Select a country" ? <option key="Select a country" value="Select a country">Select a country</option> : null}
-                                        {countries.map(c => {
-                                            return <option key={c.code} value={c.name}>{c.name}</option>
-                                        })}
-                                    </select>
-                                </div>
+            <Modal
+                show={showVerify}
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+                keyboard={false}
+                onHide={() => { setShowVerify(false); history.push('/home'); }}
+            >
+                <Modal.Body>
+                    <p className='mb-0'>Please, check your email because we have sent you another link to verify your email address. When you open it, you will be logged in automatically.</p>
+                </Modal.Body>
+            </Modal>
 
-                                <input type="submit" value="Log in" disabled={modalButtonState} className={`w-100 btn btn-primary`} />
-                            </form>
-                        </Modal.Body>
-                    </Modal>
-                </div>
-                :
-                <div className={s.contentCenter}>
-                    <img className={s.loading} src={loading} alt='loadingGif'></img>
-                </div>
-            }
-        </div>
+        </>
     )
 }

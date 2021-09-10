@@ -11,6 +11,7 @@ import { IonIcon } from '@ionic/react';
 import { setLocalStorage, getCountry, getUserInfo, showMessage } from '../../extras/globalFunctions';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../../actions';
+import { Modal } from 'react-bootstrap';
 
 export default function Signup() {
     // Own states
@@ -28,6 +29,7 @@ export default function Signup() {
     const [errPassword, setErrPassword] = useState('');
     const [buttonState, setButtonState] = useState(true)
     const [showPassword, setShowPassword] = useState(false)
+    const [showVerify, setShowVerify] = useState(false)
 
     // Variables
     const history = useHistory();
@@ -112,7 +114,7 @@ export default function Signup() {
     async function handleSubmit(e) {
         e.preventDefault();
         try {
-            const availableUsername = await axios.post(`http://localhost:3001/users/register`, {
+            const availableUsername = await axios.post(`/users/register`, {
                 fullname: `${name} ${lastname}`,
                 name,
                 lastname,
@@ -124,17 +126,19 @@ export default function Signup() {
                 type: 'Native'
             });
             showMessage(`${availableUsername.data.user} your registration was successful`);
-            const login = await axios.post(`http://localhost:3001/users/login`, {
-                emailORusername: email,
-                password,
-                type: 'Native'
-            })
-            setLocalStorage(login.data);
-            const user = await getUserInfo();
-            dispatch(setUser(user))
-            showMessage(`${login.data.user} your login was successful`);
-            history.push('/home');
+            setShowVerify(true);
+            // const login = await axios.post(`http://localhost:3001/users/login`, {
+            //     emailORusername: email,
+            //     password,
+            //     type: 'Native'
+            // })
+            // setLocalStorage(login.data);
+            // const user = await getUserInfo();
+            // dispatch(setUser(user))
+            // showMessage(`${login.data.user} your login was successful`);
+            // history.push('/home');
         } catch (e) {
+            console.log(e)
             dispatch(setUser({}))
             setButtonState(true);
             if (e.response.status === 409 && e.response.data.msg.includes('email')) return setErrEmail(e.response.data.msg);
@@ -144,75 +148,89 @@ export default function Signup() {
     }
 
     return (
-        <div className={s.container}>
-            {country ?
-                <div className={s.content}>
-                    <div className={s.image}>
-                        <img className={s.logo} src={logo} alt='logo' width="100%"></img>
-                    </div>
-                    <div className={s.form}>
-                        <h1 className={s.title}>Sign up</h1>
-                        {errGlobal ? <p className={s.errorGlobal}>{errGlobal}</p> : null}
-                        <form onSubmit={handleSubmit} className={s.infoForm}>
-                            <div className={errName ? '' : 'mb-3'}>
-                                <label className={s.label} htmlFor="nameValue">Name</label>
-                                <input id="nameValue" value={name} name='nameValue' onChange={handleChange} className={`form-control ${s.input} ${errName ? s.errorInput : ''}`} />
-                            </div>
-                            {errName ? <small className={s.error}>{errName}</small> : null}
-
-                            <div className={errLastname ? '' : 'mb-3'}>
-                                <label className={s.label} htmlFor="lastnameValue">Last Name</label>
-                                <input id="lastnameValue" value={lastname} name='lastnameValue' onChange={handleChange} className={`form-control ${s.input} ${errLastname ? s.errorInput : ''}`} />
-                            </div>
-                            {errLastname ? <small className={s.error}>{errLastname}</small> : null}
-
-                            <div className={errUsername ? '' : 'mb-3'}>
-                                <label className={s.label} htmlFor="usernameValue">Username</label>
-                                <input id="usernameValue" value={username} name='usernameValue' onChange={handleChange} className={`form-control ${s.input} ${errUsername ? s.errorInput : ''}`} />
-                            </div>
-                            {errUsername ? <small className={s.error}>{errUsername}</small> : null}
-
-                            <div className='mb-3'>
-                                <label className={s.label} htmlFor="countryValue">Country</label>
-                                <select id="countryValue" name='countryValue' value={country} onChange={handleChange} className={`form-control ${s.input}`}>
-                                    {country === "Select a country" ? <option key="Select a country" value="Select a country">Select a country</option> : null}
-                                    {countries.map(c => {
-                                        return <option key={c.code} value={c.name}>{c.name}</option>
-                                    })}
-                                </select>
-                            </div>
-
-                            <div className={errEmail ? '' : 'mb-3'}>
-                                <label className={s.label} htmlFor="emailValue">Email</label>
-                                <input id="emailValue" type='email' value={email} name='emailValue' onChange={handleChange} className={`form-control ${s.input} ${errEmail ? s.errorInput : ''}`} />
-                            </div>
-                            {errEmail ? <small className={s.error}>{errEmail}</small> : null}
-
-                            <div className={errPassword ? '' : 'mb-3'}>
-                                <label className={s.label} htmlFor="passValue">Password</label>
-                                <div className={s.test}>
-                                    <input id="passValue" value={password} name='passValue' type={showPassword ? 'text' : 'password'} onChange={handleChange} className={`form-control ${s.inputPassword} ${errPassword ? s.errorInput : ''}`} />
-                                    <IonIcon icon={showPassword ? eyeOutline : eyeOffOutline} className={s.iconDumb} onClick={() => showPassword ? setShowPassword(false) : setShowPassword(true)}></IonIcon>
+        <>
+            <div className={s.container}>
+                {country ?
+                    <div className={s.content}>
+                        <div className={s.image}>
+                            <img className={s.logo} src={logo} alt='logo' width="100%"></img>
+                        </div>
+                        <div className={s.form}>
+                            <h1 className={s.title}>Sign up</h1>
+                            {errGlobal ? <p className={s.errorGlobal}>{errGlobal}</p> : null}
+                            <form onSubmit={handleSubmit} className={s.infoForm}>
+                                <div className={errName ? '' : 'mb-3'}>
+                                    <label className={s.label} htmlFor="nameValue">Name</label>
+                                    <input id="nameValue" value={name} name='nameValue' onChange={handleChange} className={`form-control ${s.input} ${errName ? s.errorInput : ''}`} />
                                 </div>
-                            </div>
-                            {errPassword ? <small className={s.error}>{errPassword}</small> : null}
+                                {errName ? <small className={s.error}>{errName}</small> : null}
 
-                            <input type="submit" value="Sign up" disabled={buttonState} className={`w-100 btn btn-primary mb-3`} />
-                        </form>
-                        <p className={s.marginBottom0}>
-                            Already have an account?
-                            <Link className={s.registroLink} to='/login'>
-                                Log in
-                            </Link>
-                        </p>
+                                <div className={errLastname ? '' : 'mb-3'}>
+                                    <label className={s.label} htmlFor="lastnameValue">Last Name</label>
+                                    <input id="lastnameValue" value={lastname} name='lastnameValue' onChange={handleChange} className={`form-control ${s.input} ${errLastname ? s.errorInput : ''}`} />
+                                </div>
+                                {errLastname ? <small className={s.error}>{errLastname}</small> : null}
+
+                                <div className={errUsername ? '' : 'mb-3'}>
+                                    <label className={s.label} htmlFor="usernameValue">Username</label>
+                                    <input id="usernameValue" value={username} name='usernameValue' onChange={handleChange} className={`form-control ${s.input} ${errUsername ? s.errorInput : ''}`} />
+                                </div>
+                                {errUsername ? <small className={s.error}>{errUsername}</small> : null}
+
+                                <div className='mb-3'>
+                                    <label className={s.label} htmlFor="countryValue">Country</label>
+                                    <select id="countryValue" name='countryValue' value={country} onChange={handleChange} className={`form-control ${s.input}`}>
+                                        {country === "Select a country" ? <option key="Select a country" value="Select a country">Select a country</option> : null}
+                                        {countries.map(c => {
+                                            return <option key={c.code} value={c.name}>{c.name}</option>
+                                        })}
+                                    </select>
+                                </div>
+
+                                <div className={errEmail ? '' : 'mb-3'}>
+                                    <label className={s.label} htmlFor="emailValue">Email</label>
+                                    <input id="emailValue" type='email' value={email} name='emailValue' onChange={handleChange} className={`form-control ${s.input} ${errEmail ? s.errorInput : ''}`} />
+                                </div>
+                                {errEmail ? <small className={s.error}>{errEmail}</small> : null}
+
+                                <div className={errPassword ? '' : 'mb-3'}>
+                                    <label className={s.label} htmlFor="passValue">Password</label>
+                                    <div className={s.test}>
+                                        <input id="passValue" value={password} name='passValue' type={showPassword ? 'text' : 'password'} onChange={handleChange} className={`form-control ${s.inputPassword} ${errPassword ? s.errorInput : ''}`} />
+                                        <IonIcon icon={showPassword ? eyeOutline : eyeOffOutline} className={s.iconDumb} onClick={() => showPassword ? setShowPassword(false) : setShowPassword(true)}></IonIcon>
+                                    </div>
+                                </div>
+                                {errPassword ? <small className={s.error}>{errPassword}</small> : null}
+
+                                <input type="submit" value="Sign up" disabled={buttonState} className={`w-100 btn btn-primary mb-3`} />
+                            </form>
+                            <p className={s.marginBottom0}>
+                                Already have an account?
+                                <Link className={s.registroLink} to='/login'>
+                                    Log in
+                                </Link>
+                            </p>
+                        </div>
                     </div>
-                </div>
-                :
-                <div className={s.contentCenter}>
-                    <img className={s.loading} src={loading} alt='loadingGif'></img>
-                </div>
-            }
-        </div>
+                    :
+                    <div className={s.contentCenter}>
+                        <img className={s.loading} src={loading} alt='loadingGif'></img>
+                    </div>
+                }
+            </div>
+
+            <Modal
+                show={showVerify}
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+                keyboard={false}
+                onHide={() => {setShowVerify(false); history.push('/home');}}
+            >
+                <Modal.Body>
+                    <p className='mb-0'>Please, check your email because we have sent you a link to verify your email address in order to complete your registration. When you open it, you will be logged in automatically.</p>
+                </Modal.Body>
+            </Modal>
+        </>
     )
 }
 

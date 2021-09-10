@@ -26,7 +26,7 @@ export default function Detail({ id }) {
     useEffect(() => {
         async function findDog(id) {
             try {
-                let response = await axios.get(`http://localhost:3001/dogs/${id}`);
+                let response = await axios.get(`/dogs/${id}`);
                 dispatch(setCurrentDog(response.data));
             } catch (e) {
                 if (e.response.status === 404 && e.response.data === `There is no dog breed with the id ${id}`) return setErrGlobal(e.response.data)

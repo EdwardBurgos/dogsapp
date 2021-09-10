@@ -82,7 +82,7 @@ export default function RegisterPet() {
     useEffect(() => {
         async function findDog(dogId) {
             try {
-                let response = await axios.get(`http://localhost:3001/dogs/${dogId}`);
+                let response = await axios.get(`/dogs/${dogId}`);
                 setSelectedDog(response.data);
             } catch (e) {
                 if (e.response.status === 404 && e.response.data === `There is no dog breed with the id ${dogId}`) return showMessage(e.response.data)

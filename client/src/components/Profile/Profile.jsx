@@ -183,7 +183,7 @@ export default function Profile() {
   async function handleConfirmationSubmit(e) {
     e.preventDefault();
     try {
-      const response = await axios.post('/users/verifyPassword', { password: deletePassword })
+      const response = await axios.delete('/users/',  {data: {password: deletePassword}})
       logout();
       setShowConfirmation(false);
       dispatch(setUser({}));
@@ -204,6 +204,9 @@ export default function Profile() {
   async function changePassword(e) {
     e.preventDefault();
 
+  }
+
+  async function sendEmailConfirmation() {
   }
 
   return (
@@ -328,7 +331,7 @@ export default function Profile() {
           <Button variant="secondary" onClick={() => setShowDelete(false)}>
             Cancel
           </Button>
-          <Button variant="danger" onClick={() => { setShowDelete(false); user.type === 'Google' ? setShowEmailSent(true) : setShowConfirmation(true) }}>
+          <Button variant="danger" onClick={async () => { setShowDelete(false); if (user.type === 'Google') {await sendEmailConfirmation(); setShowEmailSent(true); } else { setShowConfirmation(true); }}}>
             Delete
           </Button>
         </Modal.Footer>
@@ -369,11 +372,9 @@ export default function Profile() {
         keyboard={false}
         onHide={() => setShowEmailSent(false)}
       >
-        <Modal.Header>
-          <Modal.Title id="contained-modal-title-vcenter">
-            Please, check your email because we have sent you a link to delete your account
-          </Modal.Title>
-        </Modal.Header>
+        <Modal.Body>
+            <p className={s.message}>Please, check your email because we have sent you a link to delete your account</p>
+          </Modal.Body>
       </Modal>
     </>
   );

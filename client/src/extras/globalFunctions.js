@@ -51,10 +51,9 @@ export async function getUserInfo(cancelToken) {
 
 export function setLocalStorage(responseObj) {
     // Adds the expiration time defined on the JWT to the current moment
-    const expiresAt = moment().add(Number.parseInt(responseObj.expiresIn), 'days');
-
+    //const expiresAt = moment().add(Number.parseInt(responseObj.expiresIn), 'seconds');
     localStorage.setItem('token', responseObj.token);
-    localStorage.setItem("expiration", JSON.stringify(expiresAt.valueOf()));
+    localStorage.setItem("expiration", JSON.stringify(responseObj.expiresIn * 1000));
 }
 
 export function logout() {

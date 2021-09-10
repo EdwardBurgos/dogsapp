@@ -252,3 +252,9 @@
   display: inline-block;
   margin-bottom: 16px;
 }
+
+.enlaceErr, .enlaceErr:hover, .enlaceErr:active {
+ text-decoration: none;
+ color: #842029;
+ cursor: pointer;
+}

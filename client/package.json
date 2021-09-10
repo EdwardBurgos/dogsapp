@@ -10,6 +10,7 @@
     "@wojtekmaj/enzyme-adapter-react-17": "^0.6.2",
     "axios-mock-adapter": "^1.19.0",
     "bootstrap": "^5.0.2",
+    "dotenv": "^10.0.0",
     "firebase": "^8.9.1",
     "ionicons": "^5.5.2",
     "moment": "^2.29.1",

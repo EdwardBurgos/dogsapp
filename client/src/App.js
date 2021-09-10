@@ -1,7 +1,7 @@
 import s from './App.module.css';
 import axios from './axiosInterceptor';
-import { Route, Redirect, Switch } from 'react-router-dom';
-import { getUserInfo } from './extras/globalFunctions';
+import { Route, Redirect, Switch, useLocation } from 'react-router-dom';
+import { getUserInfo, getExpiration } from './extras/globalFunctions';
 import { useEffect } from 'react';
 import { setUser } from './actions';
 import { useDispatch, useSelector } from 'react-redux';
@@ -17,6 +17,7 @@ import RegisterPet from './components/RegisterPet/RegisterPet';
 import EditPet from './components/EditPet/EditPet';
 import User from './components/User/User';
 import Pet from './components/Pet/Pet';
+import VerifyEmail from './components/VerifyEmail/VerifyEmail';
 
 function App() {
   // Redux states
@@ -24,6 +25,7 @@ function App() {
 
   // Variables
   const dispatch = useDispatch();
+  let query = new URLSearchParams(useLocation().search);
 
   // This hook is executed every time the page is reloaded
   useEffect(() => {
@@ -55,7 +57,9 @@ function App() {
                 <Route path="/about" component={About} />
                 <Route path="/profile">{Object.keys(user).length ? <Profile /> : <Redirect to="/login" />}</Route>
                 <Route path="/login">{Object.keys(user).length ? <Redirect to="/profile" /> : <Login />}</Route>
-                <Route path="/signup">{Object.keys(user).length ? <Redirect to="/profile" /> : <Signup />}</Route>
+                <Route path="/signup" >{Object.keys(user).length ? <Redirect to="/profile" /> : <Signup />}</Route>
+                <Route path="/verifyEmail/:token" render={({ match }) => <VerifyEmail token={match.params.token} expires={query.get("expires")}/>} />
+                {/* <Route path="/verifyEmail/:token" render={({ match }) =>  ? <EditPet id={match.params.id} /> : <Redirect to="/home"/> }></Route> */}
                 <Route path="/:username" render={({ match }) => <User username={match.params.username} /> }/>
               </Switch>
             </div>
