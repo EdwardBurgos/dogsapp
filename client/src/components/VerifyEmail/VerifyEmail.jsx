@@ -24,6 +24,7 @@ export default function VerifyEmail({ token, reason, expires }) {
     const [errNewPassword, setErrNewPassword] = useState('')
     const [showNewPassword, setShowNewPassword] = useState(false)
     const [userInfo, setUserInfo] = useState({})
+    const [passwordChanged, setPasswordChanged] = useState(false)
     // const user = useSelector(state => state.user)
 
     // Hooks
@@ -31,23 +32,41 @@ export default function VerifyEmail({ token, reason, expires }) {
         async function loginUser() {
             if (token && expires) {
                 try {
-                    setLocalStorage({ token, expiresIn: expires });
-                    const user = await getUserInfo();
-                    if (reason !== 'resetPassword') {
-                        if (reason === 'verifyEmail') await axios.put('/users/verifyUser', { email: user.email })
-                        dispatch(setUser(user))
-                        history.push('/home')
+                    if (reason === 'verifyEmail') {
+                        const oldToken = localStorage.getItem("token")
+                        const oldExpiration = localStorage.getItem("expiration")
+                        setLocalStorage({ token, expiresIn: expires });
+                        const user = await getUserInfo()
+                        await axios.put('/users/verifyUser', { email: user.email })
+                        showMessage(`${user.fullname} your account was verified`)
+                        setLocalStorage({ token: oldToken, expiresIn: oldExpiration });
+                        return history.push('/home')
                     } else {
-                        setUserInfo(user)
+                        if (!localStorage.getItem("token") && !localStorage.getItem("expiration")) {
+                            setLocalStorage({ token, expiresIn: expires });
+                        } else {
+                            const user = await getUserInfo()
+                            if (Object.keys(user).length) {
+                                showMessage('Sorry, another user is logged in')
+                                return history.push('/home')
+                            }
+                        }
+                        const user = await getUserInfo();
+                        if (reason !== 'resetPassword') {
+                            dispatch(setUser(user))
+                            history.push('/home')
+                        } else {
+                            logout()
+                            setUserInfo(user)
+                        }
                     }
                 } catch (e) {
-                    showMessage('Sorry, an error ocurred during your account verification')
+                    showMessage('Sorry, an error ocurred')
                 }
 
             }
         }
         loginUser()
-        return () => logout()
     }, [])
 
     // This function allows us to handle the changes in the form
@@ -79,6 +98,7 @@ export default function VerifyEmail({ token, reason, expires }) {
         showMessage(`${login.data.user} your password was updated successfully`);
         showMessage(`${login.data.user} your login was successful`);
         setLocalStorage(login.data);
+        setPasswordChanged(true)
         const user = await getUserInfo();
         dispatch(setUser(user))
         history.push('/home');
