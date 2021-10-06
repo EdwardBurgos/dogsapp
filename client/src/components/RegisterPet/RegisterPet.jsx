@@ -209,7 +209,7 @@ export default function RegisterPet() {
                             :
                             <div className={s.contentCenter}>
                                 <p>To be able to register your pet you need to be logged in.</p>
-                                <Link to="/login" className={s.loginButton}>Log in</Link>
+                                <Link to="/login" className={`${s.loginButton} btn btn-primary`}>Log in</Link>
                             </div>
                         :
                         <div className={s.contentCenter}>

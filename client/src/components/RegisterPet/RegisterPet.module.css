@@ -8,14 +8,9 @@
   } 
   
   .loginButton {
-    background-color: #2962ff;
-    color: white;
-    padding: 10px;
     width: 100%;
     display: block;
     text-decoration: none;
-    border-radius: 1rem;
-    border: 1px solid transparent;
   }
   
   .loginButton:hover {
