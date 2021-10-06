@@ -2,7 +2,7 @@ import s from './VerifyEmail.module.css';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom'
-import { setLocalStorage, getCountry, getUserInfo, showMessage } from '../../extras/globalFunctions';
+import { setLocalStorage, getCountry, getUserInfo, showMessage, logout } from '../../extras/globalFunctions';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUser } from '../../actions';
 import axios from '../../axiosInterceptor';
@@ -47,6 +47,7 @@ export default function VerifyEmail({ token, reason, expires }) {
             }
         }
         loginUser()
+        return () => logout()
     }, [])
 
     // This function allows us to handle the changes in the form
