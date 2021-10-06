@@ -1,7 +1,7 @@
 import s from './App.module.css';
 import axios from './axiosInterceptor';
 import { Route, Redirect, Switch, useLocation } from 'react-router-dom';
-import { getUserInfo, getExpiration } from './extras/globalFunctions';
+import { getUserInfo, getExpiration, logout } from './extras/globalFunctions';
 import { useEffect } from 'react';
 import { setUser } from './actions';
 import { useDispatch, useSelector } from 'react-redux';
@@ -29,6 +29,7 @@ function App() {
 
   // This hook is executed every time the page is reloaded
   useEffect(() => {
+    
     const cancelToken = axios.CancelToken;
     const source = cancelToken.source();
     async function checkLog() {
@@ -38,7 +39,10 @@ function App() {
       }
     }
     checkLog();
-    return () => source.cancel("Unmounted");
+    return () => {
+      logout();
+      source.cancel("Unmounted");
+    }
   }, [dispatch])
 
   return (

@@ -163,7 +163,7 @@ export default function Pet({ id }) {
                 <Modal.Header>
                     <Modal.Title>Sorry, you need to be logged in to like a pet</Modal.Title>
                 </Modal.Header>
-                <Modal.Body className={s.centeredInfoModal}>
+                <Modal.Body>
                     <Link to='/login' className='btn btn-primary w-100'>Log in</Link>
                 </Modal.Body>
             </Modal>

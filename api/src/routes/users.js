@@ -254,6 +254,30 @@ router.post('/changePassword', async (req, res) => {
     }
 })
 
+// This route allows us to change the password
+router.post('/changeCurrentPassword', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+    try {
+        const { newPassword, currentPassword } = req.body;
+        console.log(newPassword)
+        if (utils.validPassword(currentPassword, req.user.hash, req.user.salt)) {
+            const saltHash = utils.genPassword(newPassword)
+            if (utils.validPassword(newPassword, req.user.hash, req.user.salt)) return res.status(409).send('Provide a password different from your current password') 
+            const user = await User.findOne({ where: { id: req.user.id } })
+            if (user) {
+                const updated = await user.update({ salt: saltHash.salt, hash: saltHash.hash });
+                return updated ? res.send('Your password was updated successfully') : next()
+            } else {
+                return res.status(404).send(`There is no user with the id ${id}`)
+            }
+        } else {
+            return res.status(401).send('Incorrect password')
+        }
+    } catch (e) {
+        console.log(e)
+        next();
+    }
+})
+
 router.put('/changePhoto', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
     try {
         const user = await User.findOne({ where: { id: req.user.id } });

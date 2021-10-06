@@ -5,11 +5,10 @@ import logo from '../../img/logo.png';
 import { useState } from 'react';
 import { Navbar, Nav, Dropdown } from 'react-bootstrap'
 import { useSelector } from 'react-redux';
-import { logout } from '../../extras/globalFunctions';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../../actions';
 import axios from '../../axiosInterceptor';
-import { getUserInfo, showMessage } from '../../extras/globalFunctions';
+import { getUserInfo, showMessage, logout } from '../../extras/globalFunctions';
 
 export default function NavBar() {
   // Redux states
@@ -33,7 +32,10 @@ export default function NavBar() {
       }
     }
     checkLog();
-    return () => source.cancel("Unmounted");
+    return () => {
+      logout();
+      source.cancel("Unmounted");
+    }
   }, [dispatch])
 
   return (

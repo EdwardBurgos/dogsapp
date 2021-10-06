@@ -43,6 +43,13 @@ export default function Profile() {
   const [deletePassword, setDeletePassword] = useState('')
   const [errDeletePassword, setErrDeletePassword] = useState('')
   const [showDeletePassword, setShowDeletePassword] = useState(false)
+  const [showChangePassword, setShowChangePassword] = useState(false)
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [errCurrentPassword, setErrCurrentPassword] = useState('')
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
+  const [newPassword, setNewPassword] = useState('')
+  const [errNewPassword, setErrNewPassword] = useState('')
+  const [showNewPassword, setShowNewPassword] = useState(false)
 
   // Variables
   const dispatch = useDispatch();
@@ -110,6 +117,25 @@ export default function Profile() {
       case 'passDeleteValue':
         !value ? setErrDeletePassword('This field is required') : setErrDeletePassword('')
         return setDeletePassword(value)
+      case 'passCurrentValue':
+        !value ? setErrCurrentPassword('This field is required') : setErrCurrentPassword('')
+        return setCurrentPassword(value)
+      case 'passNewValue':
+        if (!value) {
+          setErrNewPassword('This field is required');
+        } else {
+          value.length < 21 ?
+            /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})/.test(value) ?
+              !/\s/.test(value) ?
+                setErrNewPassword('')
+                :
+                setErrNewPassword("The password can't contain white spaces")
+              :
+              setErrNewPassword('The password should have between 8 and 20 characters combining lowercase and uppercase letters, numbers and symbols')
+            :
+            setErrNewPassword("The password can't have more than 20 characters")
+        }
+        return setNewPassword(value)
       default:
         break;
     }
@@ -183,7 +209,7 @@ export default function Profile() {
   async function handleConfirmationSubmit(e) {
     e.preventDefault();
     try {
-      const response = await axios.delete('/users/',  {data: {password: deletePassword}})
+      const response = await axios.delete('/users/', { data: { password: deletePassword } })
       logout();
       setShowConfirmation(false);
       dispatch(setUser({}));
@@ -203,6 +229,27 @@ export default function Profile() {
 
   async function changePassword(e) {
     e.preventDefault();
+    try {
+      const changed = await axios.post('/users/changeCurrentPassword', { newPassword, currentPassword });
+      if (changed.data) {
+        logout();
+        setCurrentPassword(''); 
+        setErrCurrentPassword(''); 
+        setShowCurrentPassword(false); 
+        setNewPassword(''); 
+        setErrNewPassword(''); 
+        setShowNewPassword(false);
+        setShowChangePassword(false);
+        history.push('/login')
+        showMessage('Your password was updated successfully please login again')
+      }
+    } catch (e) {
+      if (e.response.status === 404 && e.response.data.includes('There is no user with the id')) return showMessage(e.response.data);
+      if (e.response.status === 401 && e.response.data === "Incorrect password") return setErrCurrentPassword(e.response.data)
+      if (e.response.status === 409 && e.response.data === "Provide a password different from your current password") return setErrNewPassword(e.response.data)
+      showMessage('Sorry, an error ocurred')
+    }
+
 
   }
 
@@ -267,7 +314,7 @@ export default function Profile() {
               </div>
 
               <div className={s.bottomContent}>
-                <button className={`w-100 btn btn-primary mb-3`} onClick={() => { changePassword() }}>Change password</button>
+                <button className={`w-100 btn btn-primary mb-3`} onClick={() => { setShowChangePassword(true) }}>Change password</button>
                 <button className={`w-100 btn btn-danger`} onClick={() => setShowDelete(true)}>Delete account</button>
               </div>
 
@@ -331,7 +378,7 @@ export default function Profile() {
           <Button variant="secondary" onClick={() => setShowDelete(false)}>
             Cancel
           </Button>
-          <Button variant="danger" onClick={async () => { setShowDelete(false); if (user.type === 'Google') {await sendEmailConfirmation(); setShowEmailSent(true); } else { setShowConfirmation(true); }}}>
+          <Button variant="danger" onClick={async () => { setShowDelete(false); if (user.type === 'Google') { await sendEmailConfirmation(); setShowEmailSent(true); } else { setShowConfirmation(true); } }}>
             Delete
           </Button>
         </Modal.Footer>
@@ -373,8 +420,45 @@ export default function Profile() {
         onHide={() => setShowEmailSent(false)}
       >
         <Modal.Body>
-            <p className={s.message}>Please, check your email because we have sent you a link to delete your account</p>
-          </Modal.Body>
+          <p className={s.message}>Please, check your email because we have sent you a link to delete your account</p>
+        </Modal.Body>
+      </Modal>
+
+      <Modal
+        show={showChangePassword}
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+        keyboard={false}
+        onHide={() => {setCurrentPassword(''); setErrCurrentPassword(''); setShowCurrentPassword(false); setNewPassword(''); setErrNewPassword(''); setShowNewPassword(false); setShowChangePassword(false);}}
+      >
+        <Modal.Header>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Please, confirm your current password and indicate a new one
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <form onSubmit={changePassword}>
+            <div className={errCurrentPassword ? '' : 'mb-3'}>
+              <label className={s.label} htmlFor="passCurrentValue">Current password</label>
+              <div className={s.test}>
+                <input id="passCurrentValue" value={currentPassword} name='passCurrentValue' type={showCurrentPassword ? 'text' : 'password'} onChange={handleChange} className={`form-control ${s.inputPassword} ${errCurrentPassword ? s.errorInput : ''}`} />
+                <IonIcon icon={showCurrentPassword ? eyeOutline : eyeOffOutline} className={s.iconDumb} onClick={() => showCurrentPassword ? setShowCurrentPassword(false) : setShowCurrentPassword(true)}></IonIcon>
+              </div>
+            </div>
+            {errCurrentPassword ? <small className={s.error}>{errCurrentPassword}</small> : null}
+
+            <div className={errNewPassword ? '' : 'mb-3'}>
+              <label className={s.label} htmlFor="passNewValue">New password</label>
+              <div className={s.test}>
+                <input id="passNewValue" value={newPassword} name='passNewValue' type={showNewPassword ? 'text' : 'password'} onChange={handleChange} className={`form-control ${s.inputPassword} ${errNewPassword ? s.errorInput : ''}`} />
+                <IonIcon icon={showNewPassword ? eyeOutline : eyeOffOutline} className={s.iconDumb} onClick={() => showNewPassword ? setShowNewPassword(false) : setShowNewPassword(true)}></IonIcon>
+              </div>
+            </div>
+            {errNewPassword ? <small className={s.error}>{errNewPassword}</small> : null}
+
+            <input type="submit" value="Confirm password" disabled={!newPassword || errNewPassword || !currentPassword || errCurrentPassword} className={`w-100 btn btn-primary`} />
+          </form>
+        </Modal.Body>
       </Modal>
     </>
   );
