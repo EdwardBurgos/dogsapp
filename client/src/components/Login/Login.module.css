@@ -268,3 +268,13 @@
 .errAlternative {
   width: 48%;
 }
+
+.loadingButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loadingInButton {
+  height: 20px;
+}

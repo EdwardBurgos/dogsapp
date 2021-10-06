@@ -34,6 +34,8 @@ export default function Login() {
     const [showVerify, setShowVerify] = useState(false)
     const [showLoginWithoutPassword, setShowLoginWithoutPassword] = useState(false)
     const [showResetPassword, setShowResetPassword] = useState(false)
+    const [firstOptionLoading, setFirstOptionLoading] = useState(false)
+    const [secondOptionLoading, setSecondOptionLoading] = useState(false)
 
     // Variables
     const history = useHistory();
@@ -260,6 +262,7 @@ export default function Login() {
 
     // This function allows us to send a email to login without password
     async function emailToLoginWithoutPassword() {
+        setFirstOptionLoading(true)
         try {
             await axios.post('/users/loginWithoutPassword', { emailUsername })
             setShowLoginWithoutPassword(true)
@@ -267,10 +270,12 @@ export default function Login() {
             console.log(e)
             setErrGlobal('Sorry, an error occurred');
         }
+        setFirstOptionLoading(false)
     }
 
     // This function allows us to send a email to reset password
     async function emailToResetPassword() {
+        setSecondOptionLoading(true)
         try {
             await axios.post('/users/resetPassword', { emailUsername })
             setShowResetPassword(true)
@@ -278,6 +283,7 @@ export default function Login() {
             console.log(e)
             setErrGlobal('Sorry, an error occurred');
         }
+        setSecondOptionLoading(false)
     }
 
     return (
@@ -337,8 +343,22 @@ export default function Login() {
                                             errPassword ?
                                                 <>
                                                     <div className={s.errAlternatives}>
-                                                        <button className={`${s.errAlternative} btn btn-primary`} onClick={() => emailToLoginWithoutPassword()}>Login without password</button>
-                                                        <button className={`${s.errAlternative} btn btn-primary`} onClick={() => emailToResetPassword()}>Reset password</button>
+                                                        {
+                                                            !firstOptionLoading ?
+                                                                <button className={`${s.errAlternative} btn btn-primary`} onClick={() => emailToLoginWithoutPassword()}>Login without password</button>
+                                                                :
+                                                                <div className={`${s.loadingButton} ${s.errAlternative} btn btn-primary disabled`}>
+                                                                    <img className={s.loadingInButton} src={loading} alt='loadingGif'></img>
+                                                                </div>
+                                                        }
+                                                        {
+                                                            !secondOptionLoading ?
+                                                                <button className={`${s.errAlternative} btn btn-primary`} onClick={() => emailToResetPassword()}>Reset password</button>
+                                                                :
+                                                                <div className={`${s.loadingButton} ${s.errAlternative} btn btn-primary disabled`}>
+                                                                    <img className={s.loadingInButton} src={loading} alt='loadingGif'></img>
+                                                                </div>
+                                                        }
                                                     </div>
                                                 </> : null
                                         }
