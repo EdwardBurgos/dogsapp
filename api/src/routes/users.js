@@ -175,6 +175,50 @@ router.put('/verifyUser', async (req, res, next) => {
     }
 })
 
+// This route allows us to login without password
+router.post('/loginWithoutPassword', async (req, res, next) => {
+    const { emailUsername } = req.body
+    const user = await User.findOne({
+        where: {
+            [Op.or]:
+                [
+                    { email: emailUsername },
+                    { username: emailUsername }
+                ]
+        }
+    })
+    if (user) {
+        const tokenObject = utils.issueJWT(user, 'loginWithoutPassword');
+        const status = await sendMail(user.name, user.email, 'loginWithoutPassword', tokenObject)
+        if (status !== 'Sorry, an error ocurred') return res.send(true)
+        return res.status(400).send({ success: false, msg: 'Sorry, an error occurred' })
+    } else {
+        return res.status(404).send({ success: false, msg: "There is no user registered with this email" });
+    }
+})
+
+// This route allows us to reset password
+router.post('/resetPassword', async (req, res, next) => {
+    const { emailUsername } = req.body
+    const user = await User.findOne({
+        where: {
+            [Op.or]:
+                [
+                    { email: emailUsername },
+                    { username: emailUsername }
+                ]
+        }
+    })
+    if (user) {
+        const tokenObject = utils.issueJWT(user, 'resetPassword');
+        const status = await sendMail(user.name, user.email, 'resetPassword', tokenObject)
+        if (status !== 'Sorry, an error ocurred') return res.send(true)
+        return res.status(400).send({ success: false, msg: 'Sorry, an error occurred' })
+    } else {
+        return res.status(404).send({ success: false, msg: "There is no user registered with this email" });
+    }
+})
+
 // This route allows us to log in a user validating if exists and issuing a JWT
 router.post('/login', async (req, res, next) => {
     try {
@@ -223,7 +267,7 @@ router.post('/login', async (req, res, next) => {
 });
 
 // This route allows us to change the password
-router.post('/changePassword', async (req, res) => {
+router.post('/changePassword', async (req, res, next) => {
     try {
         const { emailORusername, password } = req.body;
         const user = await User.findOne({
@@ -250,7 +294,8 @@ router.post('/changePassword', async (req, res) => {
             return res.status(404).send({ success: false, msg: "There is no user registered with this email" });
         }
     } catch (e) {
-        next(e);
+        console.log(e);
+        next();
     }
 })
 
@@ -261,7 +306,7 @@ router.post('/changeCurrentPassword', passport.authenticate('jwt', { session: fa
         console.log(newPassword)
         if (utils.validPassword(currentPassword, req.user.hash, req.user.salt)) {
             const saltHash = utils.genPassword(newPassword)
-            if (utils.validPassword(newPassword, req.user.hash, req.user.salt)) return res.status(409).send('Provide a password different from your current password') 
+            if (utils.validPassword(newPassword, req.user.hash, req.user.salt)) return res.status(409).send('Provide a password different from your current password')
             const user = await User.findOne({ where: { id: req.user.id } })
             if (user) {
                 const updated = await user.update({ salt: saltHash.salt, hash: saltHash.hash });

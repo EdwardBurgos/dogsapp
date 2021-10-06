@@ -32,6 +32,8 @@ export default function Login() {
     const [modalButtonState, setModalButtonState] = useState(true);
     const [onlyPassword, setOnlyPassword] = useState(false);
     const [showVerify, setShowVerify] = useState(false)
+    const [showLoginWithoutPassword, setShowLoginWithoutPassword] = useState(false)
+    const [showResetPassword, setShowResetPassword] = useState(false)
 
     // Variables
     const history = useHistory();
@@ -247,11 +249,33 @@ export default function Login() {
     // This function allows us to send another verification link
     async function newVerificationLink() {
         try {
-            await axios.post('/users/newVerificationEmail', { emailUsername});
+            await axios.post('/users/newVerificationEmail', { emailUsername });
             setShowVerify(true)
         } catch (e) {
-            console.log('pardi', e)
-         //   if (e.response.data.msg) return setErrGlobal(e.response.data.msg)
+            console.log(e)
+            //   if (e.response.data.msg) return setErrGlobal(e.response.data.msg)
+            setErrGlobal('Sorry, an error occurred');
+        }
+    }
+
+    // This function allows us to send a email to login without password
+    async function emailToLoginWithoutPassword() {
+        try {
+            await axios.post('/users/loginWithoutPassword', { emailUsername })
+            setShowLoginWithoutPassword(true)
+        } catch (e) {
+            console.log(e)
+            setErrGlobal('Sorry, an error occurred');
+        }
+    }
+
+    // This function allows us to send a email to reset password
+    async function emailToResetPassword() {
+        try {
+            await axios.post('/users/resetPassword', { emailUsername })
+            setShowResetPassword(true)
+        } catch (e) {
+            console.log(e)
             setErrGlobal('Sorry, an error occurred');
         }
     }
@@ -290,24 +314,37 @@ export default function Login() {
                                         <input type="submit" value="Log in" disabled={buttonState} className={`w-100 btn btn-primary mb-3`} />
                                     </form>
                                     :
-                                    <form onSubmit={handleSubmit}>
-                                        <div className={errEmailUsername ? '' : 'mb-3'}>
-                                            <label className={s.label} htmlFor="emailUsernameValue">Email or username</label>
-                                            <input id="emailUsernameValue" value={emailUsername} name='emailUsernameValue' onChange={handleChange} className={`form-control ${s.input} ${errEmailUsername ? s.errorInput : ''}`} />
-                                        </div>
-                                        {errEmailUsername ? <small className={s.error}>{errEmailUsername}</small> : null}
-
-                                        <div className={errPassword ? '' : 'mb-3'}>
-                                            <label className={s.label} htmlFor="passValue">Password</label>
-                                            <div className={s.test}>
-                                                <input id="passValue" value={password} name='passValue' type={showPassword ? 'text' : 'password'} onChange={handleChange} className={`form-control ${s.inputPassword} ${errPassword ? s.errorInput : ''}`} />
-                                                <IonIcon icon={showPassword ? eyeOutline : eyeOffOutline} className={s.iconDumb} onClick={() => showPassword ? setShowPassword(false) : setShowPassword(true)}></IonIcon>
+                                    <>
+                                        <form onSubmit={handleSubmit}>
+                                            <div className={errEmailUsername ? '' : 'mb-3'}>
+                                                <label className={s.label} htmlFor="emailUsernameValue">Email or username</label>
+                                                <input id="emailUsernameValue" value={emailUsername} name='emailUsernameValue' onChange={handleChange} className={`form-control ${s.input} ${errEmailUsername ? s.errorInput : ''}`} />
                                             </div>
-                                        </div>
-                                        {errPassword ? <small className={s.error}>{errPassword}</small> : null}
+                                            {errEmailUsername ? <small className={s.error}>{errEmailUsername}</small> : null}
 
-                                        <input type="submit" value="Log in" disabled={buttonState} className={`w-100 btn btn-primary mb-3`} />
-                                    </form>
+                                            <div className={errPassword ? '' : 'mb-3'}>
+                                                <label className={s.label} htmlFor="passValue">Password</label>
+                                                <div className={s.test}>
+                                                    <input id="passValue" value={password} name='passValue' type={showPassword ? 'text' : 'password'} onChange={handleChange} className={`form-control ${s.inputPassword} ${errPassword ? s.errorInput : ''}`} />
+                                                    <IonIcon icon={showPassword ? eyeOutline : eyeOffOutline} className={s.iconDumb} onClick={() => showPassword ? setShowPassword(false) : setShowPassword(true)}></IonIcon>
+                                                </div>
+                                            </div>
+                                            {errPassword ? <small className={s.error}>{errPassword}</small> : null}
+
+                                            <input type="submit" value="Log in" disabled={buttonState} className={`w-100 btn btn-primary mb-3`} />
+                                        </form>
+                                        {
+                                            errPassword ?
+                                                <>
+                                                    <div className={s.errAlternatives}>
+                                                        <button className={`${s.errAlternative} btn btn-primary`} onClick={() => emailToLoginWithoutPassword()}>Login without password</button>
+                                                        <button className={`${s.errAlternative} btn btn-primary`} onClick={() => emailToResetPassword()}>Reset password</button>
+                                                    </div>
+                                                </> : null
+                                        }
+                                    </>
+
+
                             }
 
                             <div className={s.division}>
@@ -385,10 +422,33 @@ export default function Login() {
                 onHide={() => { setShowVerify(false); history.push('/home'); }}
             >
                 <Modal.Body>
-                    <p className='mb-0'>Please, check your email because we have sent you another link to verify your email address. When you open it, you will be logged in automatically. Remember that it is only valid for 4 hours.</p>
+                    <p className='mb-0'>Please, check your email because we have sent you another link to verify your email address. When you open it, you will be logged in automatically.</p>
                 </Modal.Body>
             </Modal>
 
+            <Modal
+                show={showLoginWithoutPassword}
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+                keyboard={false}
+                onHide={() => { setShowLoginWithoutPassword(false); history.push('/home'); }}
+            >
+                <Modal.Body>
+                    <p className='mb-0'>Please, check your email because we have sent you a link to login without password. When you open it, you will be logged in automatically.</p>
+                </Modal.Body>
+            </Modal>
+
+            <Modal
+                show={showResetPassword}
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+                keyboard={false}
+                onHide={() => { setShowResetPassword(false); history.push('/home'); }}
+            >
+                <Modal.Body>
+                    <p className='mb-0'>Please, check your email because we have sent you a link to reset your password.</p>
+                </Modal.Body>
+            </Modal>
         </>
     )
 }

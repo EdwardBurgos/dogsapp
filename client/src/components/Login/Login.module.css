@@ -258,3 +258,13 @@
  color: #842029;
  cursor: pointer;
 }
+
+.errAlternatives {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.errAlternative {
+  width: 48%;
+}

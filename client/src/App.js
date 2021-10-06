@@ -62,7 +62,7 @@ function App() {
                 <Route path="/profile">{Object.keys(user).length ? <Profile /> : <Redirect to="/login" />}</Route>
                 <Route path="/login">{Object.keys(user).length ? <Redirect to="/profile" /> : <Login />}</Route>
                 <Route path="/signup" >{Object.keys(user).length ? <Redirect to="/profile" /> : <Signup />}</Route>
-                <Route path="/verifyEmail/:token" render={({ match }) => <VerifyEmail token={match.params.token} expires={query.get("expires")}/>} />
+                <Route path="/auto/:reason/:token" render={({ match }) => <VerifyEmail reason={match.params.reason} token={match.params.token} expires={query.get("expires")}/>} />
                 {/* <Route path="/verifyEmail/:token" render={({ match }) =>  ? <EditPet id={match.params.id} /> : <Redirect to="/home"/> }></Route> */}
                 <Route path="/:username" render={({ match }) => <User username={match.params.username} /> }/>
               </Switch>
