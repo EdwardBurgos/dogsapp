@@ -33,14 +33,23 @@ export default function VerifyEmail({ token, reason, expires }) {
             if (token && expires) {
                 try {
                     if (reason === 'verifyEmail') {
-                        const oldToken = localStorage.getItem("token")
-                        const oldExpiration = localStorage.getItem("expiration")
-                        setLocalStorage({ token, expiresIn: expires });
-                        const user = await getUserInfo()
-                        await axios.put('/users/verifyUser', { email: user.email })
-                        showMessage(`${user.fullname} your account was verified`)
-                        setLocalStorage({ token: oldToken, expiresIn: oldExpiration });
-                        return history.push('/home')
+                        if (!localStorage.getItem("token") && !localStorage.getItem("expiration")) {
+                            setLocalStorage({ token, expiresIn: expires });
+                            const user = await getUserInfo()
+                            await axios.put('/users/verifyUser', { email: user.email })
+                            showMessage(`${user.fullname} your account was verified`)
+                            showMessage(`${user.fullname} you are logged in`)
+                            return history.push('/home')
+                        } else {
+                            const oldToken = localStorage.getItem("token")
+                            const oldExpiration = localStorage.getItem("expiration")
+                            setLocalStorage({ token, expiresIn: expires });
+                            const user = await getUserInfo()
+                            await axios.put('/users/verifyUser', { email: user.email })
+                            showMessage(`${user.fullname} your account was verified`)
+                            setLocalStorage({ token: oldToken, expiresIn: oldExpiration });
+                            return history.push('/home')
+                        }
                     } else {
                         if (!localStorage.getItem("token") && !localStorage.getItem("expiration")) {
                             setLocalStorage({ token, expiresIn: expires });
