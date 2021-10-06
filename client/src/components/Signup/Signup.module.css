@@ -208,6 +208,16 @@
   margin-bottom: 0;
 }
 
+.loadingButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loadingInButton {
+  height: 20px;
+}
+
 @media only screen and (max-width: 992px) {
   .image, .form {
     width: 40%;

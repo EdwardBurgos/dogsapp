@@ -13,6 +13,7 @@ import { useDispatch } from 'react-redux';
 import { setUser } from '../../actions';
 import { Modal } from 'react-bootstrap';
 
+
 export default function Signup() {
     // Own states
     const [errGlobal, setErrGlobal] = useState('');
@@ -30,6 +31,8 @@ export default function Signup() {
     const [buttonState, setButtonState] = useState(true)
     const [showPassword, setShowPassword] = useState(false)
     const [showVerify, setShowVerify] = useState(false)
+    const [inProcess, setInProcess] = useState(false)
+
 
     // Variables
     const history = useHistory();
@@ -112,6 +115,7 @@ export default function Signup() {
 
     // This function allows us to register and login natively
     async function handleSubmit(e) {
+        setInProcess(true)
         e.preventDefault();
         try {
             const availableUsername = await axios.post(`/users/register`, {
@@ -135,6 +139,7 @@ export default function Signup() {
             if (e.response.status === 409 && e.response.data.msg.includes('username')) return setErrUsername(e.response.data.msg);
             setErrGlobal('Sorry, an error occurred');
         }
+        setInProcess(false)
     }
 
     return (
@@ -192,7 +197,13 @@ export default function Signup() {
                                 </div>
                                 {errPassword ? <small className={s.error}>{errPassword}</small> : null}
 
-                                <input type="submit" value="Sign up" disabled={buttonState} className={`w-100 btn btn-primary mb-3`} />
+                                {   !inProcess ?
+                                    <input type="submit" value="Sign up" disabled={buttonState} className={`w-100 btn btn-primary mb-3`} />
+                                    :
+                                    <div className={`${s.loadingButton} w-100 btn btn-primary mb-3 disabled`}>
+                                        <img className={s.loadingInButton} src={loading} alt='loadingGif'></img>
+                                    </div>
+                                }
                             </form>
                             <p className={s.marginBottom0}>
                                 Already have an account?
