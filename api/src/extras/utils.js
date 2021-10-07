@@ -59,7 +59,7 @@ function issueJWT(user, useCase) {
   const id = user.id;
 
   let expiresIn = 30;
-  if (['loginWithoutPassword', 'verifyEmail', 'resetPassword'].includes(useCase)) expiresIn = 4;
+  if (['loginWithoutPassword', 'verifyEmail', 'resetPassword', 'deleteAccountEmail'].includes(useCase)) expiresIn = 4;
   expiresIn = moment().milliseconds(0).add(expiresIn, expiresIn === 30 ? 'days' : 'hours').valueOf()/1000
   
   const payload = {

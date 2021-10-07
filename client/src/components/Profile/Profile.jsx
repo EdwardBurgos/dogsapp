@@ -233,11 +233,11 @@ export default function Profile() {
       const changed = await axios.post('/users/changeCurrentPassword', { newPassword, currentPassword });
       if (changed.data) {
         logout();
-        setCurrentPassword(''); 
-        setErrCurrentPassword(''); 
-        setShowCurrentPassword(false); 
-        setNewPassword(''); 
-        setErrNewPassword(''); 
+        setCurrentPassword('');
+        setErrCurrentPassword('');
+        setShowCurrentPassword(false);
+        setNewPassword('');
+        setErrNewPassword('');
         setShowNewPassword(false);
         setShowChangePassword(false);
         history.push('/login')
@@ -254,6 +254,13 @@ export default function Profile() {
   }
 
   async function sendEmailConfirmation() {
+    try {
+      console.log(user.email)
+      await axios.post('/users/deleteAccountEmail', { emailUsername: user.email })
+    } catch (e) {
+      console.log(e)
+      setErrGlobal('Sorry, an error occurred');
+    }
   }
 
   return (
@@ -429,7 +436,7 @@ export default function Profile() {
         aria-labelledby="contained-modal-title-vcenter"
         centered
         keyboard={false}
-        onHide={() => {setCurrentPassword(''); setErrCurrentPassword(''); setShowCurrentPassword(false); setNewPassword(''); setErrNewPassword(''); setShowNewPassword(false); setShowChangePassword(false);}}
+        onHide={() => { setCurrentPassword(''); setErrCurrentPassword(''); setShowCurrentPassword(false); setNewPassword(''); setErrNewPassword(''); setShowNewPassword(false); setShowChangePassword(false); }}
       >
         <Modal.Header>
           <Modal.Title id="contained-modal-title-vcenter">

@@ -15,9 +15,9 @@ router.get('/info', passport.authenticate('jwt', { session: false }), (req, res)
     res.status(200).json({ success: true, msg: "You are successfully authenticated to this route!", user: { id, fullname, name, lastname, profilepic, username, country, email, type, dogs: dogs.map(e => e.dataValues.id), pets: pets.map(e => e.dataValues.id), likes } });
 });
 
-// This route allows us to verify if the password of an user if correct or not
+// This route allows us to delete an user account
 router.delete('/', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
-    if (utils.validPassword(req.body.password, req.user.hash, req.user.salt)) {
+    if (req.user.type === 'Google') {
         try {
             const user = await User.findOne({ where: { id: req.user.id } })
             if (user) {
@@ -30,7 +30,43 @@ router.delete('/', passport.authenticate('jwt', { session: false }), async (req,
             next()
         }
     } else {
-        return res.status(401).send('Incorrect password')
+        if (utils.validPassword(req.body.password, req.user.hash, req.user.salt)) {
+            try {
+                const user = await User.findOne({ where: { id: req.user.id } })
+                if (user) {
+                    await user.destroy();
+                    return res.send('Your account was deleted successfully')
+                } else {
+                    return res.status(404).send(`There is no user with the id ${id}`)
+                }
+            } catch (e) {
+                next()
+            }
+        } else {
+            return res.status(401).send('Incorrect password')
+        }
+    }
+})
+
+// This route allows us to send an email to delete an account
+router.post('/deleteAccountEmail', async (req, res, next) => {
+    const { emailUsername } = req.body
+    const user = await User.findOne({
+        where: {
+            [Op.or]:
+                [
+                    { email: emailUsername },
+                    { username: emailUsername }
+                ]
+        }
+    })
+    if (user) {
+        const tokenObject = utils.issueJWT(user, 'deleteAccountEmail');
+        const status = await sendMail(user.name, user.email, 'deleteAccountEmail', tokenObject)
+        if (status !== 'Sorry, an error ocurred') return res.send(true)
+        return res.status(400).send({ success: false, msg: 'Sorry, an error occurred' })
+    } else {
+        return res.status(404).send({ success: false, msg: "There is no user registered with this email" });
     }
 })
 

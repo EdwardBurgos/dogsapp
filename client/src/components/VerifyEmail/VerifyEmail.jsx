@@ -32,21 +32,36 @@ export default function VerifyEmail({ token, reason, expires }) {
         async function loginUser() {
             if (token && expires) {
                 try {
-                    if (reason === 'verifyEmail') {
+                    if (['verifyEmail', 'deleteAccountEmail'].includes(reason)) {
                         if (!localStorage.getItem("token") && !localStorage.getItem("expiration")) {
                             setLocalStorage({ token, expiresIn: expires });
                             const user = await getUserInfo()
-                            await axios.put('/users/verifyUser', { email: user.email })
-                            showMessage(`${user.fullname} your account was verified`)
-                            showMessage(`${user.fullname} you are logged in`)
+                            if (Object.keys(user).length) {
+                                if (reason === 'verifyEmail') {
+                                    await axios.put('/users/verifyUser', { email: user.email })
+                                    showMessage(`${user.fullname} your account was verified`)
+                                    showMessage(`${user.fullname} you are logged in`)
+                                } else {
+                                    await axios.delete('/users/', { email: user.email, type: user.type })
+                                    logout()
+                                    showMessage(`${user.fullname} your account was deleted`)
+                                }
+                            }
                             return history.push('/home')
                         } else {
                             const oldToken = localStorage.getItem("token")
                             const oldExpiration = localStorage.getItem("expiration")
                             setLocalStorage({ token, expiresIn: expires });
                             const user = await getUserInfo()
-                            await axios.put('/users/verifyUser', { email: user.email })
-                            showMessage(`${user.fullname} your account was verified`)
+                            if (Object.keys(user).length) {
+                                if (reason === 'verifyEmail') {
+                                    await axios.put('/users/verifyUser', { email: user.email })
+                                    showMessage(`${user.fullname} your account was verified`)
+                                } else {
+                                    await axios.delete('/users/', { email: user.email, type: user.type })
+                                    showMessage(`${user.fullname} your account was deleted`)
+                                }
+                            }
                             setLocalStorage({ token: oldToken, expiresIn: oldExpiration });
                             return history.push('/home')
                         }
