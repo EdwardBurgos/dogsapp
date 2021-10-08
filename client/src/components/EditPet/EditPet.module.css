@@ -235,7 +235,7 @@
   
   .uploadingGif {
     width: 20%;
-    max-width: 100px;
+    max-width: 50px;
   }
   
   .fileInput {

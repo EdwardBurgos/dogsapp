@@ -285,6 +285,7 @@
 
   .uploadingGif {
     width: 50%;
+    max-width: 50px;
   }
 
   .buttonChangePic {

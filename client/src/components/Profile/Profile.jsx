@@ -164,10 +164,9 @@ export default function Profile() {
 
   // This function allows us to upload a test photo for the user profile picture
   async function changePhoto(e) {
+    setUploading(true)
     if (e.target.files[0]) {
-      setUploading(true)
       const urlPhoto = await uploadImage(user.username, e.target.files[0])
-      setUploading(false);
       if (validURL(urlPhoto)) {
         setImageFile(e.target.files[0]);
         setPhoto(urlPhoto);
@@ -176,6 +175,7 @@ export default function Profile() {
         setErrPhoto(urlPhoto)
       }
     }
+    setUploading(false);
   }
 
   // This function allows us to update the user profile picture
