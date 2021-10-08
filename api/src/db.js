@@ -37,12 +37,12 @@ const { Dog, Temperament, DogTemperament, Pet, User, Like} = sequelize.models;
 // });
 Dog.belongsToMany(Temperament, {through: "dogtemperament"});
 Temperament.belongsToMany(Dog, {through: "dogtemperament"});
-User.hasMany(Dog, {onDelete: 'cascade'});
-User.hasMany(Pet, {onDelete: 'cascade'});
+User.hasMany(Dog, {onDelete: 'cascade', hooks: true});
+User.hasMany(Pet, {onDelete: 'cascade', hooks: true});
 Pet.belongsTo(User);
 Dog.hasMany(Pet);
 Pet.belongsTo(Dog);
-User.hasMany(Like, {onDelete: 'cascade'});
+User.hasMany(Like, {onDelete: 'cascade', hooks: true});
 Like.belongsTo(User)
 Pet.hasMany(Like);
 
