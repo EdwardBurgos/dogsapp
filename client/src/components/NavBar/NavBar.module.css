@@ -1,10 +1,9 @@
 .logo {
     margin-right: 40px;
-    height: 30px;
+    height: 21px;
 }
 
 .brand {
-    padding: 0;
     display: flex;
     align-items: center;
 }
@@ -16,7 +15,7 @@
     border-bottom: 1px;
     box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
     -webkit-box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
-    margin-bottom: 30px;
+    margin-bottom: 16px;
 }
 
 .sectionItem a .active {
@@ -105,13 +104,27 @@
     margin-bottom: 8px;
 }
 
-@media only screen and (min-width: 768px) {
+
+@media only screen and (min-width: 992px) {
+    .brand, .enlace, .enlaceLogin, .enlaceSignup {
+        padding-top: 4px !important;
+        padding-bottom: 4px !important;
+    }
+
+    .enlace, .enlaceLogin, .enlaceSignup {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+    }
+
+    .titleDropdown {
+        padding-top: 3.5px !important;
+        padding-bottom: 3.5px !important;
+    }
+
     .enlace {
         margin-right: 20px
     }
-    .enlace, .enlaceLogin, .enlaceSignup {
-        padding: 8px !important;
-    }
+
     .lastEnlace {
         margin-bottom: 0;
     }

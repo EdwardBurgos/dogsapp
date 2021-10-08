@@ -54,3 +54,17 @@
     width: 100%;
     max-width: 500px;
 }
+
+.contentCenter {
+    width: 100%;
+    max-width: 330px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: calc(100vh - 62px);
+}
+
+.loading {
+    width: 25%;
+}

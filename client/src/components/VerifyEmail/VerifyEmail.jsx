@@ -9,6 +9,8 @@ import axios from '../../axiosInterceptor';
 import { eyeOutline, eyeOffOutline } from "ionicons/icons";
 import { IonIcon } from '@ionic/react';
 import realAxios from 'axios'
+import loading from '../../img/loadingGif.gif';
+
 
 export default function VerifyEmail({ token, reason, expires }) {
 
@@ -135,7 +137,9 @@ export default function VerifyEmail({ token, reason, expires }) {
         <>
             {
                 reason !== 'resetPassword' ?
-                    <h1>{reason.toUpperCase()}</h1>
+                    <div className={s.contentCenter}>
+                        <img className={s.loading} src={loading} alt='loadingGif'></img>
+                    </div>
                     :
                     <div className={s.container}>
                         <form onSubmit={changePassword} className={s.form}>
