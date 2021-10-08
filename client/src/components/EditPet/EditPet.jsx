@@ -90,7 +90,10 @@ export default function EditPet({ id }) { // si me psan el di seleccionar la raz
             }
         }
         requesting();
-        return () => source.cancel("Unmounted");
+        return () => {
+            source.cancel("Unmounted")
+            axios.delete(`/pets/notUsed/${id}`)
+        };
     }, [dispatch])
 
     // This hook allows us to get the dog information of the selected dog breed in order to display this data to the user

@@ -170,14 +170,19 @@ router.delete('/:pet', passport.authenticate('jwt', { session: false }), async (
 })
 
 router.delete('/notUsed/:photoImageName', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    const pet = await Pet.findOne({
-        where: {
-            photo: {
-                [Op.like]: `%${req.params.photoImageName}%`
+    if (parseInt(req.params.photoImageName)) {
+        deleteImage('testsPets', req.params.photoImageName)
+    } else {
+        const pet = await Pet.findOne({
+            where: {
+                photo: {
+                    [Op.like]: `%${req.params.photoImageName}%`
+                }
             }
-        }
-    })
-    if (!pet) deleteImage('deletePet', req.params.photoImageName)
+        })
+        if (!pet) deleteImage('deletePet', req.params.photoImageName)
+    }
+    
 })
 
 module.exports = router;
