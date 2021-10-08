@@ -55,6 +55,7 @@ export default function RegisterPet() {
         return () => {
             source.cancel("Unmounted");
             dispatch(setPetBreed(''))
+            axios.delete(`/pets/notUsed/${photoImageName}`)
         }
     }, [dispatch])
 
