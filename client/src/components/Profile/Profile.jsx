@@ -236,7 +236,6 @@ export default function Profile() {
     try {
       const changed = await axios.post('/users/changeCurrentPassword', { newPassword, currentPassword });
       if (changed.data) {
-        logout();
         setCurrentPassword('');
         setErrCurrentPassword('');
         setShowCurrentPassword(false);
@@ -244,8 +243,7 @@ export default function Profile() {
         setErrNewPassword('');
         setShowNewPassword(false);
         setShowChangePassword(false);
-        history.push('/login')
-        showMessage('Your password was updated successfully please login again')
+        showMessage('Your password was updated successfully')
       }
     } catch (e) {
       if (e.response.status === 404 && e.response.data.includes('There is no user with the id')) return showMessage(e.response.data);
