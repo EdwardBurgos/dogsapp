@@ -182,7 +182,6 @@ router.delete('/notUsed/:photoImageName', passport.authenticate('jwt', { session
         })
         if (!pet) deleteImage('deletePet', req.params.photoImageName)
     }
-    
 })
 
 module.exports = router;

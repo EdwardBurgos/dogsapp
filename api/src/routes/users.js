@@ -396,4 +396,8 @@ router.put('/updateUserInfo', passport.authenticate('jwt', { session: false }), 
     }
 })
 
+router.delete('/notUsed/:photoImageName', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    deleteImage('testsProfilePictures', req.params.photoImageName)
+})
+
 module.exports = router;

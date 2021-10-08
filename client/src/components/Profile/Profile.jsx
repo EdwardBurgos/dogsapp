@@ -76,7 +76,11 @@ export default function Profile() {
       }
     }
     updateUser();
-    return () => source.cancel("Unmounted");
+    return () => { 
+      source.cancel("Unmounted");
+      axios.delete(`/users/notUsed/${user.username}`)
+      
+  };
   }, [dispatch])
 
   // This hook allows us to update the user information showed in the component when the first one change
