@@ -8,7 +8,7 @@ import { setUser } from '../../actions';
 import axios from '../../axiosInterceptor';
 import { eyeOutline, eyeOffOutline } from "ionicons/icons";
 import { IonIcon } from '@ionic/react';
-
+import realAxios from 'axios'
 
 export default function VerifyEmail({ token, reason, expires }) {
 
@@ -42,27 +42,30 @@ export default function VerifyEmail({ token, reason, expires }) {
                                     showMessage(`${user.fullname} your account was verified`)
                                     showMessage(`${user.fullname} you are logged in`)
                                 } else {
-                                    await axios.delete('/users/', { email: user.email, type: user.type })
+                                    await axios.delete('/users/')
                                     logout()
                                     showMessage(`${user.fullname} your account was deleted`)
                                 }
                             }
                             return history.push('/home')
                         } else {
-                            const oldToken = localStorage.getItem("token")
-                            const oldExpiration = localStorage.getItem("expiration")
-                            setLocalStorage({ token, expiresIn: expires });
-                            const user = await getUserInfo()
+                            let user = {}
+                            try {
+                                let infoReq = await realAxios.get('http://localhost:3001/users/info', { headers: { Authorization: token } })
+                                user = infoReq.data.user
+                            } catch (e) {
+                                user = {};
+                            }
+                            console.log(user.type)
                             if (Object.keys(user).length) {
                                 if (reason === 'verifyEmail') {
-                                    await axios.put('/users/verifyUser', { email: user.email })
+                                    await realAxios.put('http://localhost:3001/users/verifyUser', { email: user.email })
                                     showMessage(`${user.fullname} your account was verified`)
                                 } else {
-                                    await axios.delete('/users/', { email: user.email, type: user.type })
+                                    await realAxios.delete('http://localhost:3001/users', { headers: { Authorization: token } })
                                     showMessage(`${user.fullname} your account was deleted`)
                                 }
                             }
-                            setLocalStorage({ token: oldToken, expiresIn: oldExpiration });
                             return history.push('/home')
                         }
                     } else {
