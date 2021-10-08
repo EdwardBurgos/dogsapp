@@ -50,6 +50,7 @@ export default function Profile() {
   const [newPassword, setNewPassword] = useState('')
   const [errNewPassword, setErrNewPassword] = useState('')
   const [showNewPassword, setShowNewPassword] = useState(false)
+  const [sendingDeletionEmail, setSendingDeletionEmail] = useState(false)
 
   // Variables
   const dispatch = useDispatch();
@@ -254,6 +255,7 @@ export default function Profile() {
   }
 
   async function sendEmailConfirmation() {
+    setSendingDeletionEmail(true)
     try {
       console.log(user.email)
       await axios.post('/users/deleteAccountEmail', { emailUsername: user.email })
@@ -261,6 +263,7 @@ export default function Profile() {
       console.log(e)
       setErrGlobal('Sorry, an error occurred');
     }
+    setSendingDeletionEmail(false)
   }
 
   return (
@@ -322,7 +325,15 @@ export default function Profile() {
 
               <div className={s.bottomContent}>
                 <button className={`w-100 btn btn-primary mb-3`} onClick={() => { setShowChangePassword(true) }}>Change password</button>
-                <button className={`w-100 btn btn-danger`} onClick={() => setShowDelete(true)}>Delete account</button>
+                {
+                  !sendingDeletionEmail ?
+                    <button className={`w-100 btn btn-danger`} onClick={() => setShowDelete(true)}>Delete account</button>
+                    :
+                    <div className={`${s.loadingButton} w-100 btn btn-danger disabled`}>
+                      <img className={s.loadingInButton} src={loading} alt='loadingGif'></img>
+                    </div>
+
+                }
               </div>
 
             </div>
