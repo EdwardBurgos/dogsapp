@@ -68,7 +68,7 @@ router.post('/deleteAccountEmail', async (req, res, next) => {
         const tokenObject = utils.issueJWT(user, 'deleteAccountEmail');
         const status = await sendMail(user.name, user.email, 'deleteAccountEmail', tokenObject)
         if (status !== 'Sorry, an error ocurred') return res.send(true)
-        return res.status(400).send({ success: false, msg: 'Sorry, an error occurred' })
+        return next()
     } else {
         return res.status(404).send({ success: false, msg: "There is no user registered with this email" });
     }
@@ -80,7 +80,7 @@ router.get('/availableEmail/:email', async (req, res, next) => {
         const user = await User.findOne({ where: { email: req.params.email } });
         return res.send(user ? false : true);
     } catch (e) {
-        next(e)
+        next()
     }
 })
 
@@ -138,7 +138,7 @@ router.get('/:username', async (req, res, next) => {
 })
 
 // This route allows us to register a new user
-router.post('/register', async (req, res) => {
+router.post('/register', async (req, res, next) => {
     let { fullname, name, lastname, profilepic, username, country, email, password, type } = req.body;
     if (!countries.map(c => c.name).includes(country)) return res.status(406).send({ success: false, msg: 'This is not a country' })
     try {
@@ -156,7 +156,7 @@ router.post('/register', async (req, res) => {
                         const tokenObject = utils.issueJWT(user, 'verifyEmail');
                         const status = await sendMail(user.name, user.email, 'verifyEmail', tokenObject)
                         if (status !== 'Sorry, an error ocurred') return res.send({ success: true, user: user.name })
-                        return res.status(400).send({ success: false, msg: 'Sorry, an error occurred' })
+                        return next()
                     } else {
                         return res.send({ success: true, user: user.name });
                     }
@@ -167,7 +167,7 @@ router.post('/register', async (req, res) => {
         } else { res.status(409).send({ success: false, msg: 'There is already a user with this username' }) }
     } catch (e) {
         console.log(e)
-        res.status(400).send({ success: false, msg: 'Sorry, an error occurred' })
+        next()
     }
 })
 
@@ -191,7 +191,7 @@ router.post('/newVerificationEmail', async (req, res, next) => {
                 const tokenObject = utils.issueJWT(user, 'verifyEmail');
                 const status = await sendMail(user.name, user.email, 'verifyEmail', tokenObject)
                 if (status !== 'Sorry, an error ocurred') return res.send(true)
-                return res.status(400).send({ success: false, msg: 'Sorry, an error occurred' })
+                return next()
             }
         } else if (user.type === "Google") {
             res.status(403).send({ success: false, msg: `You were registered with ${user.type}, if you want define a password or login with ${user.type} again` });
@@ -212,7 +212,7 @@ router.put('/verifyUser', async (req, res, next) => {
             res.status(404).send("There is no user registered with this email");
         }
     } catch (e) {
-        next(e)
+        next()
     }
 })
 
@@ -232,7 +232,7 @@ router.post('/loginWithoutPassword', async (req, res, next) => {
         const tokenObject = utils.issueJWT(user, 'loginWithoutPassword');
         const status = await sendMail(user.name, user.email, 'loginWithoutPassword', tokenObject)
         if (status !== 'Sorry, an error ocurred') return res.send(true)
-        return res.status(400).send({ success: false, msg: 'Sorry, an error occurred' })
+        return next()
     } else {
         return res.status(404).send({ success: false, msg: "There is no user registered with this email" });
     }
@@ -254,7 +254,7 @@ router.post('/resetPassword', async (req, res, next) => {
         const tokenObject = utils.issueJWT(user, 'resetPassword');
         const status = await sendMail(user.name, user.email, 'resetPassword', tokenObject)
         if (status !== 'Sorry, an error ocurred') return res.send(true)
-        return res.status(400).send({ success: false, msg: 'Sorry, an error occurred' })
+        return next()
     } else {
         return res.status(404).send({ success: false, msg: "There is no user registered with this email" });
     }
@@ -303,7 +303,7 @@ router.post('/login', async (req, res, next) => {
             }
         }
     } catch (e) {
-        next(e);
+        next();
     }
 });
 
@@ -377,11 +377,11 @@ router.put('/changePhoto', passport.authenticate('jwt', { session: false }), asy
             }
         } else { return res.status(404).send('User not found') }
     } catch (e) {
-        next(e)
+        next()
     }
 })
 
-router.put('/updateUserInfo', passport.authenticate('jwt', { session: false }), async (req, res) => {
+router.put('/updateUserInfo', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
     try {
         const { name, lastname, username, country } = req.body;
         const user = await User.findOne({ where: { id: req.user.id } });
