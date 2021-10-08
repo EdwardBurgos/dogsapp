@@ -118,9 +118,12 @@ router.put('/', passport.authenticate('jwt', { session: false }), async (req, re
         if (pet) {
             if (pet.userId === req.user.id) {
                 const realName = pet.name;
+                const oldPhoto = pet.photo;
                 const petUpdated = await pet.update({ name, photo, dogId });
                 if (petUpdated) {
-                    deleteImage('pets', /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(pet.photo.slice(87, 123)) ? pet.photo.slice(87, 123) : null);
+                    console.log(oldPhoto)
+                    console.log(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(oldPhoto.slice(87, 123)))
+                    deleteImage('pets', /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(oldPhoto.slice(87, 123)) ? oldPhoto.slice(87, 123) : null);
                     deleteImage('testsPets', pet.id)
                     return res.send(`${petUpdated.name} was updated successfully`)
                 } else {
