@@ -219,6 +219,8 @@
   .containerProfileImage {
     display: flex;
     justify-content: center;
+    height: 200px;
+    width: 100%;
   }
   
   .uploadingContainer {
@@ -232,7 +234,8 @@
   }
   
   .uploadingGif {
-    width: 50%;
+    width: 20%;
+    max-width: 100px;
   }
   
   .fileInput {

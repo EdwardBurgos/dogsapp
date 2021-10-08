@@ -119,11 +119,10 @@ export default function RegisterPet() {
 
     // This function allows us to upload the dog breed picture
     async function changePhoto(e) {
+        setUploading(true)
         if (e.target.files[0]) {
             if (name) {
-                setUploading(true)
                 const urlPhoto = await uploadConfirmedPetImage(photoImageName, e.target.files[0])
-                setUploading(false);
                 if (validURL(urlPhoto)) {
                     setPhoto(urlPhoto);
                     setChangedPhoto(true);
@@ -135,13 +134,14 @@ export default function RegisterPet() {
             }
 
         }
+        setUploading(false);
     }
 
     return (
         <>
             <div className={s.container}>
                 {!mainErr ?
-                    user ?
+                    user && dogs.length ?
                         Object.keys(user).length ?
                             <div className={s.content}>
                                 <h1 className={s.title}>Register your pet</h1>
@@ -156,24 +156,16 @@ export default function RegisterPet() {
                                         <input value={name} className={nameErr ? s.errorInput : s.formInput} type="text" onChange={handleChange} name="namePet"></input>
                                     </div>
                                     {nameErr ? <small className={s.error}>{nameErr}</small> : null}
-
-                                    {
-                                        dogs.length ?
-                                            <>
-                                                <div className={nameErr ? '' : 'mb-3'}>
-                                                    <label className={s.label}>Dog breed</label>
-                                                    <div className={s.breedSelectorContainer}>
-                                                        <select className={`form-control ${s.breedSelector}`} id="temperamentSelector" value={dogId} onChange={e => setDogId(e.target.value)} name="temperament">
-                                                            {dogId === 'default' ? <option key='default' value='default'>Select a dog breed</option> : null}
-                                                            {dogs.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
-                                                        </select>
-                                                        <button disabled={dogId === 'default'} className={`btn btn-secondary ${s.breedMoreInfo}`} onClick={e => { e.preventDefault(); setShowModal(true); }}>More information</button>
-                                                    </div>
-                                                </div>
-                                            </>
-                                            :
-                                            null
-                                    }
+                                    <div className={nameErr ? '' : 'mb-3'}>
+                                        <label className={s.label}>Dog breed</label>
+                                        <div className={s.breedSelectorContainer}>
+                                            <select className={`form-control ${s.breedSelector}`} id="temperamentSelector" value={dogId} onChange={e => setDogId(e.target.value)} name="temperament">
+                                                {dogId === 'default' ? <option key='default' value='default'>Select a dog breed</option> : null}
+                                                {dogs.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
+                                            </select>
+                                            <button disabled={dogId === 'default'} className={`btn btn-secondary ${s.breedMoreInfo}`} onClick={e => { e.preventDefault(); setShowModal(true); }}>More information</button>
+                                        </div>
+                                    </div>
                                     <div className={s.profilePictureEditor}>
                                         <label className={s.labelProfile}>Image</label>
                                         <div className={`${s.containerProfileImage} ${errPhoto ? '' : 'mb-3'}`}>
@@ -195,7 +187,7 @@ export default function RegisterPet() {
                                                 </div>
                                                 :
                                                 <>
-                                                    <div className={`w-100 btn btn-secondary mb-3 ${uploading ? 'disabled' : ''}`} onClick={() => { document.getElementById('inputFileExtra').click() }}>
+                                                    <div className={`w-100 btn btn-secondary ${uploading ? 'disabled' : ''}`} onClick={() => { document.getElementById('inputFileExtra').click() }}>
                                                         <span>Upload another image</span>
                                                         <input id="inputFileExtra" type="file" className={s.fileInput} onChange={changePhoto} accept="image/png, image/gif, image/jpeg, image/jpg" />
                                                     </div>
