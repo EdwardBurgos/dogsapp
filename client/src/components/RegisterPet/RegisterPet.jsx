@@ -231,7 +231,9 @@ export default function RegisterPet() {
                             </Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
-                            <img src={selectedDog.image} className={s.image} alt={selectedDog.name}></img>
+                            <div className={s.dogImageContainer}>
+                                <img src={selectedDog.image} className={s.image} alt={selectedDog.name}></img>
+                            </div>
                             {selectedDog.temperament ?
                                 <div className='mt-3'>
                                     <span className={s.modalLabel}>Temperament :</span>
