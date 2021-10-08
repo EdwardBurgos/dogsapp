@@ -168,7 +168,7 @@ export default function RegisterPet() {
                                                             {dogs.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
                                                         </select>
                                                         <button disabled={dogId === 'default'} className={`btn btn-secondary ${s.breedMoreInfo}`} onClick={e => { e.preventDefault(); setShowModal(true); }}>More information</button>
-                                                    </div>                                                
+                                                    </div>
                                                 </div>
                                             </>
                                             :
@@ -238,11 +238,11 @@ export default function RegisterPet() {
                                 {selectedDog.name}
                             </Modal.Title>
                         </Modal.Header>
-                        <Modal.Body className={s.modalBody}>
+                        <Modal.Body>
                             <img src={selectedDog.image} className={s.image} alt={selectedDog.name}></img>
                             {selectedDog.temperament ?
-                                <>
-                                    <span className={s.label}>Temperament :</span>
+                                <div className='mt-3'>
+                                    <span className={s.modalLabel}>Temperament :</span>
                                     <div className={s.temperamentsContainer}>
                                         {selectedDog.temperament.split(', ').map((e, i) =>
                                             <div key={i} className={s.test}>
@@ -250,66 +250,66 @@ export default function RegisterPet() {
                                             </div>
                                         )}
                                     </div>
-                                </>
+                                </div>
                                 :
                                 null
                             }
                             {
                                 selectedDog.height ?
-                                    <div>
-                                        <span className={s.label}>Height :</span>
-                                        <p>{selectedDog.height}</p>
+                                    <div className='mt-3'>
+                                        <span className={s.modalLabel}>Height :</span>
+                                        <p className='mb-0'>{selectedDog.height}</p>
                                     </div>
                                     :
                                     null
                             }
                             {
                                 selectedDog.weight ?
-                                    <div>
-                                        <span className={s.label}>Weight :</span>
-                                        <p>{selectedDog.weight}</p>
+                                    <div className='mt-3'>
+                                        <span className={s.modalLabel}>Weight :</span>
+                                        <p className='mb-0'>{selectedDog.weight}</p>
                                     </div>
                                     :
                                     null
                             }
                             {
                                 selectedDog.lifespan ?
-                                    <div>
-                                        <span className={s.label}>Lifespan :</span>
-                                        <p>{selectedDog.lifespan}</p>
+                                    <div className='mt-3'>
+                                        <span className={s.modalLabel}>Lifespan :</span>
+                                        <p className='mb-0'>{selectedDog.lifespan}</p>
                                     </div>
                                     :
                                     null
                             }
                             {
                                 selectedDog.bred_for ?
-                                    <div>
-                                        <span className={s.label}>Bred for reason :</span>
-                                        <p>{selectedDog.bred_for}</p>
+                                    <div className='mt-3'>
+                                        <span className={s.modalLabel}>Bred for reason :</span>
+                                        <p className='mb-0'>{selectedDog.bred_for}</p>
                                     </div>
                                     :
                                     null
                             }
                             {
                                 selectedDog.breed_group ?
-                                    <div>
-                                        <span className={s.label}>Breed group :</span>
-                                        <p>{selectedDog.breed_group}</p>
-                                    </div>
+                                    <div className='mt-3'>
+                                        <span className={s.modalLabel}>Breed group :</span>
+                                        <p className='mb-0'>{selectedDog.breed_group}</p>
+                                    </div >
                                     :
                                     null
                             }
                             {
                                 selectedDog.origin ?
-                                    <div>
-                                        <span className={s.label}>Origin :</span>
-                                        <p>{selectedDog.origin}</p>
+                                    <div className='mt-3'>
+                                        <span className={s.modalLabel}>Origin :</span>
+                                        <p className='mb-0'>{selectedDog.origin}</p>
                                     </div>
                                     :
                                     null
                             }
                         </Modal.Body>
-                    </Modal>
+                    </Modal >
                     :
                     null
             }

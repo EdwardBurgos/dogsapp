@@ -38,12 +38,17 @@
     flex-wrap: wrap;
   }
   
-  .label {
+  .label, .modalLabel {
     margin-bottom: 0.5rem;
     color: rgba(26,26,26,.7);
     font-weight: 600;
     font-size: 0.9rem;
     display: block;
+  }
+
+  .modalLabel {
+    margin-bottom: 0;
+    margin-top: 0;
   }
   
   .title {
@@ -244,12 +249,7 @@
 
   .image {
     width:100%;
-    margin-bottom: 16px;
     border-radius: 12px;
-  }
-
-  .modalBody {
-    padding-bottom: 0;
   }
 
   @media only screen and (min-width: 1200px) {
