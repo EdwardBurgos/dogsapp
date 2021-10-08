@@ -36,6 +36,7 @@ export default function Login() {
     const [showResetPassword, setShowResetPassword] = useState(false)
     const [firstOptionLoading, setFirstOptionLoading] = useState(false)
     const [secondOptionLoading, setSecondOptionLoading] = useState(false)
+    const [sendingNewVerification, setSendingNewVerification] = useState(false)
 
     // Variables
     const history = useHistory();
@@ -250,6 +251,7 @@ export default function Login() {
 
     // This function allows us to send another verification link
     async function newVerificationLink() {
+        setSendingNewVerification(true)
         try {
             await axios.post('/users/newVerificationEmail', { emailUsername });
             setShowVerify(true)
@@ -258,6 +260,7 @@ export default function Login() {
             //   if (e.response.data.msg) return setErrGlobal(e.response.data.msg)
             setErrGlobal('Sorry, an error occurred');
         }
+        setSendingNewVerification(false)
     }
 
     // This function allows us to send a email to login without password
@@ -300,8 +303,14 @@ export default function Login() {
                             <div className={s.errorGlobalContainer}>
                                 {errGlobal ?
                                     <div className={s.errorGlobal}>
-                                        <span>{errGlobal}</span>
-                                        {errGlobal === 'Your account is not verified yet' ? <><span>, please check your email to do it or click </span><a className={`${s.enlaceErr} bold`} onClick={() => newVerificationLink()}>here</a><span> to get another verification link</span></> : null}
+                                        {!sendingNewVerification ?
+                                            <>
+                                                <span>{errGlobal}</span>
+                                                {errGlobal === 'Your account is not verified yet' ? <><span>, please check your email to do it or click </span><a className={`${s.enlaceErr} bold`} onClick={() => newVerificationLink()}>here</a><span> to get another verification link</span></> : null}
+                                            </>
+                                            :
+                                            <img className={s.loadingInButton} src={loading} alt='loadingGif'></img>
+                                        }
                                     </div>
                                     : null}
                             </div>
