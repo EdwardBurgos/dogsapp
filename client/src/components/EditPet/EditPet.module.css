@@ -234,10 +234,6 @@
     display: none;
   }
 
-  .loadingHorizontal {
-    height: 16px;
-  }
-
   .breedSelectorContainer {
     display: flex;
     flex-wrap: wrap;
@@ -259,6 +255,16 @@
 
   .modalBody {
     padding-bottom: 0;
+  }
+
+  .loadingButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .loadingInButton {
+    height: 20px;
   }
 
   @media only screen and (min-width: 1200px) {

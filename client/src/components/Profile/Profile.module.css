@@ -212,28 +212,6 @@
     width: 100%;
     margin-bottom: 16px;
   }
-  
-  @media only screen and (max-width: 992px) {
-    .image, .form {
-      width: 40%;
-    }
-  }
-  
-  @media only screen and (max-width: 768px) {
-    .image, .form {
-      width: 50%;
-    }
-  }
-  
-  @media only screen and (max-width: 576px) {
-    .image, .form {
-      width: 100%;
-    } 
-    .logo {
-      margin-right: 0;
-    }
-  }
-  
 
   .errorGlobal {
     background-color: #f8d7da;
@@ -336,6 +314,20 @@
     margin-bottom: 0;
   }
 
+  .goProfileButton {
+    margin-bottom: 32px;
+  }
+
+  .loadingButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .loadingInButton {
+    height: 20px;
+  }
+
   @media only screen and (min-width: 768px) {
     .imageContainer {
       padding: 0 5% 0 5%;
@@ -363,21 +355,24 @@
       margin-bottom: 32px;
     }
   }
-
-  .loadingHorizontal {
-    height: 16px;
-  }
-
-  .goProfileButton {
-    margin-bottom: 32px;
-  }
-
-  .loadingButton {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  
+  @media only screen and (max-width: 992px) {
+    .image, .form {
+      width: 40%;
+    }
   }
   
-  .loadingInButton {
-    height: 20px;
+  @media only screen and (max-width: 768px) {
+    .image, .form {
+      width: 50%;
+    }
+  }
+  
+  @media only screen and (max-width: 576px) {
+    .image, .form {
+      width: 100%;
+    } 
+    .logo {
+      margin-right: 0;
+    }
   }

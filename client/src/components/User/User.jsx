@@ -9,7 +9,6 @@ import { useDispatch } from 'react-redux';
 import { setUser, setPublicUser } from '../../actions';
 import { uploadImage, uploadConfirmedImage } from '../../extras/firebase';
 import { getUserInfo, showMessage, validURL } from '../../extras/globalFunctions';
-import loadingHorizontal from '../../img/loadingHorizontalGif.gif'
 import Post from '../Post/Post';
 import Card from '../Card/Card';
 import emptyVector from '../../img/empty.svg';

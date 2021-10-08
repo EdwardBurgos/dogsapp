@@ -9,7 +9,6 @@ import { useDispatch } from 'react-redux';
 import { setUser } from '../../actions';
 import { uploadImage, uploadConfirmedImage } from '../../extras/firebase';
 import { getUserInfo, showMessage, validURL, logout } from '../../extras/globalFunctions';
-import loadingHorizontal from '../../img/loadingHorizontalGif.gif'
 import { Link, useHistory } from 'react-router-dom';
 import { deleteImage } from '../../extras/firebase';
 import { Modal, Button } from 'react-bootstrap';
@@ -298,8 +297,8 @@ export default function Profile() {
                     <>
                       {
                         guardando ?
-                          <div className={`w-100 btn btn-primary mb-3 disabled`}>
-                            <img src={loadingHorizontal} className={s.loadingHorizontal} alt='Loading'></img>
+                          <div className={`${s.loadingButton} w-100 btn btn-primary disabled`}>
+                            <img className={s.loadingInButton} src={loading} alt='loadingGif'></img>
                           </div>
                           :
                           <>

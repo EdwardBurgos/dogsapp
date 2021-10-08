@@ -10,7 +10,6 @@ import { getTemperaments, showMessage, validURL, getUserInfo, getDogsNames } fro
 import { setUser } from '../../actions';
 import 'react-toastify/dist/ReactToastify.css';
 import { uploadConfirmedPetImage, uploadPetImage } from '../../extras/firebase';
-import loadingHorizontal from '../../img/loadingHorizontalGif.gif';
 import { Modal } from 'react-bootstrap'
 import { deleteImage } from '../../extras/firebase';
 
@@ -147,16 +146,16 @@ export default function EditPet({ id }) { // si me psan el di seleccionar la raz
     // This function allows us to upload the dog breed picture
     async function changePhoto(e) {
         if (e.target.files[0]) {
-                setUploading(true)
-                const urlPhoto = await uploadPetImage(id, e.target.files[0])
-                setUploading(false);
-                if (validURL(urlPhoto)) {
-                    setImageFile(e.target.files[0]);
-                    setPhoto(urlPhoto);
-                    setChangedPhoto(true);
-                } else {
-                    setErrPhoto(urlPhoto)
-                }
+            setUploading(true)
+            const urlPhoto = await uploadPetImage(id, e.target.files[0])
+            setUploading(false);
+            if (validURL(urlPhoto)) {
+                setImageFile(e.target.files[0]);
+                setPhoto(urlPhoto);
+                setChangedPhoto(true);
+            } else {
+                setErrPhoto(urlPhoto)
+            }
         }
     }
 
@@ -224,7 +223,7 @@ export default function EditPet({ id }) { // si me psan el di seleccionar la raz
                                                         <input id="inputFileExtra" type="file" className={s.fileInput} onChange={changePhoto} accept="image/png, image/gif, image/jpeg, image/jpg" />
                                                     </div>
 
-                                                    <button className={`w-100 btn btn-secondary`} disabled={uploading} onClick={async () => { setImageFile(null); setUploading(false); setErrPhoto(''); setChangedPhoto(false); setPhoto(pet.photo); deleteImage('cancelPet', id);}}>Cancel changes</button>
+                                                    <button className={`w-100 btn btn-secondary`} disabled={uploading} onClick={async () => { setImageFile(null); setUploading(false); setErrPhoto(''); setChangedPhoto(false); setPhoto(pet.photo); deleteImage('cancelPet', id); }}>Cancel changes</button>
                                                 </>
                                         }
                                     </div>
@@ -233,8 +232,8 @@ export default function EditPet({ id }) { // si me psan el di seleccionar la raz
 
                                     {
                                         guardando ?
-                                            <div className={`w-100 btn btn-primary disabled`}>
-                                                <img src={loadingHorizontal} className={s.loadingHorizontal} alt='Loading'></img>
+                                            <div className={`${s.loadingButton} w-100 btn btn-primary disabled`}>
+                                                <img className={s.loadingInButton} src={loading} alt='loadingGif'></img>
                                             </div>
                                             :
                                             <input type="submit" value="Save changes" disabled={buttonState} className={`w-100 btn btn-primary`} />
