@@ -8,7 +8,7 @@ export default function LandingPage() {
       <div className={s.content}>
         <h1 className={s.title}>WELCOME</h1>
         <p className={s.description}>Get ready to learn more about dog breeds</p>
-        <Link to="/home"><button className={s.buttonHome}>START</button></Link>
+        <Link to="/home"><button className='btn btn-primary w-100'>Start</button></Link>
       </div>
     </div>
   );

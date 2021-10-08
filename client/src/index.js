@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import { BrowserRouter, Route} from 'react-router-dom';
+import { BrowserRouter, Route, Redirect } from 'react-router-dom';
 import storeConfig from './store.js';
 import { Provider } from 'react-redux';
 import App from './App';
@@ -15,7 +15,10 @@ ReactDOM.render(
   <Provider store={store}>
     <BrowserRouter>
       <React.StrictMode>
-        <Route exact path="/" component={LandingPage} />
+        {/* <Route exact path="/" component={LandingPage} /> > This allows us to show the landing page */}
+        <Route exact path="/">
+          <Redirect to="/home" />
+        </Route>
         <Route path='/:page' component={App} />
       </React.StrictMode>
     </BrowserRouter>

@@ -20,10 +20,6 @@
     border: 1px solid transparent;
 }
 
-.buttonHome:hover {
-    box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
-    -webkit-box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
-}
 
 .content {
     background-color: rgba(231, 233, 235, 0.5);
@@ -44,11 +40,7 @@
     margin-top: 0;
     margin-bottom: 16px;
     font-weight: 600;
-}
-
-.description {
-    font-size: 1.10rem;
-    margin-bottom: 16px;
+    font-size: 32px !important;
 }
 
 @media only screen and (max-width: 992px) {
