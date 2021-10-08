@@ -21,7 +21,9 @@ router.delete('/', passport.authenticate('jwt', { session: false }), async (req,
         try {
             const user = await User.findOne({ where: { id: req.user.id } })
             if (user) {
+                const username = user.username;
                 await user.destroy();
+                deleteImage('profilePictures', username);
                 return res.send('Your account was deleted successfully')
             } else {
                 return res.status(404).send(`There is no user with the id ${id}`)
@@ -34,7 +36,9 @@ router.delete('/', passport.authenticate('jwt', { session: false }), async (req,
             try {
                 const user = await User.findOne({ where: { id: req.user.id } })
                 if (user) {
+                    const username = user.username;
                     await user.destroy();
+                    deleteImage('profilePictures', username);
                     return res.send('Your account was deleted successfully')
                 } else {
                     return res.status(404).send(`There is no user with the id ${id}`)

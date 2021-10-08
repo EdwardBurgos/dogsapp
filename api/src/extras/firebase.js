@@ -19,6 +19,7 @@ admin.initializeApp({
 
 async function deleteImage(origin, fileName) {
     try {
+        if (origin === 'profilePictures') await admin.storage().bucket().file(`profilePictures/${fileName}ProfilePic`).delete();
         if (origin === 'testsProfilePictures') await admin.storage().bucket().file(`testsProfilePictures/${fileName}ProfilePic`).delete();
         if (origin === 'pets' && fileName) await admin.storage().bucket().file(`petsPictures/${fileName}`).delete();
         if (origin === 'testsPets') await admin.storage().bucket().file(`testsPetsPictures/${fileName}`).delete();
