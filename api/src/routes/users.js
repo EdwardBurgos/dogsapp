@@ -113,7 +113,6 @@ router.get('/:username', async (req, res, next) => {
                                     as: "user"
                                 }
                             ]
-
                         },
                         {
                             model: Dog,
@@ -121,7 +120,8 @@ router.get('/:username', async (req, res, next) => {
                         }
                     ]
                 }
-            ]
+            ],
+            order: [[{ model: Pet, as: 'pets' }, 'createdAt', 'DESC']]
         })
         if (user) {
             let { fullname, profilepic, country, username, pets, dogs } = user.dataValues;
@@ -132,6 +132,7 @@ router.get('/:username', async (req, res, next) => {
             return res.status(500).send('User not found')
         }
     } catch (e) {
+        console.log(e)
         next();
     }
 })
