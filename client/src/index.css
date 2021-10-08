@@ -103,3 +103,12 @@ background: #d4d4d4;
 h1, h2, h3, h4, h5, h6, .bold{
   font-weight: 600 !important;
 }
+
+.navbar-toggler-icon {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+.navbar-toggler {
+  line-height: 0.5;
+}

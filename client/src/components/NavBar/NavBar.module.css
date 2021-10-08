@@ -6,6 +6,8 @@
 .brand {
     display: flex;
     align-items: center;
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
 }
 
 .navbar {
@@ -100,13 +102,9 @@
     border-radius: 50%;
 }
 
-.lastEnlace {
-    margin-bottom: 8px;
-}
-
 
 @media only screen and (min-width: 992px) {
-    .brand, .enlace, .enlaceLogin, .enlaceSignup {
+    .enlace, .enlaceLogin, .enlaceSignup {
         padding-top: 4px !important;
         padding-bottom: 4px !important;
     }
@@ -123,9 +121,5 @@
 
     .enlace {
         margin-right: 20px
-    }
-
-    .lastEnlace {
-        margin-bottom: 0;
     }
 }
