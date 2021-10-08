@@ -60,10 +60,6 @@
   box-sizing: border-box;
 }
 
-.form {
-  margin: 30px 0;
-}
-
 .image, .form {
   width: 30%;
 }
