@@ -226,7 +226,7 @@ export default function RegisterPet() {
                         keyboard={false}
                         onHide={() => setShowModal(false)}
                     >
-                        <Modal.Header>
+                        <Modal.Header closeButton>
                             <Modal.Title id="contained-modal-title-vcenter">
                                 {selectedDog.name}
                             </Modal.Title>

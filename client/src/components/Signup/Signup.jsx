@@ -197,7 +197,7 @@ export default function Signup() {
                                 </div>
                                 {errPassword ? <small className={s.error}>{errPassword}</small> : null}
 
-                                {   !inProcess ?
+                                {!inProcess ?
                                     <input type="submit" value="Sign up" disabled={buttonState} className={`w-100 btn btn-primary mb-3`} />
                                     :
                                     <div className={`${s.loadingButton} w-100 btn btn-primary mb-3 disabled`}>
@@ -225,8 +225,13 @@ export default function Signup() {
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
                 keyboard={false}
-                onHide={() => {setShowVerify(false); history.push('/home');}}
+                onHide={() => { setShowVerify(false); history.push('/home'); }}
             >
+                <Modal.Header closeButton>
+                    <Modal.Title id="contained-modal-title-vcenter">
+                        Check your email
+                    </Modal.Title>
+                </Modal.Header>
                 <Modal.Body>
                     <p className='mb-0'>Please, check your email because we have sent you a link to verify your email address in order to complete your registration. When you open it, you will be logged in automatically. Remember that it is only valid for 4 hours.</p>
                 </Modal.Body>

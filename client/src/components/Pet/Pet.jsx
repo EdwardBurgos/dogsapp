@@ -160,8 +160,8 @@ export default function Pet({ id }) {
                 keyboard={false}
                 onHide={() => setUnauthorized(false)}
             >
-                <Modal.Header>
-                    <Modal.Title>Sorry, you need to be logged in to like a pet</Modal.Title>
+                <Modal.Header closeButton>
+                    <Modal.Title>Log in to like a pet</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Link to='/login' className='btn btn-primary w-100'>Log in</Link>
@@ -176,8 +176,8 @@ export default function Pet({ id }) {
                 keyboard={false}
                 onHide={() => setShowDelete(false)}
             >
-                <Modal.Header>
-                    <Modal.Title>Delete {pet.name}?</Modal.Title>
+                <Modal.Header closeButton>
+                    <Modal.Title>Delete confirmation</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     Are you sure you want to delete {pet.name}?

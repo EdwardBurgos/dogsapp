@@ -76,11 +76,11 @@ export default function Profile() {
       }
     }
     updateUser();
-    return () => { 
+    return () => {
       source.cancel("Unmounted");
       axios.delete(`/users/notUsed/${user.username}`)
-      
-  };
+
+    };
   }, [dispatch])
 
   // This hook allows us to update the user information showed in the component when the first one change
@@ -389,8 +389,8 @@ export default function Profile() {
         keyboard={false}
         onHide={() => setShowDelete(false)}
       >
-        <Modal.Header>
-          <Modal.Title>Delete your account?</Modal.Title>
+        <Modal.Header closeButton>
+          <Modal.Title>Delete confirmation</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           Are you sure you want to delete your account?
@@ -412,9 +412,9 @@ export default function Profile() {
         keyboard={false}
         onHide={() => { setErrDeletePassword(''); setDeletePassword(''); setShowConfirmation(false); }}
       >
-        <Modal.Header>
+        <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
-            Please, confirm your password to delete your account
+            Password confirmation
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -440,6 +440,11 @@ export default function Profile() {
         keyboard={false}
         onHide={() => setShowEmailSent(false)}
       >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Check your email
+          </Modal.Title>
+        </Modal.Header>
         <Modal.Body>
           <p className={s.message}>Please, check your email because we have sent you a link to delete your account</p>
         </Modal.Body>
@@ -452,9 +457,10 @@ export default function Profile() {
         keyboard={false}
         onHide={() => { setCurrentPassword(''); setErrCurrentPassword(''); setShowCurrentPassword(false); setNewPassword(''); setErrNewPassword(''); setShowNewPassword(false); setShowChangePassword(false); }}
       >
-        <Modal.Header>
+        
+        <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
-            Please, confirm your current password and indicate a new one
+            Confirm your current password and indicate a new one
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>

@@ -415,7 +415,7 @@ export default function Login() {
                 centered
                 keyboard={false}
             >
-                <Modal.Header>
+                <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter">
                         Complete this form
                     </Modal.Title>
@@ -450,6 +450,11 @@ export default function Login() {
                 keyboard={false}
                 onHide={() => { setShowVerify(false); history.push('/home'); }}
             >
+                <Modal.Header closeButton>
+                    <Modal.Title id="contained-modal-title-vcenter">
+                        Check your email
+                    </Modal.Title>
+                </Modal.Header>
                 <Modal.Body>
                     <p className='mb-0'>Please, check your email because we have sent you another link to verify your email address. When you open it, you will be logged in automatically.</p>
                 </Modal.Body>
@@ -462,6 +467,11 @@ export default function Login() {
                 keyboard={false}
                 onHide={() => { setShowLoginWithoutPassword(false); history.push('/home'); }}
             >
+                <Modal.Header closeButton>
+                    <Modal.Title id="contained-modal-title-vcenter">
+                        Check your email
+                    </Modal.Title>
+                </Modal.Header>
                 <Modal.Body>
                     <p className='mb-0'>Please, check your email because we have sent you a link to login without password. When you open it, you will be logged in automatically.</p>
                 </Modal.Body>
@@ -474,6 +484,11 @@ export default function Login() {
                 keyboard={false}
                 onHide={() => { setShowResetPassword(false); history.push('/home'); }}
             >
+                <Modal.Header closeButton>
+                    <Modal.Title id="contained-modal-title-vcenter">
+                        Check your email
+                    </Modal.Title>
+                </Modal.Header>
                 <Modal.Body>
                     <p className='mb-0'>Please, check your email because we have sent you a link to reset your password.</p>
                 </Modal.Body>
