@@ -169,7 +169,7 @@ export default function RegisterPet() {
                                     </div>
                                     <div className={s.profilePictureEditor}>
                                         <label className={s.labelProfile}>Image</label>
-                                        <div className={`${s.containerProfileImage} ${errPhoto ? '' : 'mb-3'}`}>
+                                        <div className={`${s.containerProfileImage} mb-3`}>
                                             {
                                                 uploading ?
                                                     <div className={s.uploadingContainer}>
@@ -179,7 +179,7 @@ export default function RegisterPet() {
                                                     <img className={s.profilePic} src={photo} alt='Dog breed'></img>
                                             }
                                         </div>
-                                        {errPhoto ? <small className={s.error}>{errPhoto}</small> : null}
+                                        {errPhoto ? <div className='w-100 text-center mb-3'><small className={s.errorPhoto}>{errPhoto}</small></div> : null }
                                         {
                                             !changedPhoto ?
                                                 <div className={`w-100 btn btn-primary ${uploading || !name ? 'disabled' : ''}`} onClick={() => document.getElementById('inputFile').click()}>

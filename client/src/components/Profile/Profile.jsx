@@ -278,7 +278,7 @@ export default function Profile() {
 
               <div className={s.profilePictureEditor}>
                 <label className={s.labelProfile} htmlFor="nameValue">Profile picture</label>
-                <div className={`${s.containerProfileImage} ${errPhoto ? '' : 'mb-3'}`}>
+                <div className={`${s.containerProfileImage} mb-3`}>
                   {
                     uploading ?
                       <div className={s.uploadingContainer}>
@@ -288,7 +288,7 @@ export default function Profile() {
                       <img className={s.profilePic} src={photo} alt='User profile'></img>
                   }
                 </div>
-                {errPhoto ? <small className={s.error}>{errPhoto}</small> : null}
+                {errPhoto ? <div className='w-100 text-center mb-3'><small className={s.errorPhoto}>{errPhoto}</small></div> : null }
                 {
                   !changedPhoto ?
                     <div className={`w-100 btn btn-primary ${uploading ? 'disabled' : ''}`} onClick={() => document.getElementById('inputFile').click()}>

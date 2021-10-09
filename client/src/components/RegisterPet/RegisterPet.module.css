@@ -53,7 +53,7 @@
   
   .title {
     text-align: center;
-    margin-bottom: 32px;
+    margin-bottom: 16px;
     font-weight: 600;
     width: 100%;
   }
@@ -75,11 +75,16 @@
     margin: 8px 0;
   }
   
-  .error {
+  .error, .errorPhoto {
     margin-top: 0.5rem;
     color:red;
     display: inline-block;
     margin-bottom: 16px;
+  }
+
+  .errorPhoto {
+    margin-top: 0;
+    margin-bottom: 0;
   }
   
   .test {
@@ -148,7 +153,6 @@
   
   .form {
     width: 100%;
-    margin-bottom: 30px;
     text-align: left;
   }
   
