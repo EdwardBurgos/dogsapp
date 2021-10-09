@@ -152,8 +152,6 @@ export default function Login() {
                         type: 'Google'
                     });
                     setLocalStorage(logged.data);
-                    const user = await getUserInfo();
-                    dispatch(setUser(user))
                     showMessage(`${logged.data.user} your login was successful`);
                     history.push('/home');
                 }
@@ -188,8 +186,6 @@ export default function Login() {
                     type: 'Google'
                 });
                 setLocalStorage(logged.data);
-                const user = await getUserInfo();
-                dispatch(setUser(user))
                 setShowModal(false);
                 showMessage(`${logged.data.user} your login was successful`);
                 history.push('/home');
@@ -213,8 +209,6 @@ export default function Login() {
                 type: 'Native'
             })
             setLocalStorage(login.data);
-            const user = await getUserInfo();
-            dispatch(setUser(user))
             showMessage(`${login.data.user} your login was successful`);
             history.push('/home');
         } catch (e) {
