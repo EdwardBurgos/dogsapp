@@ -8,7 +8,7 @@ async function sendMail(name, addressee, reason, token) {
     try {
         let url = 'http://localhost:3000'
 
-        if (['loginWithoutPassword', 'verifyEmail', 'resetPassword', 'deleteAccountEmail'].includes(reason) && token) {
+        if (['loginWithoutPassword', 'verifyEmail', 'resetPassword', 'deleteAccountEmail', 'definePassword'].includes(reason) && token) {
             url = `${url}/auto/${reason}/${token.token}?expires=${token.expires}`
         }
 
@@ -30,7 +30,7 @@ async function sendMail(name, addressee, reason, token) {
         const mailOptions = {
             from: 'edwardpbn@gmail.com',
             to: addressee,
-            subject: reason === 'verifyEmail' ? 'DOGS APP - Verify your email address' : reason === 'loginWithoutPassword' ? 'DOGS APP - Login without password' : reason === 'resetPassword' ? 'DOGS APP - Reset password' : reason === 'deleteAccountEmail' ? 'DOGS APP - Account deletion confirmation' : '',
+            subject: reason === 'verifyEmail' ? 'DOGS APP - Verify your email address' : reason === 'loginWithoutPassword' ? 'DOGS APP - Login without password' : reason === 'resetPassword' ? 'DOGS APP - Reset password' : reason === 'deleteAccountEmail' ? 'DOGS APP - Account deletion confirmation' : reason === 'definePassword' ? 'DOGS APP - Define password' : '',
             text: reason === 'verifyEmail' ? `Hi ${name}` +
             'Thank so much for wanting to try the DOGS APP deeply' + 
             'In order to avoid spam, we verify all the email addresses so the following link would help us to verify yours' +
@@ -51,7 +51,11 @@ async function sendMail(name, addressee, reason, token) {
             'The following link confirm your decision and delete your account automatically' +
             'Please, click it if you really want to do it and do not worry because it is not dangerous at all' + 
             `<a href="${url}">Delete account</a>` +
-            'Thanks for your try the DOGS APP' : '',
+            'Thanks for your try the DOGS APP' : reason === 'definePassword' ? `Hi ${name}` +
+            'The following link allow you to define a password for your account' +
+            'Please, click it to define it and do not worry because it is not dangerous at all' + 
+            `<a href="${url}">Define password</a>` +
+            'Hope you share your pets with the community' : '',
             html: reason === 'verifyEmail' ?  `<div style='background-color: #0d6efd; padding: 16px; border-radius: 5px; color: #fff !important;'><h1 style='margin-top: 0;'>Hi ${name}</h1>` +
             '<p>Thank so much for wanting to try the DOGS APP deeply</p>' +
             '<p>In order to avoid spam, we verify all the email addresses so the following link would help us to verify yours</p>' +
@@ -72,9 +76,12 @@ async function sendMail(name, addressee, reason, token) {
             '<p>The following link confirm your decision and delete your account automatically</p>' +
             '<p>Please, click it if you really want to do it and do not worry because it is not dangerous at all</p>' + 
             `<a style='background-color: #fff; color: #0d6efd; padding: 6px 12px; display: inline-block; text-decoration: none; border-radius: 5px' href="${url}">Delete account</a>` + 
-            `<p style='margin-bottom: 0;'>Thanks for your try the DOGS APP</p></div>` : ''
+            `<p style='margin-bottom: 0;'>Thanks for your try the DOGS APP</p></div>` : reason === 'definePassword' ? `<div style='background-color: #0d6efd; padding: 16px; border-radius: 5px; color: #fff !important;'><h1 style='margin-top: 0;'>Hi ${name}</h1>` +
+            '<p>The following link allow you to define a password for your account</p>' +
+            '<p>Please, click it to define it and do not worry because it is not dangerous at all</p>' + 
+            `<a style='background-color: #fff; color: #0d6efd; padding: 6px 12px; display: inline-block; text-decoration: none; border-radius: 5px' href="${url}">Define password</a>` + 
+            `<p style='margin-bottom: 0;'>Hope you share your pets with the community</p></div>` : ''
         }
-
         const result = await transport.sendMail(mailOptions);
         console.log(result)
         return result;

@@ -37,6 +37,8 @@ export default function Login() {
     const [firstOptionLoading, setFirstOptionLoading] = useState(false)
     const [secondOptionLoading, setSecondOptionLoading] = useState(false)
     const [sendingNewVerification, setSendingNewVerification] = useState(false)
+    const [sendingPasswordEmail, setSendingPasswordEmail] = useState(false)
+    const [showDefinePassword, setShowDefinePassword] = useState(false)
 
     // Variables
     const history = useHistory();
@@ -226,29 +228,6 @@ export default function Login() {
         }
     }
 
-    // This function allows us to change the password specifically when the user was registered with Google and do not have one
-    async function handleSubmitOnlyPassword(e) {
-        e.preventDefault();
-        try {
-            const login = await axios.post(`/users/changePassword`, {
-                emailORusername: emailUsername,
-                password,
-            })
-            setLocalStorage(login.data);
-            const user = await getUserInfo();
-            dispatch(setUser(user))
-            showMessage(`${login.data.user} your password was updated successfully`);
-            showMessage(`${login.data.user} your login was successful`);
-            history.push('/home');
-        } catch (e) {
-            dispatch(setUser({}))
-            setButtonState(true);
-            if (e.response.status === 500 && e.response.data.msg === 'Password could not be updated') return setErrGlobal(e.response.data.msg);
-            if (e.response.status === 404 && e.response.data.msg === 'There is no user registered with this email') return setWrongCredentials(e.response.data.msg)
-            setErrGlobal('Sorry, an error occurred');
-        }
-    }
-
     // This function allows us to send another verification link
     async function newVerificationLink() {
         setSendingNewVerification(true)
@@ -289,6 +268,18 @@ export default function Login() {
         setSecondOptionLoading(false)
     }
 
+    async function definePassword() {
+        setSendingPasswordEmail(true)
+        try {
+            await axios.post('/users/definePassword', { emailUsername })
+            setShowDefinePassword(true)
+        } catch (e) {
+            console.log(e)
+            setErrGlobal('Sorry, an error occurred');
+        }
+        setSendingPasswordEmail(false)
+    }
+
     return (
         <>
             <div className={s.container}>
@@ -316,18 +307,7 @@ export default function Login() {
                             </div>
                             {
                                 onlyPassword ?
-                                    <form onSubmit={handleSubmitOnlyPassword}>
-                                        <div className={errPassword ? '' : 'mb-3'}>
-                                            <label className={s.label} htmlFor="passValue">Password</label>
-                                            <div className={s.test}>
-                                                <input id="passValue" value={password} name='passValue' type={showPassword ? 'text' : 'password'} onChange={handleChange} className={`form-control ${s.inputPassword} ${errPassword ? s.errorInput : ''}`} />
-                                                <IonIcon icon={showPassword ? eyeOutline : eyeOffOutline} className={s.iconDumb} onClick={() => showPassword ? setShowPassword(false) : setShowPassword(true)}></IonIcon>
-                                            </div>
-                                        </div>
-                                        {errPassword ? <small className={s.error}>{errPassword}</small> : null}
-
-                                        <input type="submit" value="Log in" disabled={buttonState} className={`w-100 btn btn-primary mb-3`} />
-                                    </form>
+                                    null
                                     :
                                     <>
                                         <form onSubmit={handleSubmit}>
@@ -349,7 +329,7 @@ export default function Login() {
                                             <input type="submit" value="Log in" disabled={buttonState} className={`w-100 btn btn-primary mb-3`} />
                                         </form>
                                         {
-                                            errPassword ?
+                                            errPassword === 'Incorrect password' ?
                                                 <>
                                                     <div className={s.errAlternatives}>
                                                         {
@@ -375,17 +355,28 @@ export default function Login() {
 
 
                             }
+                            {
+                                onlyPassword ?
+                                    <>
+                                        {
+                                            sendingPasswordEmail ?
+                                                <div className={`${s.loadingButton} ${s.loginOtherEmail} w-100 btn disabled`}>
+                                                    <img className={s.loadingInButton} src={loading} alt='loadingGif'></img>
+                                                </div>
+                                                :
+                                                <div className={`w-100 btn ${s.loginOtherEmail}`} onClick={() => { definePassword() }}>
+                                                    <span>Define a password</span>
+                                                </div>
+                                        }
+                                        <div className={`w-100 btn ${s.loginOtherEmail}`} onClick={() => { setEmailUsername(''); setErrEmailUsername(''); setErrGlobal(''); setOnlyPassword(false); }}>
+                                            <span>Log in with other email</span>
+                                        </div>
+                                    </>
+                                    :
+                                    <div className={s.division}>
+                                        <span>Or</span>
+                                    </div>
 
-                            <div className={s.division}>
-                                <span>Or</span>
-                            </div>
-
-                            {onlyPassword ?
-                                <div className={`w-100 btn ${s.loginOtherEmail}`} onClick={() => { setEmailUsername(''); setErrEmailUsername(''); setErrGlobal(''); setOnlyPassword(false); }}>
-                                    <span>Log in with other email</span>
-                                </div>
-                                :
-                                null
                             }
 
                             <div className={`w-100 btn ${s.loginButton}`} onClick={loginConGoogle}>
@@ -491,6 +482,23 @@ export default function Login() {
                 </Modal.Header>
                 <Modal.Body>
                     <p className='mb-0'>Please, check your email because we have sent you a link to reset your password.</p>
+                </Modal.Body>
+            </Modal>
+
+            <Modal
+                show={showDefinePassword}
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+                keyboard={false}
+                onHide={() => { setShowDefinePassword(false); history.push('/home'); }}
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title id="contained-modal-title-vcenter">
+                        Check your email
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p className='mb-0'>Please, check your email because we have sent you a link to define a password.</p>
                 </Modal.Body>
             </Modal>
         </>

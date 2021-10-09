@@ -161,7 +161,7 @@
 
 .loginOtherEmail {
   margin-bottom: 16px;
-  border: 1px #2962ff solid !important;
+  border: 1px #d9d9db solid !important;
 }
 
 .loginButton:hover, .loginOtherEmail:hover {

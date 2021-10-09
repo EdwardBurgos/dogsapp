@@ -33,7 +33,7 @@ export default function VerifyEmail({ token, reason, expires }) {
         async function loginUser() {
             if (token && expires) {
                 try {
-                    if (['verifyEmail', 'deleteAccountEmail', 'resetPassword'].includes(reason)) {
+                    if (['verifyEmail', 'deleteAccountEmail', 'resetPassword', 'definePassword'].includes(reason)) {
                         let user = {}
                         try {
                             let infoReq = await realAxios.get('http://localhost:3001/users/info', { headers: { Authorization: token } })
@@ -54,7 +54,7 @@ export default function VerifyEmail({ token, reason, expires }) {
                                     showMessage(`${user.fullname} you are logged in`)
                                 }
                                 return history.push('/home')
-                            } else if (reason === 'resetPassword') {
+                            } else if (['resetPassword', 'definePassword'].includes(reason)) {
                                 setUserInfo(user)
                             }
                         }
@@ -126,18 +126,38 @@ export default function VerifyEmail({ token, reason, expires }) {
         }
     }
 
+    // This function allows us to change the password specifically when the user was registered with Google and do not have one
+    async function definePassword(e) {
+        e.preventDefault()
+        try {
+            const login = await axios.post(`/users/definePasswordWithEmail`, {
+                emailORusername: userInfo.email,
+                password: newPassword,
+            })
+            if (!localStorage.getItem("token") && !localStorage.getItem("expiration")) {
+                showMessage(`${login.data.user} your password was defined successfully`);
+                setLocalStorage(login.data);
+                showMessage(`${login.data.user} your login was successful`);
+                history.push('/home');
+            } else {
+                showMessage(`${login.data.user} your password was defined successfully`);
+                history.push('/home');
+            }
+        } catch (e) {
+            if (e.response.status === 500 && e.response.data.msg === 'Password could not be defined') return showMessage(e.response.data.msg);
+            if (e.response.status === 404 && e.response.data.msg === 'There is no user registered with this email') return showMessage(e.response.data.msg)
+            showMessage('Sorry, an error occurred');
+        }
+    }
+
     return (
         <>
             {
-                reason !== 'resetPassword' ?
-                    <div className={s.contentCenter}>
-                        <img className={s.loading} src={loading} alt='loadingGif'></img>
-                    </div>
-                    :
+                ['resetPassword', 'definePassword'].includes(reason) ?
                     <div className={s.container}>
-                        <form onSubmit={changePassword} className={s.form}>
+                        <form onSubmit={reason === 'resetPassword' ? changePassword : definePassword} className={s.form}>
                             <div className={errNewPassword ? '' : 'mb-3'}>
-                                <label className={s.label} htmlFor="passNewValue">New password</label>
+                                <label className={s.label} htmlFor="passNewValue">{reason === 'resetPassword' ? 'New password' : 'Password'}</label>
                                 <div className={s.test}>
                                     <input id="passNewValue" value={newPassword} name='passNewValue' type={showNewPassword ? 'text' : 'password'} onChange={handleChange} className={`form-control ${s.inputPassword} ${errNewPassword ? s.errorInput : ''}`} />
                                     <IonIcon icon={showNewPassword ? eyeOutline : eyeOffOutline} className={s.iconDumb} onClick={() => showNewPassword ? setShowNewPassword(false) : setShowNewPassword(true)}></IonIcon>
@@ -146,6 +166,10 @@ export default function VerifyEmail({ token, reason, expires }) {
                             {errNewPassword ? <small className={s.error}>{errNewPassword}</small> : null}
                             <input type="submit" value="Confirm password" disabled={!newPassword || errNewPassword} className={`w-100 btn btn-primary`} />
                         </form>
+                    </div>
+                    :
+                    <div className={s.contentCenter}>
+                        <img className={s.loading} src={loading} alt='loadingGif'></img>
                     </div>
             }
         </>

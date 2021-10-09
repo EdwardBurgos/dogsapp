@@ -194,7 +194,7 @@ router.post('/newVerificationEmail', async (req, res, next) => {
                 return next()
             }
         } else if (user.type === "Google") {
-            res.status(403).send({ success: false, msg: `You were registered with ${user.type}, if you want to define a password or login with ${user.type} again` });
+            res.status(403).send({ success: false, msg: `You were registered with ${user.type}, if you want define a password, log in with other email or log in with ${user.type} again` });
         }
     } else {
         return res.status(404).send({ success: false, msg: "There is no user registered with this email" });
@@ -260,6 +260,28 @@ router.post('/resetPassword', async (req, res, next) => {
     }
 })
 
+// This route allows us to define password
+router.post('/definePassword', async (req, res, next) => {
+    const { emailUsername } = req.body
+    const user = await User.findOne({
+        where: {
+            [Op.or]:
+                [
+                    { email: emailUsername },
+                    { username: emailUsername }
+                ]
+        }
+    })
+    if (user) {
+        const tokenObject = utils.issueJWT(user, 'definePassword');
+        const status = await sendMail(user.name, user.email, 'definePassword', tokenObject)
+        if (status !== 'Sorry, an error ocurred') return res.send(true)
+        return next()
+    } else {
+        return res.status(404).send({ success: false, msg: "There is no user registered with this email" });
+    }
+})
+
 // This route allows us to log in a user validating if exists and issuing a JWT
 router.post('/login', async (req, res, next) => {
     try {
@@ -296,7 +318,7 @@ router.post('/login', async (req, res, next) => {
                         res.status(403).send({ success: false, msg: `Your account is not verified yet` });
                     }
                 } else if (user.type === "Google") {
-                    res.status(403).send({ success: false, msg: `You were registered with ${user.type}, if you want to define a password or login with ${user.type} again` });
+                    res.status(403).send({ success: false, msg: `You were registered with ${user.type}, if you want define a password, log in with other email or log in with ${user.type} again` });
                 }
             } else {
                 return res.status(404).send({ success: false, msg: /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(emailORusername) ? "There is no user registered with this email" : "There is no user registered with this username" });
@@ -308,7 +330,7 @@ router.post('/login', async (req, res, next) => {
 });
 
 // This route allows us to change the password
-router.post('/changePassword', async (req, res, next) => {
+router.post('/definePasswordWithEmail', async (req, res, next) => {
     try {
         const { emailORusername, password } = req.body;
         const user = await User.findOne({
@@ -329,7 +351,7 @@ router.post('/changePassword', async (req, res, next) => {
                 const tokenObject = utils.issueJWT(newUser);
                 res.send({ success: true, user: user.name, token: tokenObject.token, expiresIn: tokenObject.expires });
             } else {
-                return res.status(500).send({ success: false, msg: "Password could not be updated" });
+                return res.status(500).send({ success: false, msg: "Password could not be defined" });
             }
         } else {
             return res.status(404).send({ success: false, msg: "There is no user registered with this email" });
