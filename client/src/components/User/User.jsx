@@ -74,7 +74,7 @@ export default function User({ username }) {
       {!errGlobal ?
         Object.keys(publicUser).length && Object.keys(images).length ?
           <div className={s.content}>
-            <div className={s.header}>
+            <div className={`${s.header} ${user.username === username ? 'mb-3' : ''}`}>
               <div className={s.photoContainer}>
                 <img className={s.profilePic} src={publicUser.profilepic} alt='User profile'></img>
               </div>
