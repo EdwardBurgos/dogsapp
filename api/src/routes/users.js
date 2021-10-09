@@ -206,8 +206,12 @@ router.put('/verifyUser', async (req, res, next) => {
     try {
         const user = await User.findOne({ where: { email: req.body.email } })
         if (user) {
-            await user.update({ verified: true })
-            res.send('Verified')
+            if (user.verified) {
+                res.send('Already verified')
+            } else {
+                await user.update({ verified: true })
+                res.send('Verified')
+            }
         } else {
             res.status(404).send("There is no user registered with this email");
         }

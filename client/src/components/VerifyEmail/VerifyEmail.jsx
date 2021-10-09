@@ -47,8 +47,8 @@ export default function VerifyEmail({ token, reason, expires }) {
                                 showMessage(`${user.fullname} your account was deleted`)
                                 return history.push('/home')
                             } else if (reason === 'verifyEmail') {
-                                await realAxios.put('http://localhost:3001/users/verifyUser', { email: user.email })
-                                showMessage(`${user.fullname} your account was verified`)
+                                const verificationState = await realAxios.put('http://localhost:3001/users/verifyUser', { email: user.email })
+                                verificationState.data === 'Already verified' ? showMessage(`${user.fullname} your account is already verified`) : showMessage(`${user.fullname} your account was verified`)
                                 if (!localStorage.getItem("token") && !localStorage.getItem("expiration")) {
                                     setLocalStorage({ token, expiresIn: expires });
                                     showMessage(`${user.fullname} you are logged in`)
