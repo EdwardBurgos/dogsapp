@@ -289,6 +289,7 @@ router.post('/login', async (req, res, next) => {
         if (type === 'Google') {
             const user = await User.findOne({ where: { email: emailORusername } });
             if (user) {
+                if (!user.verified) await user.update({verified: true})
                 const tokenObject = utils.issueJWT(user);
                 res.send({ success: true, user: user.name, token: tokenObject.token, expiresIn: tokenObject.expires });
             } else {
