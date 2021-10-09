@@ -3,13 +3,11 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Route, Redirect } from 'react-router-dom';
-import storeConfig from './store.js';
+import { store } from './store.js';
 import { Provider } from 'react-redux';
 import App from './App';
 import LandingPage from './components/LandingPage/LandingPage';
 import 'bootstrap/dist/css/bootstrap.min.css'
-
-const store = storeConfig();
 
 ReactDOM.render(
   <Provider store={store}>

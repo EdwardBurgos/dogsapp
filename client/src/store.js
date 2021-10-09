@@ -16,27 +16,36 @@ export default store;
 
 
 // ANTES
+// import { applyMiddleware, compose, createStore } from 'redux'
+// import thunkMiddleware from 'redux-thunk'
+// import reducer from './reducers'
 
-import { applyMiddleware, compose, createStore } from 'redux'
-import thunkMiddleware from 'redux-thunk'
-import reducer from './reducers'
 
+// export default function configureStore(prealoadedState) {
+//   const middlewares = [thunkMiddleware]
+//   const middlewareEnhancer = applyMiddleware(...middlewares)
 
-export default function configureStore(prealoadedState) {
-  const middlewares = [thunkMiddleware]
-  const middlewareEnhancer = applyMiddleware(...middlewares)
+//   const enhancers = [middlewareEnhancer, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()]
+//   const composedEnhancers = compose(...enhancers)
 
-  const enhancers = [middlewareEnhancer, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()]
-  const composedEnhancers = compose(...enhancers)
+//   const store = createStore(
+//     reducer,  
+//     prealoadedState,
 
-  const store = createStore(
-    reducer,  
-    prealoadedState,
+//     composedEnhancers)
 
-    composedEnhancers)
+//   return store
+// }
 
-  return store
-}
+// AHORA
+import { applyMiddleware, createStore } from 'redux'
+import thunk from 'redux-thunk';
+import reducer from './reducers';
+
+export const store = createStore(
+  reducer,
+  applyMiddleware(thunk)
+);
 
 // @flow
 
