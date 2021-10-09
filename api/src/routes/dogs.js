@@ -17,6 +17,7 @@ router.get('/all', async (req, res, next) => {
                     attributes: ["id", "name"]
                 },
             ],
+            order: [ [ 'name', 'asc' ] ]
         });
         if (responseOwn.length) {
             responseOwn = responseOwn.map(e => {
@@ -39,7 +40,7 @@ router.get('/all', async (req, res, next) => {
 // This route allows us to get all the dogs name to be used in a select input
 router.get('/', async (req, res, next) => {
     try {
-        const dogs = await Dog.findAll({ attributes: ['id', 'name'] })
+        const dogs = await Dog.findAll({ attributes: ['id', 'name'], order: [ [ 'name', 'asc' ] ]})
         return res.send(dogs.map(e => e.dataValues))
     } catch (e) {
         next()
