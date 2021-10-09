@@ -194,7 +194,7 @@ router.post('/newVerificationEmail', async (req, res, next) => {
                 return next()
             }
         } else if (user.type === "Google") {
-            res.status(403).send({ success: false, msg: `You were registered with ${user.type}, if you want define a password or login with ${user.type} again` });
+            res.status(403).send({ success: false, msg: `You were registered with ${user.type}, if you want to define a password or login with ${user.type} again` });
         }
     } else {
         return res.status(404).send({ success: false, msg: "There is no user registered with this email" });
@@ -296,7 +296,7 @@ router.post('/login', async (req, res, next) => {
                         res.status(403).send({ success: false, msg: `Your account is not verified yet` });
                     }
                 } else if (user.type === "Google") {
-                    res.status(403).send({ success: false, msg: `You were registered with ${user.type}, if you want define a password or login with ${user.type} again` });
+                    res.status(403).send({ success: false, msg: `You were registered with ${user.type}, if you want to define a password or login with ${user.type} again` });
                 }
             } else {
                 return res.status(404).send({ success: false, msg: /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(emailORusername) ? "There is no user registered with this email" : "There is no user registered with this username" });
@@ -344,7 +344,6 @@ router.post('/changePassword', async (req, res, next) => {
 router.post('/changeCurrentPassword', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
     try {
         const { newPassword, currentPassword } = req.body;
-        console.log(newPassword)
         if (utils.validPassword(currentPassword, req.user.hash, req.user.salt)) {
             const saltHash = utils.genPassword(newPassword)
             if (utils.validPassword(newPassword, req.user.hash, req.user.salt)) return res.status(409).send('Provide a password different from your current password')
@@ -357,6 +356,29 @@ router.post('/changeCurrentPassword', passport.authenticate('jwt', { session: fa
             }
         } else {
             return res.status(401).send('Incorrect password')
+        }
+    } catch (e) {
+        console.log(e)
+        next();
+    }
+})
+
+router.post('/changePasswordWithEmail', async (req, res, next) => {
+    try {
+        const { newPassword, email } = req.body;
+        const saltHash = utils.genPassword(newPassword)
+        const user = await User.findOne({ where: { email}})
+        if (user) {
+            if (utils.validPassword(newPassword, user.hash, user.salt)) return res.status(409).send('Provide a password different from your current password')
+            const newUser = await user.update({ salt: saltHash.salt, hash: saltHash.hash });
+            if (newUser) {
+                const tokenObject = utils.issueJWT(newUser);
+                res.send({ success: true, user: user.name, token: tokenObject.token, expiresIn: tokenObject.expires });
+            } else {
+                return res.status(500).send({ success: false, msg: "Password could not be updated" });
+            }
+        } else {
+            return res.status(404).send(`There is no user with the email ${email}`)
         }
     } catch (e) {
         console.log(e)

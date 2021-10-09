@@ -16,17 +16,11 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
-/* 
-/*al parecer esto no será necesario cuando unifique los estilos de los formualrios*/
-/* .btn, .form-control {
+
+.btn, .form-control, .form-input {
   font-weight: 400 !important;
   font-size: 14px !important;
-} */
-/*al parecer esto no será necesario cuando unifique los estilos de los formualrios*/
-/* .form-input {
-  font-weight: 400 !important;
-  font-size: 14px !important;
-} */
+} 
 
 .Toastify__toast--default {
   color: #000 !important;

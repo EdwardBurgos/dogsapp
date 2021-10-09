@@ -26,7 +26,6 @@ export default function VerifyEmail({ token, reason, expires }) {
     const [errNewPassword, setErrNewPassword] = useState('')
     const [showNewPassword, setShowNewPassword] = useState(false)
     const [userInfo, setUserInfo] = useState({})
-    const [passwordChanged, setPasswordChanged] = useState(false)
     // const user = useSelector(state => state.user)
 
     // Hooks
@@ -34,45 +33,37 @@ export default function VerifyEmail({ token, reason, expires }) {
         async function loginUser() {
             if (token && expires) {
                 try {
-                    if (['verifyEmail', 'deleteAccountEmail'].includes(reason)) {
-                        if (!localStorage.getItem("token") && !localStorage.getItem("expiration")) {
-                            setLocalStorage({ token, expiresIn: expires });
-                            const user = await getUserInfo()
-                            if (Object.keys(user).length) {
-                                if (reason === 'verifyEmail') {
-                                    await axios.put('/users/verifyUser', { email: user.email })
-                                    showMessage(`${user.fullname} your account was verified`)
+                    if (['verifyEmail', 'deleteAccountEmail', 'resetPassword'].includes(reason)) {
+                        let user = {}
+                        try {
+                            let infoReq = await realAxios.get('http://localhost:3001/users/info', { headers: { Authorization: token } })
+                            user = infoReq.data.user
+                        } catch (e) {
+                            user = {};
+                        }
+                        if (Object.keys(user).length) {
+                            if (reason === 'deleteAccountEmail') {
+                                await realAxios.delete('http://localhost:3001/users', { headers: { Authorization: token } })
+                                showMessage(`${user.fullname} your account was deleted`)
+                                return history.push('/home')
+                            } else if (reason === 'verifyEmail') {
+                                await realAxios.put('http://localhost:3001/users/verifyUser', { email: user.email })
+                                showMessage(`${user.fullname} your account was verified`)
+                                if (!localStorage.getItem("token") && !localStorage.getItem("expiration")) {
+                                    setLocalStorage({ token, expiresIn: expires });
                                     showMessage(`${user.fullname} you are logged in`)
-                                } else {
-                                    await axios.delete('/users/')
-                                    logout()
-                                    showMessage(`${user.fullname} your account was deleted`)
                                 }
+                                return history.push('/home')
+                            } else if (reason === 'resetPassword') {
+                                setUserInfo(user)
                             }
-                            return history.push('/home')
-                        } else {
-                            let user = {}
-                            try {
-                                let infoReq = await realAxios.get('http://localhost:3001/users/info', { headers: { Authorization: token } })
-                                user = infoReq.data.user
-                            } catch (e) {
-                                user = {};
-                            }
-                            console.log(user.type)
-                            if (Object.keys(user).length) {
-                                if (reason === 'verifyEmail') {
-                                    await realAxios.put('http://localhost:3001/users/verifyUser', { email: user.email })
-                                    showMessage(`${user.fullname} your account was verified`)
-                                } else {
-                                    await realAxios.delete('http://localhost:3001/users', { headers: { Authorization: token } })
-                                    showMessage(`${user.fullname} your account was deleted`)
-                                }
-                            }
-                            return history.push('/home')
                         }
                     } else {
                         if (!localStorage.getItem("token") && !localStorage.getItem("expiration")) {
                             setLocalStorage({ token, expiresIn: expires });
+                            const user = await getUserInfo()
+                            showMessage(`${user.fullname} you are logged in`)
+                            return history.push('/home')
                         } else {
                             const user = await getUserInfo()
                             if (Object.keys(user).length) {
@@ -80,14 +71,7 @@ export default function VerifyEmail({ token, reason, expires }) {
                                 return history.push('/home')
                             }
                         }
-                        const user = await getUserInfo();
-                        if (reason !== 'resetPassword') {
-                            dispatch(setUser(user))
-                            history.push('/home')
-                        } else {
-                            logout()
-                            setUserInfo(user)
-                        }
+
                     }
                 } catch (e) {
                     showMessage('Sorry, an error ocurred')
@@ -120,17 +104,26 @@ export default function VerifyEmail({ token, reason, expires }) {
 
     async function changePassword(e) {
         e.preventDefault()
-        const login = await axios.post(`/users/changePassword`, {
-            emailORusername: userInfo.email,
-            password: newPassword
-        })
-        showMessage(`${login.data.user} your password was updated successfully`);
-        showMessage(`${login.data.user} your login was successful`);
-        setLocalStorage(login.data);
-        setPasswordChanged(true)
-        const user = await getUserInfo();
-        dispatch(setUser(user))
-        history.push('/home');
+        try {
+            const login = await axios.post(`/users/changePasswordWithEmail`, {
+                email: userInfo.email,
+                newPassword,
+            })
+            if (!localStorage.getItem("token") && !localStorage.getItem("expiration")) {
+                showMessage(`${login.data.user} your password was updated successfully`);
+                setLocalStorage(login.data);
+                showMessage(`${login.data.user} your login was successful`);
+                history.push('/home');
+            } else {
+                showMessage(`${login.data.user} your password was updated successfully`);
+                history.push('/home');
+            }
+        } catch (e) {
+            if (e.response.status === 404 && e.response.data.includes('There is no user with the id')) return showMessage(e.response.data);
+            if (e.response.status === 409 && e.response.data === "Provide a password different from your current password") return setErrNewPassword(e.response.data)
+            if (e.response.status === 500 && e.response.data.msg === "Password could not be updated") return showMessage(e.response.data.msg);
+            showMessage('Sorry, an error ocurred')
+        }
     }
 
     return (
