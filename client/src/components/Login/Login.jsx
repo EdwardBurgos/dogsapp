@@ -447,7 +447,7 @@ export default function Login() {
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <p className='mb-0'>Please, check your email because we have sent you another link to verify your email address. When you open it, you will be logged in automatically.</p>
+                    <p className='mb-0'>Please, check your email because we have sent you another link to verify your email address</p>
                 </Modal.Body>
             </Modal>
 
@@ -464,7 +464,7 @@ export default function Login() {
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <p className='mb-0'>Please, check your email because we have sent you a link to login without password. When you open it, you will be logged in automatically.</p>
+                    <p className='mb-0'>Please, check your email because we have sent you a link to login without password</p>
                 </Modal.Body>
             </Modal>
 
@@ -481,7 +481,7 @@ export default function Login() {
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <p className='mb-0'>Please, check your email because we have sent you a link to reset your password.</p>
+                    <p className='mb-0'>Please, check your email because we have sent you a link to reset your password</p>
                 </Modal.Body>
             </Modal>
 
@@ -498,7 +498,7 @@ export default function Login() {
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <p className='mb-0'>Please, check your email because we have sent you a link to define a password.</p>
+                    <p className='mb-0'>Please, check your email because we have sent you a link to define a password</p>
                 </Modal.Body>
             </Modal>
         </>

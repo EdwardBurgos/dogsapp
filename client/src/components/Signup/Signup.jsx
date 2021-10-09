@@ -233,7 +233,7 @@ export default function Signup() {
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <p className='mb-0'>Please, check your email because we have sent you a link to verify your email address in order to complete your registration. When you open it, you will be logged in automatically. Remember that it is only valid for 4 hours.</p>
+                    <p className='mb-0'>Please, check your email because we have sent you a link to verify your email address in order to complete your registration</p>
                 </Modal.Body>
             </Modal>
         </>
