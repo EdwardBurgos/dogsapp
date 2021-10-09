@@ -50,6 +50,7 @@ export default function Profile() {
   const [errNewPassword, setErrNewPassword] = useState('')
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [sendingDeletionEmail, setSendingDeletionEmail] = useState(false)
+  const [showDefinePassword, setShowDefinePassword] = useState(false)
 
   // Variables
   const dispatch = useDispatch();
@@ -251,8 +252,6 @@ export default function Profile() {
       if (e.response.status === 409 && e.response.data === "Provide a password different from your current password") return setErrNewPassword(e.response.data)
       showMessage('Sorry, an error ocurred')
     }
-
-
   }
 
   async function sendEmailConfirmation() {
@@ -265,6 +264,25 @@ export default function Profile() {
       setErrGlobal('Sorry, an error occurred');
     }
     setSendingDeletionEmail(false)
+  }
+
+  async function definePassword(e) {
+    e.preventDefault()
+    try {
+      const login = await axios.post(`/users/definePasswordWithEmail`, {
+        emailORusername: user.email,
+        password: newPassword,
+      })
+      setNewPassword('');
+      setErrNewPassword('');
+      setShowNewPassword(false);
+      setShowDefinePassword(false);
+      showMessage('Your password was updated successfully')
+    } catch (e) {
+      if (e.response.status === 500 && e.response.data.msg === 'Password could not be defined') return showMessage(e.response.data.msg);
+      if (e.response.status === 404 && e.response.data.msg === 'There is no user registered with this email') return showMessage(e.response.data.msg)
+      showMessage('Sorry, an error occurred');
+    }
   }
 
   return (
@@ -288,7 +306,7 @@ export default function Profile() {
                       <img className={s.profilePic} src={photo} alt='User profile'></img>
                   }
                 </div>
-                {errPhoto ? <div className='w-100 text-center mb-3'><small className={s.errorPhoto}>{errPhoto}</small></div> : null }
+                {errPhoto ? <div className='w-100 text-center mb-3'><small className={s.errorPhoto}>{errPhoto}</small></div> : null}
                 {
                   !changedPhoto ?
                     <div className={`w-100 btn btn-primary ${uploading ? 'disabled' : ''}`} onClick={() => document.getElementById('inputFile').click()}>
@@ -325,7 +343,7 @@ export default function Profile() {
               </div>
 
               <div className={s.bottomContent}>
-                <button className={`w-100 btn btn-primary mb-3`} onClick={() => { setShowChangePassword(true) }}>Change password</button>
+                <button className={`w-100 btn btn-primary mb-3`} onClick={() => { user.type === 'Google' ? setShowDefinePassword(true) : setShowChangePassword(true) }}>{user.type === 'Google' ? 'Define password' : 'Change password'}</button>
                 {
                   !sendingDeletionEmail ?
                     <button className={`w-100 btn btn-danger`} onClick={() => setShowDelete(true)}>Delete account</button>
@@ -455,7 +473,7 @@ export default function Profile() {
         keyboard={false}
         onHide={() => { setCurrentPassword(''); setErrCurrentPassword(''); setShowCurrentPassword(false); setNewPassword(''); setErrNewPassword(''); setShowNewPassword(false); setShowChangePassword(false); }}
       >
-        
+
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
             Confirm your current password and indicate a new one
@@ -485,6 +503,36 @@ export default function Profile() {
           </form>
         </Modal.Body>
       </Modal>
+
+      <Modal
+        show={showDefinePassword}
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+        keyboard={false}
+        onHide={() => { setCurrentPassword(''); setErrCurrentPassword(''); setShowCurrentPassword(false); setNewPassword(''); setErrNewPassword(''); setShowNewPassword(false); setShowDefinePassword(false); }}
+      >
+
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Indicate a password
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <form onSubmit={definePassword}>
+            <div className={errNewPassword ? '' : 'mb-3'}>
+              <label className={s.label} htmlFor="passNewValue">Password</label>
+              <div className={s.test}>
+                <input id="passNewValue" value={newPassword} name='passNewValue' type={showNewPassword ? 'text' : 'password'} onChange={handleChange} className={`form-control ${s.inputPassword} ${errNewPassword ? s.errorInput : ''}`} />
+                <IonIcon icon={showNewPassword ? eyeOutline : eyeOffOutline} className={s.iconDumb} onClick={() => showNewPassword ? setShowNewPassword(false) : setShowNewPassword(true)}></IonIcon>
+              </div>
+            </div>
+            {errNewPassword ? <small className={s.error}>{errNewPassword}</small> : null}
+
+            <input type="submit" value="Confirm password" disabled={!newPassword || errNewPassword} className={`w-100 btn btn-primary`} />
+          </form>
+        </Modal.Body>
+      </Modal>
+
     </>
   );
 }
