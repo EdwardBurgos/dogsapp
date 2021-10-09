@@ -28,11 +28,6 @@ module.exports = (passport) => {
                 where: {id: jwt_payload.sub}, 
                 include: [
                     {
-                        model: Dog,
-                        as: "dogs",
-                        attributes: ["id"]
-                    },
-                    {
                         model: Pet,
                         as: "pets",
                         attributes: ["id"]

@@ -12,7 +12,7 @@ const { sendMail } = require('../extras/nodemailer')
 // This route allows us to get the email, photo and name of the authentciated user
 router.get('/info', passport.authenticate('jwt', { session: false }), (req, res) => {
     const { id, fullname, name, lastname, profilepic, username, country, email, dogs, pets, type, likes } = req.user;
-    res.status(200).json({ success: true, msg: "You are successfully authenticated to this route!", user: { id, fullname, name, lastname, profilepic, username, country, email, type, dogs: dogs.map(e => e.dataValues.id), pets: pets.map(e => e.dataValues.id), likes } });
+    res.status(200).json({ success: true, msg: "You are successfully authenticated to this route!", user: { id, fullname, name, lastname, profilepic, username, country, email, type, pets: pets.map(e => e.dataValues.id), likes } });
 });
 
 // This route allows us to delete an user account
@@ -91,16 +91,6 @@ router.get('/:username', async (req, res, next) => {
             where: { username: req.params.username },
             include: [
                 {
-                    model: Dog,
-                    as: "dogs",
-                    include: [
-                        {
-                            model: Temperament,
-                            as: "temperaments"
-                        }
-                    ]
-                },
-                {
                     model: Pet,
                     as: "pets",
                     include: [
@@ -126,7 +116,6 @@ router.get('/:username', async (req, res, next) => {
         if (user) {
             let { fullname, profilepic, country, username, pets, dogs } = user.dataValues;
             pets = pets.map(e => Object.assign((({ id, name, photo, dog, likes }) => ({ id, name, photo, dog, likes }))(e.dataValues), { likes: e.dataValues.likes.map(e => e.dataValues ? (({ id, username, fullname, profilepic }) => ({ id, username, fullname, profilepic }))(e.dataValues.user) : null) }, { likesCount: e.dataValues.likes.length }, { dog: (({ id, name }) => ({ id, name }))(e.dataValues.dog) }));
-            dogs = dogs.map(e => { return { id: e.dataValues.id, image: e.dataValues.image, name: e.dataValues.name, temperament: e.dataValues.temperaments.map(e => e.dataValues.name).toString().replace(/,/g, ', ') } })
             return res.send({ fullname, profilepic, country, username, pets, dogs })
         } else {
             return res.status(500).send('User not found')
