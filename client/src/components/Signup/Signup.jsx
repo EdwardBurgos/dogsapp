@@ -135,8 +135,8 @@ export default function Signup() {
             console.log(e)
             dispatch(setUser({}))
             setButtonState(true);
-            if (e.response.status === 409 && e.response.data.msg.includes('email')) return setErrEmail(e.response.data.msg);
-            if (e.response.status === 409 && e.response.data.msg.includes('username')) return setErrUsername(e.response.data.msg);
+            if (e.response.status === 409 && e.response.data.msg.includes('email')) { setInProcess(false); return setErrEmail(e.response.data.msg); }
+            if (e.response.status === 409 && e.response.data.msg.includes('username')) { setInProcess(false); return setErrUsername(e.response.data.msg); }
             setErrGlobal('Sorry, an error occurred');
         }
         setInProcess(false)
