@@ -21,7 +21,6 @@ export default function Home() {
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [temperament, setTemperament] = useState('');
-  const [property, setProperty] = useState('');
   const [errorGlobal, setErrorGlobal] = useState('')
   const [dogs, setDogs] = useState([])
   // Variables
@@ -70,31 +69,22 @@ export default function Home() {
   // Functions 
 
   function filter(e) {
-    if (e.target.id !== 'own' && e.target.id !== 'notOwn') { e.preventDefault(); }
+    e.preventDefault();
     if (dogs.length < 9) return setError('Wait a moment please');
     let componentValue = e.target.value;
     let componentId = e.target.id;
     let finalResult = [];
     let actualsearchterm = searchTerm;
     let actualtemperament = temperament;
-    let actualproperty = property;
     if (componentId === 'searchTerm') { actualsearchterm = componentValue; setSearchTerm(componentValue) }
     if (componentId === 'temperament') { actualtemperament = componentValue; setTemperament(componentValue) }
-    if (componentId === 'own') { actualproperty = 'own'; setProperty('own') }
-    if (componentId === 'notOwn') { actualproperty = 'notOwn'; setProperty('notOwn') }
-    if (componentId === 'deleteSearch') { finalResult = dogs; setSearchTerm(''); } else {
+    if (componentId === 'deleteSearch') { if (searchTerm) { finalResult = dogs; setSearchTerm('');} else {return} } else {
       finalResult = dogs.filter((e) => e.name.toLowerCase().includes(actualsearchterm.toLowerCase()))
     }
-    if (componentId === 'deleteTemperamentFilter' || (componentId === 'temperament' && componentValue === 'default')) { setTemperament('') } else {
+    if (componentId === 'deleteTemperamentFilter' || (componentId === 'temperament' && componentValue === 'default')) { if (temperament && temperament !== 'default') { setTemperament(''); } else {return} } else {
       finalResult = finalResult.filter(e => e.temperament ? e.temperament.toLowerCase().includes(actualtemperament.toLowerCase()) : false);
     }
-    if (componentId === 'deletePropertyFilter') { setProperty('') } else {
-      if (actualproperty === "own") {
-        finalResult = finalResult.filter(e => e.id >= 265);
-      } else if (actualproperty === "notOwn") {
-        finalResult = finalResult.filter(e => e.id < 265);
-      }
-    }
+
     if (!finalResult.length) setError('Not results found')
     dispatch(actionsCreators.modifyFinalResult(finalResult))
   }
@@ -124,14 +114,6 @@ export default function Home() {
                     {temperaments.map((e, i) => <option key={i} value={e}>{e}</option>)}
                   </select>
                   <button className={s.button} id="deleteTemperamentFilter" onClick={e => { filter(e) }}>Delete filter</button>
-                </div>
-                <div className={`${s.marginTop} ${s.marginBottom}`}>
-                  <span className={s.label}>Filter by property</span>
-                  <div className={s.middleContent}>
-                    <div className={s.radioOneInput}><label htmlFor="own"><input type="radio" id="own" name="propertyFilter" checked={property === 'own'} onChange={e => filter(e)} className={s.radioOne} />Show dog breeds created by the community</label></div>
-                    <div className={s.radioTwoInput}><label htmlFor="notOwn"><input type="radio" id="notOwn" name="propertyFilter" checked={property === 'notOwn'} onChange={e => filter(e)} className={s.radioTwo} />Do not show dog breeds created by the community</label></div>
-                  </div>
-                  <button id="deletePropertyFilter" className={s.button} onClick={e => { filter(e) }}>Delete filter</button>
                 </div>
               </div>
               <div className={s.content}>
