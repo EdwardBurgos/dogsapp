@@ -279,8 +279,8 @@
   }
 
   .uploadingContainer {
-    width: 200px;
-      height: 200px;
+    width: 150px;
+      height: 150px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -332,6 +332,17 @@
   
   .loadingInButton {
     height: 20px;
+  }
+
+  .changePhotoButtons {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .option  {
+    width: 48%;
   }
 
   @media only screen and (min-width: 768px) {

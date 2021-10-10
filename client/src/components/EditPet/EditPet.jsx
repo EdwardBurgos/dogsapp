@@ -220,14 +220,13 @@ export default function EditPet({ id }) { // si me psan el di seleccionar la raz
                                                     <input id="inputFile" type="file" className={s.fileInput} onChange={changePhoto} accept="image/png, image/gif, image/jpeg, image/jpg" />
                                                 </div>
                                                 :
-                                                <>
-                                                    <div className={`w-100 btn btn-secondary mb-3  ${uploading ? 'disabled' : ''}`} onClick={() => { document.getElementById('inputFileExtra').click() }}>
+                                                <div className={s.optionsContainer}>
+                                                    <div className={`btn btn-secondary ${s.option} ${uploading ? 'disabled' : ''}`} onClick={() => { document.getElementById('inputFileExtra').click() }}>
                                                         <span>Change image</span>
                                                         <input id="inputFileExtra" type="file" className={s.fileInput} onChange={changePhoto} accept="image/png, image/gif, image/jpeg, image/jpg" />
                                                     </div>
-
-                                                    <button className={`w-100 btn btn-secondary`} disabled={uploading} onClick={async () => { setImageFile(null); setUploading(false); setErrPhoto(''); setChangedPhoto(false); setPhoto(pet.photo); deleteImage('cancelPet', id); }}>Cancel changes</button>
-                                                </>
+                                                    <button className={`btn btn-secondary ${s.option}`} disabled={uploading} onClick={async () => { setImageFile(null); setUploading(false); setErrPhoto(''); setChangedPhoto(false); setPhoto(pet.photo); deleteImage('cancelPet', id); }}>Cancel changes</button>
+                                                </div>
                                         }
                                     </div>
 

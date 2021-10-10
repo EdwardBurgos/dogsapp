@@ -321,16 +321,16 @@ export default function Profile() {
                             <img className={s.loadingInButton} src={loading} alt='loadingGif'></img>
                           </div>
                           :
-                          <>
-                            <div className={`w-100 btn btn-secondary mb-3 ${uploading ? 'disabled' : ''}`} onClick={() => { document.getElementById('inputFileExtra').click() }}>
+                          <div className={s.changePhotoButtons}>
+                            <div className={`btn btn-secondary mb-3 ${s.option} ${uploading ? 'disabled' : ''}`} onClick={() => { document.getElementById('inputFileExtra').click() }}>
                               <span>Upload another profile picture</span>
                               <input id="inputFileExtra" type="file" className={s.fileInput} onChange={changePhoto} accept="image/png, image/gif, image/jpeg, image/jpg" />
                             </div>
 
-                            <button className={`w-100 btn btn-secondary mb-3`} disabled={uploading} onClick={async () => { dispatch(setUser(await getUserInfo())); setImageFile(null); setUploading(false); setErrPhoto(''); setChangedPhoto(false); setPhoto(user.profilepic); deleteImage('cancelUser', user.username); }}>Cancel changes</button>
+                            <button className={`btn btn-secondary mb-3 ${s.option}`} disabled={uploading} onClick={async () => { dispatch(setUser(await getUserInfo())); setImageFile(null); setUploading(false); setErrPhoto(''); setChangedPhoto(false); setPhoto(user.profilepic); deleteImage('cancelUser', user.username); }}>Cancel changes</button>
 
                             <button className={`w-100 btn btn-primary`} disabled={uploading} onClick={() => { setNewProfilePic() }}>Save changes</button>
-                          </>
+                          </div>
                       }
 
                     </>
