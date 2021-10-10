@@ -169,7 +169,7 @@ router.delete('/:pet', passport.authenticate('jwt', { session: false }), async (
     }
 })
 
-router.delete('/notUsed/:photoImageName', passport.authenticate('jwt', { session: false }), async (req, res) => {
+router.delete('/notUsed/:photoImageName', async (req, res) => {
     if (parseInt(req.params.photoImageName)) {
         deleteImage('testsPets', req.params.photoImageName)
     } else {
