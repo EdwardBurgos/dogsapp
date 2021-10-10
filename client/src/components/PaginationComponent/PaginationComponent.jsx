@@ -16,7 +16,6 @@ export default function PaginationComponent(props) {
   // Own states
   const [page, setPage] = useState({
     totalPages: null,
-    dataStartingIndex: null,
     pageData: null,
   })
 
@@ -42,7 +41,6 @@ export default function PaginationComponent(props) {
 
     setPage({
       totalPages: (finalResultRedux.length > 0) ? Math.ceil(finalResultRedux.length / 8) : 0,
-      dataStartingIndex: 1,
       pageData: paginatedDataObject,
     });
 
@@ -70,7 +68,7 @@ export default function PaginationComponent(props) {
         </Pagination.Item>
       );
     }
-    let currentPage = (<Pagination.Item active activeLabel="" className={s.activo} onClick={(e) => { dispatch(setClickedNumber(parseInt(e.target.innerText)))}}
+    let currentPage = (<Pagination.Item active activeLabel="" className={s.activo} onClick={(e) => dispatch(setClickedNumber(parseInt(e.target.innerText)))}
       key={currentClickedNumber}>{currentClickedNumber}</Pagination.Item>)
 
     let pointsStart = <Pagination.Item className={s.item} key='pointsStart'> ... </Pagination.Item>
@@ -81,19 +79,11 @@ export default function PaginationComponent(props) {
 
   // This function move us to the next page
   function moveOnePageForward() {
-    if (page.dataStartingIndex) {
-      dispatch(setClickedNumber(2));
-      setPage({
-        ...page,
-        dataStartingIndex: null
-      });
-    } else {
-      dispatch(setClickedNumber(
-        currentClickedNumber + 1 > page.totalPages
-            ? page.totalPages
-            : currentClickedNumber + 1
-      ));
-    }
+    dispatch(setClickedNumber(
+      currentClickedNumber + 1 > page.totalPages
+        ? page.totalPages
+        : currentClickedNumber + 1
+    ));
   };
 
   return (
