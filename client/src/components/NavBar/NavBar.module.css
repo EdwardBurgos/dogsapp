@@ -102,6 +102,9 @@
     border-radius: 50%;
 }
 
+.titleDropdown {
+    margin-top: 8px !important;
+}
 
 @media only screen and (min-width: 992px) {
     .enlace, .enlaceLogin, .enlaceSignup {
@@ -115,6 +118,7 @@
     }
 
     .titleDropdown {
+        margin-top: 0 !important;
         padding-top: 3.5px !important;
         padding-bottom: 3.5px !important;
     }

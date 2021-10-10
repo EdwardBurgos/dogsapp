@@ -205,7 +205,7 @@ export default function Signup() {
                                     </div>
                                 }
                             </form>
-                            <p className={s.marginBottom0}>
+                            <p>
                                 Already have an account?
                                 <Link className={s.registroLink} to='/login'>
                                     Log in
