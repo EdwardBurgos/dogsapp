@@ -13,6 +13,7 @@ import { uploadConfirmedPetImage } from '../../extras/firebase';
 import { v4 as uuidv4 } from 'uuid';
 import { Modal } from 'react-bootstrap'
 import Loading from '../Loading/Loading';
+import MainError from '../MainError/MainError';
 
 
 export default function RegisterPet() {
@@ -208,11 +209,7 @@ export default function RegisterPet() {
                         :
                         <Loading />
                     :
-                    <div className={s.contentCenter}>
-                        <div className={s.errorGlobalContainer}>
-                            <p className={s.errorMain}>{mainErr}</p>
-                        </div>
-                    </div>
+                    <MainError mainErr={mainErr}/>
                 }
             </div>
 

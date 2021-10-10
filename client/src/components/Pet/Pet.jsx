@@ -10,6 +10,7 @@ import { Modal, Button } from 'react-bootstrap';
 import { IonIcon } from '@ionic/react';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import Loading from '../Loading/Loading';
+import MainError from '../MainError/MainError';
 
 
 
@@ -146,9 +147,7 @@ export default function Pet({ id }) {
                         :
                         <Loading />
                     :
-                    <div className={s.contentCenter}>
-                        {errGlobal ? <p className={s.errorGlobal}>{errGlobal}</p> : null}
-                    </div>
+                    <MainError mainErr={errGlobal}/>
                 }
             </div>
 

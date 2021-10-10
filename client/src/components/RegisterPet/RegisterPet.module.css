@@ -152,7 +152,7 @@
     text-align: left;
   }
   
-  .errorGlobal, .errorMain {
+  .errorGlobal {
     background-color: #f8d7da;
     border: 1px #f5c2c7 solid;
     color: #842029;

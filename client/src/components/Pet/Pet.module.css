@@ -81,19 +81,6 @@
     }
   }
   
-  
-  
-  .errorGlobal {
-    background-color: #f8d7da;
-    border: 1px #f5c2c7 solid;
-    color: #842029;
-    width: 100%;
-    display: block;
-    padding: 10px 0;
-    border-radius: 5px;
-    margin-bottom: 0;
-  }
-  
   .container {
     height: var(--height);
     display: flex;
@@ -102,13 +89,7 @@
     flex-wrap: wrap;
     text-align: center;
   } 
-  
-  .contentCenter {
-    width: 100%;
-    max-width: 330px;
-    margin: 0 auto;
-  }
-  
+
   .image {
     width:100%;
     border-radius: 12px;

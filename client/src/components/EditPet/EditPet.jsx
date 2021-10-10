@@ -13,6 +13,7 @@ import { uploadConfirmedPetImage, uploadPetImage } from '../../extras/firebase';
 import { Modal } from 'react-bootstrap'
 import { deleteImage } from '../../extras/firebase';
 import Loading from '../Loading/Loading';
+import MainError from '../MainError/MainError';
 
 export default function EditPet({ id }) { // si me psan el di seleccionar la raza automáticmanete si no mostrrar seleccionar raza en el <select
     // Redux states
@@ -251,11 +252,7 @@ export default function EditPet({ id }) { // si me psan el di seleccionar la raz
                         :
                         <Loading />
                     :
-                    <div className={s.contentCenter}>
-                        <div className={s.errorGlobalContainer}>
-                            <p className={s.errorMain}>{mainErr}</p>
-                        </div>
-                    </div>
+                    <MainError mainErr={mainErr} />
                 }
             </div>
             {

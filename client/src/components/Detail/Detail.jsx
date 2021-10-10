@@ -8,6 +8,7 @@ import { useHistory } from 'react-router';
 import Post from '../Post/Post';
 import { Link } from 'react-router-dom';
 import Loading from '../Loading/Loading';
+import MainError from '../MainError/MainError';
 
 export default function Detail({ id }) {
     // Redux states
@@ -151,9 +152,7 @@ export default function Detail({ id }) {
                     :
                     <Loading />
                 :
-                <div className={s.contentCenter}>
-                    {errGlobal ? <p className={s.errorGlobal}>{errGlobal}</p> : null}
-                </div>
+                <MainError mainErr={errGlobal} />
             }
         </div>
 
