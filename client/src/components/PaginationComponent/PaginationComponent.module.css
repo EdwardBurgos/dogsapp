@@ -2,6 +2,7 @@
   justify-content: center !important;
   flex-wrap: wrap !important;
   align-self: flex-end;
+  margin-bottom: 0 !important;
 }
 
 .activo span {

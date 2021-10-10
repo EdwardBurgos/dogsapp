@@ -47,3 +47,9 @@ export function setPetBreed(petBreed) {
     }
 }
 
+export function setLoading(loading) {
+    return {
+        type: 'SET_LOADING',
+        loading
+    }
+}

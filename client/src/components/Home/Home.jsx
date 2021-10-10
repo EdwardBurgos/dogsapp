@@ -14,6 +14,7 @@ export default function Home() {
   // Redux states
   const finalResultRedux = useSelector(state => state.finalResult);
   const actualPageRedux = useSelector(state => state.actualPage);
+  const loadingRedux = useSelector(state => state.loading);
 
   // Own States
   const [temperaments, setTemperaments] = useState([]);
@@ -27,6 +28,11 @@ export default function Home() {
   const dispatch = useDispatch();
 
   // Hooks
+
+  // This hooks allows us to stop loading when the results of the page are ready 
+  useEffect(() => {
+    dispatch(actionsCreators.setLoading(false))
+  }, [actualPageRedux])
 
   // This hook load the dogs and the temperaments for the filter
   useEffect(() => {
@@ -131,12 +137,19 @@ export default function Home() {
               <div className={s.content}>
                 {finalResultRedux.length ?
                   <>
-                    <div className={s.cardsContainer}>
-                      {
-                        actualPageRedux.map((e, i) => <Card name={e.name} img={e.image} key={i} temperament={e.temperament} id={e.id}></Card>)
-                      }
-                    </div>
-                    <PaginationComponent />
+                    {
+                      !loadingRedux ?
+                        <div className={s.cardsContainer}>
+                          {
+                            actualPageRedux.map((e, i) => <Card name={e.name} img={e.image} key={i} temperament={e.temperament} id={e.id}></Card>)
+                          }
+                        </div>
+                        :
+                        <div className={s.loadingContainer}>
+                          <Loading />
+                        </div>
+                    }
+                    <div className='w-100'><PaginationComponent /></div>
                   </>
                   :
                   <>

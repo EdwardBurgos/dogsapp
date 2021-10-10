@@ -5,7 +5,8 @@ const initialState = {
   user: null,
   publicUser: {},
   dog: {},
-  petBreed: ''
+  petBreed: '',
+  loading: false
 }
 
 export default function reducer (state = initialState, action) {
@@ -44,6 +45,11 @@ export default function reducer (state = initialState, action) {
       return {
         ...state,
         petBreed: action.petBreed
+      }
+    case 'SET_LOADING':
+      return {
+        ...state,
+        loading: action.loading
       }
     default:
       return { ...state }

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import s from './PaginationComponent.module.css';
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { changePage } from '../../actions';
+import { changePage, setLoading } from '../../actions';
 import { Pagination } from 'react-bootstrap';
 import { setClickedNumber } from '../../actions';
 import { chevronForwardOutline, chevronBackOutline } from 'ionicons/icons';
@@ -53,6 +53,7 @@ export default function PaginationComponent(props) {
   // This hook change the page 
   useEffect(() => {
     if (page.pageData) {
+      dispatch(setLoading(true))
       dispatch(changePage(page.pageData[currentClickedNumber]));
     }
   }, [currentClickedNumber, page.pageData, dispatch])
