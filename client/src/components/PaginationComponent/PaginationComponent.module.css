@@ -33,3 +33,9 @@
   border-radius: 5px;
   border: 1px solid #E7EAED;
 }
+
+.iconBack {
+  height: 16px;
+  width: 16px;
+  vertical-align: text-bottom;
+}

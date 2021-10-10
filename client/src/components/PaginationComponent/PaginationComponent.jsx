@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { changePage, setLoading } from '../../actions';
 import { Pagination } from 'react-bootstrap';
 import { setClickedNumber } from '../../actions';
-import { chevronForwardOutline, chevronBackOutline } from 'ionicons/icons';
+import { playBackCircleOutline, caretBackCircleOutline, caretForwardCircleOutline, playForwardCircleOutline } from 'ionicons/icons';
 import { IonIcon } from '@ionic/react';
 
 export default function PaginationComponent(props) {
@@ -101,11 +101,10 @@ export default function PaginationComponent(props) {
       {currentClickedNumber > 1 ?
         <>
           <Pagination.Item className={s.item} onClick={() => dispatch(setClickedNumber(1))} key='first'>
-            <IonIcon icon={chevronBackOutline} className={s.iconBack}></IonIcon>
-            <IonIcon icon={chevronBackOutline} className={s.iconBack}></IonIcon>
+            <IonIcon icon={playBackCircleOutline} className={s.iconBack}></IonIcon>
           </Pagination.Item>
           <Pagination.Item className={s.item} onClick={() => dispatch(setClickedNumber(currentClickedNumber - 1 < 1 ? 1 : currentClickedNumber - 1))} key='prev'>
-            <IonIcon icon={chevronBackOutline} className={s.iconBack}></IonIcon>
+            <IonIcon icon={caretBackCircleOutline} className={s.iconBack}></IonIcon>
           </Pagination.Item>
         </>
         :
@@ -116,11 +115,10 @@ export default function PaginationComponent(props) {
         {currentClickedNumber !== page.totalPages ?
           <>
             <Pagination.Item className={s.item} onClick={() => moveOnePageForward()} key='next'>
-              <IonIcon icon={chevronForwardOutline} className={s.iconBack}></IonIcon>
+              <IonIcon icon={caretForwardCircleOutline} className={s.iconBack}></IonIcon>
             </Pagination.Item>
             <Pagination.Item className={s.item} onClick={() => dispatch(setClickedNumber(page.totalPages))} key='last'>
-              <IonIcon icon={chevronForwardOutline} className={s.iconBack}></IonIcon>
-              <IonIcon icon={chevronForwardOutline} className={s.iconBack}></IonIcon>
+              <IonIcon icon={playForwardCircleOutline} className={s.iconBack}></IonIcon>
             </Pagination.Item>
           </>
           :
