@@ -9,6 +9,7 @@ import { heartOutline, heart } from 'ionicons/icons';
 import { Modal, Button } from 'react-bootstrap';
 import { IonIcon } from '@ionic/react';
 import { Link, useHistory, useLocation } from 'react-router-dom';
+import Loading from '../Loading/Loading';
 
 
 
@@ -143,9 +144,7 @@ export default function Pet({ id }) {
                             </div>
                         </div>
                         :
-                        <div className={s.contentCenter}>
-                            <img className={s.loading} src={loading} alt='loadingGif'></img>
-                        </div>
+                        <Loading />
                     :
                     <div className={s.contentCenter}>
                         {errGlobal ? <p className={s.errorGlobal}>{errGlobal}</p> : null}

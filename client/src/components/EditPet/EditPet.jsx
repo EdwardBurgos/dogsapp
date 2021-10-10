@@ -12,6 +12,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { uploadConfirmedPetImage, uploadPetImage } from '../../extras/firebase';
 import { Modal } from 'react-bootstrap'
 import { deleteImage } from '../../extras/firebase';
+import Loading from '../Loading/Loading';
 
 export default function EditPet({ id }) { // si me psan el di seleccionar la raza automáticmanete si no mostrrar seleccionar raza en el <select
     // Redux states
@@ -248,9 +249,7 @@ export default function EditPet({ id }) { // si me psan el di seleccionar la raz
                                 <Link to="/login" className={s.loginButton}>Log in</Link>
                             </div>
                         :
-                        <div className={s.contentCenter}>
-                            <img className={s.loading} src={loading} alt='loadingGif'></img>
-                        </div>
+                        <Loading />
                     :
                     <div className={s.contentCenter}>
                         <div className={s.errorGlobalContainer}>

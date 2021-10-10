@@ -8,6 +8,7 @@ import PaginationComponent from '../PaginationComponent/PaginationComponent';
 import loading from '../../img/loadingGif.gif';
 import { getDogs, getTemperaments, getUserInfo } from '../../extras/globalFunctions';
 import emptyVector from '../../img/empty.svg';
+import Loading from '../Loading/Loading';
 
 export default function Home() {
   // Redux states
@@ -148,9 +149,7 @@ export default function Home() {
               </div>
             </>
             :
-            <div className={s.contentCenter}>
-              <img className={s.loading} src={loading} alt='loadingGif'></img>
-            </div>
+            <Loading />
       }
     </div>
   );

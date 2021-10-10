@@ -12,6 +12,7 @@ import { setLocalStorage, getCountry, getUserInfo, showMessage } from '../../ext
 import { useDispatch } from 'react-redux';
 import { setUser } from '../../actions';
 import { Modal } from 'react-bootstrap';
+import Loading from '../Loading/Loading';
 
 
 export default function Signup() {
@@ -214,9 +215,7 @@ export default function Signup() {
                         </div>
                     </div>
                     :
-                    <div className={s.contentCenter}>
-                        <img className={s.loading} src={loading} alt='loadingGif'></img>
-                    </div>
+                    <Loading />
                 }
             </div>
 

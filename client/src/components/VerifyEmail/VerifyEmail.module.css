@@ -64,7 +64,3 @@
     justify-content: center;
     height: calc(100vh - 62px);
 }
-
-.loading {
-    width: 25%;
-}

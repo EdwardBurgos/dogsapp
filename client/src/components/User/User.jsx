@@ -15,6 +15,7 @@ import emptyVector from '../../img/empty.svg';
 import { useLocation } from 'react-router';
 import { Link } from 'react-router-dom';
 import NotFound from '../NotFound/NotFound';
+import Loading from '../Loading/Loading';
 
 export default function User({ username }) {
   // Redux states
@@ -120,9 +121,7 @@ export default function User({ username }) {
             </>
           </div>
           :
-          <div className={s.contentCenter}>
-            <img className={s.loading} src={loading} alt='loadingGif'></img>
-          </div>
+          <Loading />
         :
         <NotFound></NotFound>
       }

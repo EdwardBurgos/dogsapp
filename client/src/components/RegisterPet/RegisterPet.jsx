@@ -12,6 +12,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { uploadConfirmedPetImage } from '../../extras/firebase';
 import { v4 as uuidv4 } from 'uuid';
 import { Modal } from 'react-bootstrap'
+import Loading from '../Loading/Loading';
 
 
 export default function RegisterPet() {
@@ -205,9 +206,7 @@ export default function RegisterPet() {
                                 <Link to="/login" className={`${s.loginButton} btn btn-primary`}>Log in</Link>
                             </div>
                         :
-                        <div className={s.contentCenter}>
-                            <img className={s.loading} src={loading} alt='loadingGif'></img>
-                        </div>
+                        <Loading />
                     :
                     <div className={s.contentCenter}>
                         <div className={s.errorGlobalContainer}>

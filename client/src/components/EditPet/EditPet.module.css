@@ -24,10 +24,6 @@
     -webkit-box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
   }
   
-  .loading {
-    width: 25%;
-  }
-  
   .contentCenter {
     width: 100%;
     max-width: 330px;

@@ -7,16 +7,6 @@
   text-align: center;
 } 
 
-.contentCenter {
-  width: 100%;
-  max-width: 330px;
-  margin: 0 auto;
-}
-
-.loading {
-  width: 25%;
-}
-
 .center {
   text-align: center;
 }

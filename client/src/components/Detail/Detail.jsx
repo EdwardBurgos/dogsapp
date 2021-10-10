@@ -1,6 +1,5 @@
 import s from './Detail.module.css';
 import React, { useEffect, useState } from 'react';
-import loading from '../../img/loadingGif.gif';
 import axios from '../../axiosInterceptor';
 import { getUserInfo, showMessage } from '../../extras/globalFunctions';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,6 +7,7 @@ import { setUser, setCurrentDog, setPetBreed } from '../../actions';
 import { useHistory } from 'react-router';
 import Post from '../Post/Post';
 import { Link } from 'react-router-dom';
+import Loading from '../Loading/Loading';
 
 export default function Detail({ id }) {
     // Redux states
@@ -149,9 +149,7 @@ export default function Detail({ id }) {
                         }
                     </div>
                     :
-                    <div className={s.contentCenter}>
-                        <img className={s.loading} src={loading} alt='loadingGif'></img>
-                    </div>
+                    <Loading />
                 :
                 <div className={s.contentCenter}>
                     {errGlobal ? <p className={s.errorGlobal}>{errGlobal}</p> : null}

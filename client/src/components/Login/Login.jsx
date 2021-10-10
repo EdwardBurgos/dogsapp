@@ -13,6 +13,7 @@ import loading from '../../img/loadingGif.gif';
 import { setLocalStorage, getCountry, getUserInfo, showMessage } from '../../extras/globalFunctions';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../../actions';
+import Loading from '../Loading/Loading';
 
 export default function Login() {
     // Own states
@@ -387,9 +388,7 @@ export default function Login() {
                         </div>
                     </div>
                     :
-                    <div className={s.contentCenter}>
-                        <img className={s.loading} src={loading} alt='loadingGif'></img>
-                    </div>
+                    <Loading />
                 }
             </div>
 

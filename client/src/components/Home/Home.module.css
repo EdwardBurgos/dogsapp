@@ -77,10 +77,6 @@
     max-width: 330px;
     margin: 0 auto;
   }
-  
-  .loading {
-    width: 25%;
-  }  
 
 .searchInput, .selectInput{
     width: 40%;

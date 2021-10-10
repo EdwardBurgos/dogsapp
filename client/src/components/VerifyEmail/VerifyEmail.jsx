@@ -10,6 +10,7 @@ import { eyeOutline, eyeOffOutline } from "ionicons/icons";
 import { IonIcon } from '@ionic/react';
 import realAxios from 'axios'
 import loading from '../../img/loadingGif.gif';
+import Loading from '../Loading/Loading';
 
 
 export default function VerifyEmail({ token, reason, expires }) {
@@ -168,9 +169,7 @@ export default function VerifyEmail({ token, reason, expires }) {
                         </form>
                     </div>
                     :
-                    <div className={s.contentCenter}>
-                        <img className={s.loading} src={loading} alt='loadingGif'></img>
-                    </div>
+                    <Loading />
             }
         </>
     );

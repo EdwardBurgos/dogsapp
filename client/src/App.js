@@ -5,7 +5,6 @@ import { getUserInfo, getExpiration, logout } from './extras/globalFunctions';
 import { useEffect } from 'react';
 import { setUser } from './actions';
 import { useDispatch, useSelector } from 'react-redux';
-import loading from './img/loadingGif.gif';
 import Home from './components/Home/Home';
 import Detail from './components/Detail/Detail';
 import About from './components/About/About';
@@ -18,6 +17,7 @@ import EditPet from './components/EditPet/EditPet';
 import User from './components/User/User';
 import Pet from './components/Pet/Pet';
 import VerifyEmail from './components/VerifyEmail/VerifyEmail';
+import Loading from './components/Loading/Loading';
 
 function App() {
   // Redux states
@@ -70,9 +70,7 @@ function App() {
           </div>
           :
           <div className={s.container}>
-            <div className={s.contentCenter}>
-              <img className={s.loading} src={loading} alt='loadingGif'></img>
-            </div>
+            <Loading />
           </div>
       }
     </>
