@@ -6,7 +6,7 @@
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
-    min-height: calc(100vh - 341.200px);
+    min-height: calc(100vh - 177px);
     flex-direction: column;
 }
 
@@ -15,6 +15,7 @@
     flex: 1;
     display: flex;
     justify-content: center;
+    width: 100%;
 }
 
 .emptyVectorContainer {
@@ -164,7 +165,7 @@
 
 .title {
     font-weight: 600;
-    margin-bottom: 32px;
+    margin-bottom: 16px;
 }
 
 .radioOne, .radioTwo {
@@ -181,8 +182,11 @@
 .searchContainer, .searchModalContainer {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 8px;
     align-items: center;
+}
+
+.invisible {
+    display: none;
 }
 
 .searchModalContainer {
@@ -250,9 +254,6 @@
     .middleContent {
         justify-content: space-between;
     }
-    .content {
-        min-height: calc(100vh - 482.600px);
-    }
 }
 
 @media only screen and (max-width: 768px) {
@@ -262,9 +263,6 @@
     }
     .middleContent {
         justify-content: space-between;
-    }
-    .content {
-        min-height: calc(100vh - 632.600px);
     }
 }
 

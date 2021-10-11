@@ -130,14 +130,14 @@ export default function Home() {
               <>
                 <div className={s.header}>
                   <h1 className={s.title}>Dog breeds</h1>
-                  <div className={s.searchContainer}>
+                  <div className={`${s.searchContainer} ${selectedTemperaments.length ? '' : 'mb-3'}`}>
                     <div className={s.test}>
                       <Form.Control id="searchTerm" autoComplete="off" value={searchTerm} onChange={e => filter(e)} className={s.searchInput} placeholder='Search a dog breed' />
                       <IonIcon icon={searchTerm ? closeCircleOutline : searchOutline} className={s.iconDumb} id="deleteSearch" onClick={e => filter(e)}></IonIcon>
                     </div>
                     <IonIcon icon={optionsOutline} className={s.filterIcon} onClick={() => setShowFilterModal(true)}></IonIcon>
                   </div>
-                  <div className={s.temperaments}>
+                  <div className={selectedTemperaments.length ? s.temperaments : s.invisible}>
                     {selectedTemperaments.map(e =>
                       <div key={e} className={s.temperamentContainer}>
                         <span className={s.temperament}>{e}</span>
@@ -162,18 +162,18 @@ export default function Home() {
                 <div className={s.content}>
                   {finalResultRedux.length ?
                     <>
-                      {
-                        !loadingRedux ?
-                          <div className={s.cardsContainer}>
-                            {
-                              actualPageRedux.map((e, i) => <Card name={e.name} img={e.image} key={i} temperament={e.temperament} id={e.id}></Card>)
-                            }
-                          </div>
-                          :
-                          <div className={s.loadingContainer}>
+                      <div className={s.loadingContainer}>
+                        {
+                          !loadingRedux ?
+                            <div className={s.cardsContainer}>
+                              {
+                                actualPageRedux.map((e, i) => <Card name={e.name} img={e.image} key={i} temperament={e.temperament} id={e.id}></Card>)
+                              }
+                            </div>
+                            :
                             <Loading />
-                          </div>
-                      }
+                        }
+                      </div>
                       <div className='w-100'><PaginationComponent /></div>
                     </>
                     :

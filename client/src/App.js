@@ -51,7 +51,7 @@ function App() {
         user ?
           <div>
             <NavBar />
-            <div className={s.margin}>
+            <div className={s.padding}>
               <Switch>
                 <Route path="/home" component={Home} />
                 <Route path="/detail/:id" render={({ match }) => <Detail id={match.params.id} />} />
