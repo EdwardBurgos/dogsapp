@@ -28,6 +28,8 @@ export default function Home() {
   const [dogs, setDogs] = useState([])
   const [showFilterModal, setShowFilterModal] = useState(false)
   const [selectedTemperaments, setSelectedTemperaments] = useState([])
+  const [searchTermModal, setSearchTermModal] = useState('')
+  const [filterTemperaments, setFilterTemperaments] = useState([])
   // Variables
   const dispatch = useDispatch();
 
@@ -57,6 +59,7 @@ export default function Home() {
           setDogs(dogs)
           dispatch(actionsCreators.modifyFinalResult(dogs));
           setTemperaments(temperaments);
+          setFilterTemperaments(temperaments)
         } else { setErrorGlobal('Sorry, an error ocurred'); }
       }
     }
@@ -86,15 +89,30 @@ export default function Home() {
     let componentValue = e.target.value;
     let componentId = e.target.id;
     let finalResult = [];
-    if (componentId === 'searchTerm') { setSearchTerm(componentValue); finalResult = dogs.filter((e) => e.name.toLowerCase().includes(componentValue.toLowerCase())) } else { if (searchTerm) { finalResult = dogs.filter((e) => e.name.toLowerCase().includes(searchTerm.toLowerCase())) } else { finalResult = dogs } }
-    if (componentId === 'deleteSearch') { if (searchTerm) { finalResult = dogs; setSearchTerm(''); } else { return } }
-    if (currentTemperaments) console.log(currentTemperaments, componentValue, currentTemperaments.includes(componentValue), 'INCLUIDO')
-    if (componentValue && (componentValue.toLowerCase() === componentId && !currentTemperaments.includes(componentValue))) {
-      finalResult = finalResult.filter(e => e.temperament ? currentTemperaments.length + 1 === [...currentTemperaments, componentValue].filter(temperament => e.temperament.includes(temperament)).length : false)
-    } else if (componentValue && (componentValue.toLowerCase() === componentId && currentTemperaments.includes(componentValue) || `id${componentValue.toLowerCase()}` === componentId && currentTemperaments.includes(componentValue))) {
-      finalResult = finalResult.filter(e => e.temperament ? currentTemperaments.length - 1 === currentTemperaments.filter(e => e !== componentValue).filter(temperament => e.temperament.includes(temperament)).length : false)
-      console.log('AHORA', finalResult)
-    }
+    let query = searchTerm;
+    let action = ''
+    if (componentValue && (componentValue.toLowerCase() === componentId && !currentTemperaments.includes(componentValue))) action = 'add'
+    if (componentValue && (componentValue.toLowerCase() === componentId && currentTemperaments.includes(componentValue) || `id${componentValue.toLowerCase()}` === componentId && currentTemperaments.includes(componentValue))) action = 'delete'
+    if (!currentTemperaments) currentTemperaments = selectedTemperaments
+    if (componentId === 'searchTerm') { setSearchTerm(componentValue); query = componentValue }
+    if (componentId === 'deleteSearch') { setSearchTerm(''); query = '' }
+    finalResult = dogs.filter((e) => e.name.toLowerCase().includes(query.toLowerCase()))
+    if (!action && currentTemperaments.length) finalResult = finalResult.filter(e => e.temperament ? currentTemperaments.length === currentTemperaments.filter(temperament => e.temperament.includes(temperament)).length : false)
+    if (action === 'add') finalResult = finalResult.filter(e => e.temperament ? currentTemperaments.length + 1 === [...currentTemperaments, componentValue].filter(temperament => e.temperament.includes(temperament)).length : false)
+    if (action === 'delete' && currentTemperaments.length !== 1) finalResult = finalResult.filter(e => e.temperament ? currentTemperaments.length - 1 === currentTemperaments.filter(e => e !== componentValue).filter(temperament => e.temperament.includes(temperament)).length : false)
+
+
+
+
+    // if (componentId === 'searchTerm') { setSearchTerm(componentValue); finalResult = base.filter((e) => e.name.toLowerCase().includes(componentValue.toLowerCase()))}} else { if (searchTerm) { finalResult = dogs.filter((e) => e.name.toLowerCase().includes(searchTerm.toLowerCase())) } else { finalResult = dogs } }
+    // if (componentId === 'deleteSearch') { if (searchTerm) { finalResult = dogs; setSearchTerm(''); } else { return } }
+    // if (currentTemperaments) console.log(currentTemperaments, componentValue, currentTemperaments.includes(componentValue), 'INCLUIDO')
+    // if (componentValue && (componentValue.toLowerCase() === componentId && !currentTemperaments.includes(componentValue))) {
+    //   finalResult = finalResult.filter(e => e.temperament ? currentTemperaments.length + 1 === [...currentTemperaments, componentValue].filter(temperament => e.temperament.includes(temperament)).length : false)
+    // } else if (componentValue && (componentValue.toLowerCase() === componentId && currentTemperaments.includes(componentValue) || `id${componentValue.toLowerCase()}` === componentId && currentTemperaments.includes(componentValue))) {
+    //   finalResult = finalResult.filter(e => e.temperament ? currentTemperaments.length - 1 === currentTemperaments.filter(e => e !== componentValue).filter(temperament => e.temperament.includes(temperament)).length : false)
+    //   console.log('AHORA', finalResult)
+    // }
     if (!finalResult.length) setError('Not results found')
     dispatch(actionsCreators.modifyFinalResult(finalResult))
   }
@@ -178,7 +196,7 @@ export default function Home() {
         aria-labelledby="contained-modal-title-vcenter"
         centered
         keyboard={false}
-        onHide={() => setShowFilterModal(false)}
+        onHide={() => { setShowFilterModal(false); setSearchTermModal(''); setFilterTemperaments(temperaments) }}
       >
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
@@ -186,19 +204,28 @@ export default function Home() {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div className="mb-3">
+          <div className={s.searchModalContainer}>
+            <div className={s.testModal}>
+              <Form.Control id="searchTermModal" autoComplete="off" value={searchTermModal} onChange={event => { setFilterTemperaments(temperaments.filter(e => e.toLowerCase().includes(event.target.value.toLowerCase()))); setSearchTermModal(event.target.value) }} className={s.searchInput} placeholder='Search a temperament' />
+              <IonIcon icon={searchTermModal ? closeCircleOutline : searchOutline} className={s.iconDumb} id="deleteSearchModal" onClick={() => { setFilterTemperaments(temperaments); setSearchTermModal('') }}></IonIcon>
+            </div>
+          </div>
+          <div>
             {
-              temperaments.map((e, i) =>
-                <Form.Check
-                  type='checkbox'
-                  key={e.toLowerCase()}
-                  id={e.toLowerCase()}
-                  value={e}
-                  checked={selectedTemperaments.includes(e) ? true : false}
-                  label={e}
-                  onChange={(event) => { selectedTemperaments.includes(e) ? setSelectedTemperaments([...new Set(selectedTemperaments.filter(element => element !== e))]) : setSelectedTemperaments([...new Set([...selectedTemperaments, e])]); filter(event, selectedTemperaments); }}
-                  name="temperaments"
-                />)
+              filterTemperaments.length ?
+                filterTemperaments.map((e, i) =>
+                  <Form.Check
+                    type='checkbox'
+                    key={e.toLowerCase()}
+                    id={e.toLowerCase()}
+                    value={e}
+                    checked={selectedTemperaments.includes(e) ? true : false}
+                    label={e}
+                    onChange={(event) => { selectedTemperaments.includes(e) ? setSelectedTemperaments([...new Set(selectedTemperaments.filter(element => element !== e))]) : setSelectedTemperaments([...new Set([...selectedTemperaments, e])]); filter(event, selectedTemperaments); }}
+                    name="temperaments"
+                  />)
+                :
+                <p className='text-center mb-0'>No temperaments found</p>
             }
           </div>
         </Modal.Body>

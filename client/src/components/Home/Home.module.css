@@ -149,7 +149,7 @@
     -webkit-box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
 }
 
-.searchInput {
+.searchInput{
     border-radius: 5px !important;
     padding-right: 2.5rem !important;
     margin: 0 !important;
@@ -178,18 +178,26 @@
     justify-content: space-around;
 }
 
-.searchContainer {
+.searchContainer, .searchModalContainer {
     display: flex;
     justify-content: space-between;
     margin-bottom: 8px;
     align-items: center;
 }
 
-.test {
+.searchModalContainer {
+    margin-bottom: 16px;
+}
+
+.test, .testModal {
     position: relative;
     display: flex;
     align-items: center;
     width: calc(100% - 46px)
+}
+
+.testModal {
+    width: 100%;
 }
 
 .iconDumb {
