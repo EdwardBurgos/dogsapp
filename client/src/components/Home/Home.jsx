@@ -80,23 +80,21 @@ export default function Home() {
 
   // Functions 
 
-  function filter(e) {
-    e.preventDefault();
+  // This function allows us to filter the results
+  function filter(e, currentTemperaments) {
     if (dogs.length < 9) return setError('Wait a moment please');
     let componentValue = e.target.value;
     let componentId = e.target.id;
     let finalResult = [];
-    let actualsearchterm = searchTerm;
-    let actualtemperament = temperament;
-    if (componentId === 'searchTerm') { actualsearchterm = componentValue; setSearchTerm(componentValue) }
-    if (componentId === 'temperament') { actualtemperament = componentValue; setTemperament(componentValue) }
-    if (componentId === 'deleteSearch') { if (searchTerm) { finalResult = dogs; setSearchTerm(''); } else { return } } else {
-      finalResult = dogs.filter((e) => e.name.toLowerCase().includes(actualsearchterm.toLowerCase()))
+    if (componentId === 'searchTerm') { setSearchTerm(componentValue); finalResult = dogs.filter((e) => e.name.toLowerCase().includes(componentValue.toLowerCase())) } else { if (searchTerm) { finalResult = dogs.filter((e) => e.name.toLowerCase().includes(searchTerm.toLowerCase())) } else { finalResult = dogs } }
+    if (componentId === 'deleteSearch') { if (searchTerm) { finalResult = dogs; setSearchTerm(''); } else { return } }
+    if (currentTemperaments) console.log(currentTemperaments, componentValue, currentTemperaments.includes(componentValue), 'INCLUIDO')
+    if (componentValue && (componentValue.toLowerCase() === componentId && !currentTemperaments.includes(componentValue))) {
+      finalResult = finalResult.filter(e => e.temperament ? currentTemperaments.length + 1 === [...currentTemperaments, componentValue].filter(temperament => e.temperament.includes(temperament)).length : false)
+    } else if (componentValue && (componentValue.toLowerCase() === componentId && currentTemperaments.includes(componentValue) || `id${componentValue.toLowerCase()}` === componentId && currentTemperaments.includes(componentValue))) {
+      finalResult = finalResult.filter(e => e.temperament ? currentTemperaments.length - 1 === currentTemperaments.filter(e => e !== componentValue).filter(temperament => e.temperament.includes(temperament)).length : false)
+      console.log('AHORA', finalResult)
     }
-    if (componentId === 'deleteTemperamentFilter' || (componentId === 'temperament' && componentValue === 'default')) { if (temperament && temperament !== 'default') { setTemperament(''); } else { return } } else {
-      finalResult = finalResult.filter(e => e.temperament ? e.temperament.toLowerCase().includes(actualtemperament.toLowerCase()) : false);
-    }
-
     if (!finalResult.length) setError('Not results found')
     dispatch(actionsCreators.modifyFinalResult(finalResult))
   }
@@ -125,7 +123,7 @@ export default function Home() {
                     {selectedTemperaments.map(e =>
                       <div key={e} className={s.temperamentContainer}>
                         <span className={s.temperament}>{e}</span>
-                        <IonIcon icon={closeCircleOutline} className={s.iconDumb} onClick={() => setSelectedTemperaments([...new Set(selectedTemperaments.filter(element => element !== e))])}></IonIcon>
+                        <IonIcon icon={closeCircleOutline} className={s.iconDumb} onClick={event => { setSelectedTemperaments([...new Set(selectedTemperaments.filter(element => element !== e))]); filter({ target: { value: e, id: `id${e.toLowerCase()}` } }, selectedTemperaments); }}></IonIcon>
                       </div>
                     )}
                   </div>
@@ -198,7 +196,7 @@ export default function Home() {
                   value={e}
                   checked={selectedTemperaments.includes(e) ? true : false}
                   label={e}
-                  onChange={() => selectedTemperaments.includes(e) ? setSelectedTemperaments([...new Set(selectedTemperaments.filter(element => element !== e))]) : setSelectedTemperaments([...new Set([...selectedTemperaments, e])])}
+                  onChange={(event) => { selectedTemperaments.includes(e) ? setSelectedTemperaments([...new Set(selectedTemperaments.filter(element => element !== e))]) : setSelectedTemperaments([...new Set([...selectedTemperaments, e])]); filter(event, selectedTemperaments); }}
                   name="temperaments"
                 />)
             }
