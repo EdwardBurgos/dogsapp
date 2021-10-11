@@ -7,7 +7,6 @@ import { setUser } from './actions';
 import { useDispatch, useSelector } from 'react-redux';
 import Home from './components/Home/Home';
 import Detail from './components/Detail/Detail';
-import About from './components/About/About';
 import NavBar from './components/NavBar/NavBar';
 import Login from './components/Login/Login';
 import Profile from './components/Profile/Profile';
@@ -58,7 +57,6 @@ function App() {
                 <Route path="/registerPet" component={RegisterPet} />
                 <Route path="/editPet/:id" render={({ match }) => Object.keys(user).length && user.pets.includes(parseInt(match.params.id))? <EditPet id={match.params.id} /> : <Redirect to="/home"/> }></Route>
                 <Route path="/pet/:id" render={({ match }) => <Pet id={match.params.id} /> } />
-                <Route path="/about" component={About} />
                 <Route path="/profile">{Object.keys(user).length ? <Profile /> : <Redirect to="/login" />}</Route>
                 <Route path="/login">{Object.keys(user).length ? <Redirect to="/profile" /> : <Login />}</Route>
                 <Route path="/signup" >{Object.keys(user).length ? <Redirect to="/profile" /> : <Signup />}</Route>
