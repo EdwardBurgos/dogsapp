@@ -156,7 +156,7 @@ export default function Login() {
                     showMessage(`${logged.data.user} your login was successful`);
                     history.push('/home');
                 }
-            } else { dispatch(setUser({})); return setErrGlobal('Sorry, an error occurred'); }
+            } else { dispatch(setUser({})); showMessage('Sorry, an error occurred'); }
         } catch (e) {
             console.log(e)
             if (e.code !== "auth/popup-closed-by-user") {
@@ -197,10 +197,10 @@ export default function Login() {
             } catch (e) {
                 dispatch(setUser({}));
                 if (e.response.status === 409 && e.response.data.msg === "There is already a user with this username") return setErrUsername(e.response.data.msg)
-                setErrGlobal('Sorry, an error occurred');
+                showMessage('Sorry, an error occurred');
             }
         } else {
-            dispatch(setUser({})); return setErrGlobal('Sorry, an error occurred');
+            dispatch(setUser({})); showMessage('Sorry, an error occurred');
         }
     }
 
