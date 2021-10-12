@@ -46,7 +46,7 @@ export default function Community() {
               <h1>Community</h1>
               <div className={s.content}>
                 <div className={s.cardsContainer}>
-                  {users.map(e => <CommunityMember fullname={e.fullname} profilepic={e.profilepic} username={e.username} country={e.country} flag={e.flag} />)}
+                  {users.map((e, i) => <CommunityMember key={i} fullname={e.fullname} profilepic={e.profilepic} username={e.username} country={e.country} flag={e.flag} />)}
                 </div>
               </div>
             </>
