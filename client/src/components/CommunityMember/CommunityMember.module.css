@@ -1,11 +1,12 @@
 .card {
     width: 100%;
     box-sizing: border-box;
-    margin-bottom: 16px;
     background-color: rgba(231, 233, 235, 0.5);
     padding: 16px;
     border-radius: 1rem;
     text-align: left;
+    max-width: 182px;
+    margin: 0 8px 16px 8px;
 }
 
 .card:hover {
@@ -31,26 +32,45 @@
 .infoContainer {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 .countryInfo {
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
 .dataContainer {
     width: calc(100% - 166px);
+    width: 100%;
+    justify-content: center;
 }
 
 .imageContainer {
     display: flex;
     align-items: flex-start;
     width: 166px;
+    width: 100%;
+    margin-bottom: 16px;
+    justify-content: center;
 }
 
-@media only screen and (min-width: 768px) {
+/* .imageContainer {
+    width: 100%;
+    margin-bottom: 16px;
+}
+.dataContainer {
+    width: 100%;
+}
+.imageContainer, .dataContainer {
+    justify-content: center;
+} */
+
+/* @media only screen and (min-width: 500px) { .card { width: 45%;} }
+@media only screen and (min-width: 800px) {
     .card {
-        width: 45%;
+        width: 40%;
     }
 }
 
@@ -58,4 +78,4 @@
     .card {
         width: 22%;
     }
-}
+} */

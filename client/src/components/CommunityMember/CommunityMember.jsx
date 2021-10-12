@@ -11,8 +11,8 @@ export default function CommunityMember({ fullname, profilepic, username, countr
           <img className={s.image} src={profilepic} alt={username} />
         </div>
         <div className={s.dataContainer}>
-          <p className='mb-0'>{fullname}</p>
-          <p className='mb-0'>{username}</p>
+          <p className='mb-0 text-center'>{fullname}</p>
+          <p className='mb-0 text-center'>{username}</p>
           <div className={s.countryInfo}>
             <img className={s.flag} src={flag} alt={`${country} flag`} />
             <p className='mb-0'>{country}</p>
