@@ -67,7 +67,7 @@ export default function Pet({ id }) {
     async function likeORdislike() {
         try {
             await axios.post(`/likes/${id}`)
-            setChanged(true); 
+            setChanged(true);
             const user = await getUserInfo();
             dispatch(setUser(user));
         } catch (e) {
@@ -114,8 +114,10 @@ export default function Pet({ id }) {
                             </div>
                             <div className={s.secondColumn}>
                                 <div className={s.breedSection}>
-                                    <h2 className='mb-3'>Dog Breed</h2>
-                                    <p className={s.breedName}>{pet.dog.name}</p>
+                                    <div className={s.dogBreedContainer}>
+                                        <div className={s.dogBreedName}><span className={s.bold}>Dog breed: </span><span className={s.breedName}>{pet.dog.name}</span></div>
+                                        <Link to={`/detail/${pet.dog.id}`} className='btn btn-primary linkRR mb-2'>See details</Link>
+                                    </div>
                                     <img src={pet.dog.image} alt={pet.dog.name} className={s.dogBreedImage}></img>
                                 </div>
                                 {
@@ -147,7 +149,7 @@ export default function Pet({ id }) {
                         :
                         <Loading />
                     :
-                    <MainError mainErr={errGlobal}/>
+                    <MainError mainErr={errGlobal} />
                 }
             </div>
 
