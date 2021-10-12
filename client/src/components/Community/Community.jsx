@@ -4,14 +4,32 @@ import axios from '../../axiosInterceptor';
 import Loading from '../Loading/Loading';
 import CommunityMember from '../CommunityMember/CommunityMember';
 import { countries } from '../../extras/countries';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../../actions';
+import { getUserInfo } from '../../extras/globalFunctions';
 
 export default function Community() {
 
   // Own states
   const [errGlobal, setErrGlobal] = useState('');
   const [users, setUsers] = useState([])
+  const dispatch = useDispatch();
 
   // Hooks
+
+  // This hook is executed every time the page is reloaded
+  useEffect(() => {
+    const cancelToken = axios.CancelToken;
+    const source = cancelToken.source();
+    async function checkLog() {
+      const user = await getUserInfo(source.token);
+      if (user !== "Unmounted") {
+        dispatch(setUser(user));
+      }
+    }
+    checkLog();
+    return () => source.cancel("Unmounted");
+  }, [dispatch])
 
   // This hook allows us to get the community
   useEffect(() => {

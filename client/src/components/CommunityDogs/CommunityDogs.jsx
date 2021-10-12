@@ -4,7 +4,8 @@ import axios from '../../axiosInterceptor';
 import Loading from '../Loading/Loading';
 import Post from '../Post/Post';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCommunityDogs } from '../../actions';
+import { setCommunityDogs, setUser } from '../../actions';
+import { getUserInfo } from '../../extras/globalFunctions';
 
 export default function Community() {
 
@@ -16,6 +17,20 @@ export default function Community() {
   const dispatch = useDispatch();
 
   // Hooks
+
+  // This hook is executed every time the page is reloaded
+  useEffect(() => {
+    const cancelToken = axios.CancelToken;
+    const source = cancelToken.source();
+    async function checkLog() {
+      const user = await getUserInfo(source.token);
+      if (user !== "Unmounted") {
+        dispatch(setUser(user));
+      }
+    }
+    checkLog();
+    return () => source.cancel("Unmounted");
+  }, [dispatch])
 
   // This hook allows us to get the community
   useEffect(() => {

@@ -1,5 +1,5 @@
 import s from './NavBar.module.css';
-import { NavLink, useHistory } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import React,  { useEffect } from 'react';
 import logo from '../../img/logo.png';
 import { useState } from 'react';
@@ -19,7 +19,6 @@ export default function NavBar() {
 
   // Variables
   const dispatch = useDispatch();
-  const history = useHistory();
 
   // This hook is executed every time the page is reloaded
   useEffect(() => {
@@ -32,10 +31,7 @@ export default function NavBar() {
       }
     }
     checkLog();
-    return () => {
-      logout();
-      source.cancel("Unmounted");
-    }
+    return () => source.cancel("Unmounted");
   }, [dispatch])
 
   return (

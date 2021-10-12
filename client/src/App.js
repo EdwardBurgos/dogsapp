@@ -30,7 +30,6 @@ function App() {
 
   // This hook is executed every time the page is reloaded
   useEffect(() => {
-    
     const cancelToken = axios.CancelToken;
     const source = cancelToken.source();
     async function checkLog() {
@@ -40,10 +39,7 @@ function App() {
       }
     }
     checkLog();
-    return () => {
-      logout();
-      source.cancel("Unmounted");
-    }
+    return () => source.cancel("Unmounted");
   }, [dispatch])
 
   return (
@@ -57,16 +53,16 @@ function App() {
                 <Route path="/home" component={Home} />
                 <Route path="/detail/:id" render={({ match }) => <Detail id={match.params.id} />} />
                 <Route path="/registerDog" component={RegisterPet} />
-                <Route path="/editDog/:id" render={({ match }) => Object.keys(user).length && user.pets.includes(parseInt(match.params.id))? <EditPet id={match.params.id} /> : <Redirect to="/home"/> }></Route>
-                <Route path="/dog/:id" render={({ match }) => <Pet id={match.params.id} /> } />
+                <Route path="/editDog/:id" render={({ match }) => Object.keys(user).length && user.pets.includes(parseInt(match.params.id)) ? <EditPet id={match.params.id} /> : <Redirect to="/home" />}></Route>
+                <Route path="/dog/:id" render={({ match }) => <Pet id={match.params.id} />} />
                 <Route path="/profile">{Object.keys(user).length ? <Profile /> : <Redirect to="/login" />}</Route>
                 <Route path="/login">{Object.keys(user).length ? <Redirect to="/profile" /> : <Login />}</Route>
                 <Route path="/signup" >{Object.keys(user).length ? <Redirect to="/profile" /> : <Signup />}</Route>
                 <Route path="/community" component={Community} />
                 <Route path="/communityDogs" component={CommunityDogs} />
-                <Route path="/auto/:reason/:token" render={({ match }) => <VerifyEmail reason={match.params.reason} token={match.params.token} expires={query.get("expires")}/>} />
+                <Route path="/auto/:reason/:token" render={({ match }) => <VerifyEmail reason={match.params.reason} token={match.params.token} expires={query.get("expires")} />} />
                 {/* <Route path="/verifyEmail/:token" render={({ match }) =>  ? <EditPet id={match.params.id} /> : <Redirect to="/home"/> }></Route> */}
-                <Route path="/:username" render={({ match }) => <User username={match.params.username} /> }/>
+                <Route path="/:username" render={({ match }) => <User username={match.params.username} />} />
               </Switch>
             </div>
           </div>

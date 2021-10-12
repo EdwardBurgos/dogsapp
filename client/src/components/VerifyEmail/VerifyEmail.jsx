@@ -29,6 +29,20 @@ export default function VerifyEmail({ token, reason, expires }) {
     const [userInfo, setUserInfo] = useState({})
     // const user = useSelector(state => state.user)
 
+    // This hook is executed every time the page is reloaded
+    useEffect(() => {
+        const cancelToken = axios.CancelToken;
+        const source = cancelToken.source();
+        async function checkLog() {
+            const user = await getUserInfo(source.token);
+            if (user !== "Unmounted") {
+                dispatch(setUser(user));
+            }
+        }
+        checkLog();
+        return () => source.cancel("Unmounted");
+    }, [dispatch])
+
     // Hooks
     useEffect(() => {
         async function loginUser() {

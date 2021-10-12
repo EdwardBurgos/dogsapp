@@ -44,8 +44,6 @@ export default function Post({ name, img, id, likesCount, owner, likes, origin, 
   async function likeORdislike() {
     try {
       await axios.post(`/likes/${id}`)
-      const user = await getUserInfo();
-      dispatch(setUser(user));
       if (origin === 'publicProfile') {
         const publicUser = await axios.get(`/users${location.pathname}`)
         dispatch(setPublicUser(publicUser.data))
@@ -60,6 +58,8 @@ export default function Post({ name, img, id, likesCount, owner, likes, origin, 
       showMessage(e.response.data)
     }
   }
+
+  
 
   // This funtion allows us to delete a pet
   async function deletePet() {
