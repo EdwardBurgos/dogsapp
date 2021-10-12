@@ -25,9 +25,11 @@ export default function Detail({ id }) {
 
     // This hook load the dog data
     useEffect(() => {
+        const cancelToken = axios.CancelToken;
+        const source = cancelToken.source();
         async function findDog(id) {
             try {
-                let response = await axios.get(`/dogs/${id}`);
+                let response = await axios.get(`/dogs/${id}`, { cancelToken: source.token });
                 dispatch(setCurrentDog(response.data));
             } catch (e) {
                 if (e.response.status === 404 && e.response.data === `There is no dog breed with the id ${id}`) return setErrGlobal(e.response.data)
@@ -35,6 +37,7 @@ export default function Detail({ id }) {
             }
         }
         findDog(id);
+        return () => source.cancel("Unmounted");
     }, [id])
 
     // This hook allow us to load the logued user

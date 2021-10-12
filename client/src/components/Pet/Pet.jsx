@@ -34,9 +34,11 @@ export default function Pet({ id }) {
 
     // This hook load the dog data
     useEffect(() => {
+        const cancelToken = axios.CancelToken;
+        const source = cancelToken.source();
         async function findPet(id) {
             try {
-                let response = await axios.get(`/pets/${id}`);
+                let response = await axios.get(`/pets/${id}`, { cancelToken: source.token });
                 setPet(response.data)
                 setChanged(false)
             } catch (e) {
@@ -45,6 +47,7 @@ export default function Pet({ id }) {
             }
         }
         findPet(id);
+        return () => source.cancel("Unmounted");
     }, [id, changed])
 
     // This hook allow us to load the logued user

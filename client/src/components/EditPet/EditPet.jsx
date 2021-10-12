@@ -59,9 +59,11 @@ export default function EditPet({ id }) { // si me psan el di seleccionar la raz
 
     // This hook load the pet data
     useEffect(() => {
+        const cancelToken = axios.CancelToken;
+        const source = cancelToken.source();
         async function findPet(id) {
             try {
-                let response = await axios.get(`/pets/${id}`);
+                let response = await axios.get(`/pets/${id}`, { cancelToken: source.token });
                 const { name, photo, dog } = response.data
                 setPet({ name, photo, dogId: dog.id });
                 setName(name);
@@ -73,6 +75,7 @@ export default function EditPet({ id }) { // si me psan el di seleccionar la raz
             }
         }
         findPet(id);
+        return () => source.cancel("Unmounted");
     }, [id])
 
     // This hook is to enable or disable the submit button
@@ -100,9 +103,11 @@ export default function EditPet({ id }) { // si me psan el di seleccionar la raz
 
     // This hook allows us to get the dog information of the selected dog breed in order to display this data to the user
     useEffect(() => {
+        const cancelToken = axios.CancelToken;
+        const source = cancelToken.source();
         async function findDog(dogId) {
             try {
-                let response = await axios.get(`/dogs/${dogId}`);
+                let response = await axios.get(`/dogs/${dogId}`, { cancelToken: source.token });
                 setSelectedDog(response.data);
             } catch (e) {
                 if (e.response.status === 404 && e.response.data === `There is no dog breed with the id ${dogId}`) return showMessage(e.response.data)
@@ -110,6 +115,7 @@ export default function EditPet({ id }) { // si me psan el di seleccionar la raz
             }
         }
         if (dogId !== 'default') findDog(dogId);
+        return () => source.cancel("Unmounted");
     }, [dogId])
 
     // Functions

@@ -83,9 +83,11 @@ export default function RegisterPet() {
 
     // This hook allows us to get the dog information of the selected dog breed in order to display this data to the user
     useEffect(() => {
+        const cancelToken = axios.CancelToken;
+        const source = cancelToken.source();
         async function findDog(dogId) {
             try {
-                let response = await axios.get(`/dogs/${dogId}`);
+                let response = await axios.get(`/dogs/${dogId}`, { cancelToken: source.token });
                 setSelectedDog(response.data);
             } catch (e) {
                 if (e.response.status === 404 && e.response.data === `There is no dog breed with the id ${dogId}`) return showMessage(e.response.data)
@@ -93,6 +95,7 @@ export default function RegisterPet() {
             }
         }
         if (dogId !== 'default') findDog(dogId);
+        return () => source.cancel("Unmounted");
     }, [dogId])
 
     // Functions
