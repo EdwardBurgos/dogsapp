@@ -159,7 +159,11 @@ export default function Login() {
             } else { dispatch(setUser({})); return setErrGlobal('Sorry, an error occurred'); }
         } catch (e) {
             console.log(e)
-            dispatch(setUser({})); return setErrGlobal('Sorry, an error occurred');
+            if (e.code !== "auth/popup-closed-by-user") {
+                dispatch(setUser({})); 
+                showMessage('Sorry, an error occurred');
+            }
+            
         }
     }
 
