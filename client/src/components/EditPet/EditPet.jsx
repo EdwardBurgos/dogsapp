@@ -68,7 +68,7 @@ export default function EditPet({ id }) { // si me psan el di seleccionar la raz
                 setPhoto(photo);
                 setDogId(dog.id);
             } catch (e) {
-                if (e.response.status === 404 && e.response.data === `There is no pet with the id ${id}`) return setMainErr(e.response.data)
+                if (e.response.status === 404 && e.response.data === `There is no dog with the id ${id}`) return setMainErr(e.response.data)
                 setMainErr('Sorry, an error ocurred')
             }
         }
@@ -246,7 +246,7 @@ export default function EditPet({ id }) { // si me psan el di seleccionar la raz
                             </div>
                             :
                             <div className={s.contentCenter}>
-                                <p>To be able to register your pet you need to be logged in.</p>
+                                <p>To be able to register your dog you need to be logged in.</p>
                                 <Link to="/login" className={s.loginButton}>Log in</Link>
                             </div>
                         :

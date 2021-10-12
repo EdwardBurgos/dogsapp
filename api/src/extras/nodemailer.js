@@ -36,17 +36,17 @@ async function sendMail(name, addressee, reason, token) {
             'In order to avoid spam, we verify all the email addresses so the following link would help us to verify yours' +
             'Please, click it and wait until your logging is completed and do not worry because it is not dangerous' + 
             `<a href="${url}">Verify your email</a>` +
-            'Hope you share your pets with the community' : reason === 'loginWithoutPassword' ? `Hi ${name}` +
+            'Hope you share your dogs with the community' : reason === 'loginWithoutPassword' ? `Hi ${name}` +
             'Thank so much for wanting to try the DOGS APP deeply' + 
             'The following link allow you to login without password' +
             'Please, click it and wait until your logging is completed and do not worry because it is not dangerous' + 
             `<a href="${url}">Login without password</a>` +
-            'Hope you share your pets with the community' : reason === 'resetPassword' ? `Hi ${name}` +
+            'Hope you share your dogs with the community' : reason === 'resetPassword' ? `Hi ${name}` +
             'We are so sorry that you forget your password' + 
             'The following link allow you to reset it' +
             'Please, click it to define a new one and do not worry because it is not dangerous at all' + 
             `<a href="${url}">Reset password</a>` +
-            'Hope you share your pets with the community' : reason === 'deleteAccountEmail' ? `Hi ${name}` +
+            'Hope you share your dogs with the community' : reason === 'deleteAccountEmail' ? `Hi ${name}` +
             'We are so sorry that you want to delete your account' + 
             'The following link confirm your decision and delete your account automatically' +
             'Please, click it if you really want to do it and do not worry because it is not dangerous at all' + 
@@ -55,23 +55,23 @@ async function sendMail(name, addressee, reason, token) {
             'The following link allow you to define a password for your account' +
             'Please, click it to define it and do not worry because it is not dangerous at all' + 
             `<a href="${url}">Define password</a>` +
-            'Hope you share your pets with the community' : '',
+            'Hope you share your dogs with the community' : '',
             html: reason === 'verifyEmail' ?  `<div style='background-color: #0d6efd; padding: 16px; border-radius: 5px; color: #fff !important;'><h1 style='margin-top: 0;'>Hi ${name}</h1>` +
             '<p>Thank so much for wanting to try the DOGS APP deeply</p>' +
             '<p>In order to avoid spam, we verify all the email addresses so the following link would help us to verify yours</p>' +
             '<p>Please, click it and wait until your logging is completed, and do not worry because it is not dangerous at all</p>' + 
             `<a style='background-color: #fff; color: #0d6efd; padding: 6px 12px; display: inline-block; text-decoration: none; border-radius: 5px' href="${url}">Verify your email</a>` + 
-            `<p style='margin-bottom: 0;'>Hope you share your pets with the community</p></div>` : reason === 'loginWithoutPassword' ? `<div style='background-color: #0d6efd; padding: 16px; border-radius: 5px; color: #fff !important;'><h1 style='margin-top: 0;'>Hi ${name}</h1>` +
+            `<p style='margin-bottom: 0;'>Hope you share your dogs with the community</p></div>` : reason === 'loginWithoutPassword' ? `<div style='background-color: #0d6efd; padding: 16px; border-radius: 5px; color: #fff !important;'><h1 style='margin-top: 0;'>Hi ${name}</h1>` +
             '<p>Thank so much for wanting to try the DOGS APP deeply</p>' +
             '<p>The following link allow you to login without password</p>' +
             '<p>Please, click it and wait until your logging is completed, and do not worry because it is not dangerous at all</p>' + 
             `<a style='background-color: #fff; color: #0d6efd; padding: 6px 12px; display: inline-block; text-decoration: none; border-radius: 5px' href="${url}">Login without password</a>` + 
-            `<p style='margin-bottom: 0;'>Hope you share your pets with the community</p></div>` : reason === 'resetPassword' ? `<div style='background-color: #0d6efd; padding: 16px; border-radius: 5px; color: #fff !important;'><h1 style='margin-top: 0;'>Hi ${name}</h1>` +
+            `<p style='margin-bottom: 0;'>Hope you share your dogs with the community</p></div>` : reason === 'resetPassword' ? `<div style='background-color: #0d6efd; padding: 16px; border-radius: 5px; color: #fff !important;'><h1 style='margin-top: 0;'>Hi ${name}</h1>` +
             '<p>We are so sorry that you forget your password</p>' +
             '<p>The following link allow you to reset it</p>' +
             '<p>Please, click it to define a new one and do not worry because it is not dangerous at all</p>' + 
             `<a style='background-color: #fff; color: #0d6efd; padding: 6px 12px; display: inline-block; text-decoration: none; border-radius: 5px' href="${url}">Reset password</a>` + 
-            `<p style='margin-bottom: 0;'>Hope you share your pets with the community</p></div>` : reason === 'deleteAccountEmail' ? `<div style='background-color: #0d6efd; padding: 16px; border-radius: 5px; color: #fff !important;'><h1 style='margin-top: 0;'>Hi ${name}</h1>` +
+            `<p style='margin-bottom: 0;'>Hope you share your dogs with the community</p></div>` : reason === 'deleteAccountEmail' ? `<div style='background-color: #0d6efd; padding: 16px; border-radius: 5px; color: #fff !important;'><h1 style='margin-top: 0;'>Hi ${name}</h1>` +
             '<p>We are so sorry that you want to delete your account</p>' +
             '<p>The following link confirm your decision and delete your account automatically</p>' +
             '<p>Please, click it if you really want to do it and do not worry because it is not dangerous at all</p>' + 
@@ -80,7 +80,7 @@ async function sendMail(name, addressee, reason, token) {
             '<p>The following link allow you to define a password for your account</p>' +
             '<p>Please, click it to define it and do not worry because it is not dangerous at all</p>' + 
             `<a style='background-color: #fff; color: #0d6efd; padding: 6px 12px; display: inline-block; text-decoration: none; border-radius: 5px' href="${url}">Define password</a>` + 
-            `<p style='margin-bottom: 0;'>Hope you share your pets with the community</p></div>` : ''
+            `<p style='margin-bottom: 0;'>Hope you share your dogs with the community</p></div>` : ''
         }
         const result = await transport.sendMail(mailOptions);
         console.log(result)

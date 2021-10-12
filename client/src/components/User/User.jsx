@@ -92,7 +92,7 @@ export default function User({ username }) {
             {
               user.username === username ?
                 <div className={s.registerPetButton}>
-                  <Link to="/registerPet" className='btn btn-primary'>Register your pet</Link>
+                  <Link to="/registerDog" className='btn btn-primary'>Register your dog</Link>
                 </div>
                 :
                 null
@@ -102,7 +102,7 @@ export default function User({ username }) {
                 publicUser.pets.length ?
                   <>
                     {/* <div className={publicUser.dogs.length ? s.specimens : s.onlyColumn}> */}
-                    <h2 className={s.petsTitle}>Pets</h2>
+                    <h2 className={s.petsTitle}>Dogs</h2>
                     <div className={s.postsContainer}>
                       {
                         publicUser.pets.map((e, i) => <Post origin='publicProfile' key={i} id={e.id} name={e.name} img={e.photo} likesCount={e.likesCount} owner={publicUser} likes={e.likes} dog={e.dog}></Post>)
@@ -115,7 +115,7 @@ export default function User({ username }) {
                     <div className={s.emptyVectorContainer}>
                       <img className={s.emptyVector} src={emptyVector} alt='Empty vector'></img>
                     </div>
-                    <p className={s.noPets}>No pets published yet</p>
+                    <p className={s.noPets}>No dogs published yet</p>
                   </>
               }
             </>

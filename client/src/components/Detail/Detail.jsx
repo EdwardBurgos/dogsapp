@@ -131,8 +131,8 @@ export default function Detail({ id }) {
                                     null
                             }
                             <div className={s.query}>
-                                <span>Is your pet of this breed?</span>
-                                <Link to='/registerPet' className="w-100 btn btn-primary mt-2" onClick={() => dispatch(setPetBreed(id))}>Register it here</Link>
+                                <span>Is your dog of this breed?</span>
+                                <Link to='/registerDog' className="w-100 btn btn-primary mt-2" onClick={() => dispatch(setPetBreed(id))}>Register it here</Link>
                             </div>
                         </div>
                         {

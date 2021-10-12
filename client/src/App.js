@@ -56,9 +56,9 @@ function App() {
               <Switch>
                 <Route path="/home" component={Home} />
                 <Route path="/detail/:id" render={({ match }) => <Detail id={match.params.id} />} />
-                <Route path="/registerPet" component={RegisterPet} />
-                <Route path="/editPet/:id" render={({ match }) => Object.keys(user).length && user.pets.includes(parseInt(match.params.id))? <EditPet id={match.params.id} /> : <Redirect to="/home"/> }></Route>
-                <Route path="/pet/:id" render={({ match }) => <Pet id={match.params.id} /> } />
+                <Route path="/registerDog" component={RegisterPet} />
+                <Route path="/editDog/:id" render={({ match }) => Object.keys(user).length && user.pets.includes(parseInt(match.params.id))? <EditPet id={match.params.id} /> : <Redirect to="/home"/> }></Route>
+                <Route path="/dog/:id" render={({ match }) => <Pet id={match.params.id} /> } />
                 <Route path="/profile">{Object.keys(user).length ? <Profile /> : <Redirect to="/login" />}</Route>
                 <Route path="/login">{Object.keys(user).length ? <Redirect to="/profile" /> : <Login />}</Route>
                 <Route path="/signup" >{Object.keys(user).length ? <Redirect to="/profile" /> : <Signup />}</Route>

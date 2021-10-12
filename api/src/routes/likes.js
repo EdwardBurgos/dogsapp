@@ -11,7 +11,7 @@ const router = Router();
 // This route allows us to read the existing likes of the given pet
 router.get('/:pet', async (req, res, next) => {
     try {
-        if (!req.params.pet) return res.status(400).send('Please provide a pet')
+        if (!req.params.pet) return res.status(400).send('Please provide a dog')
         let petFound = await Pet.findOne({
             where: {
                 id: req.params.pet
@@ -23,7 +23,7 @@ router.get('/:pet', async (req, res, next) => {
                 },
             ],
         })
-        petFound ? res.send({ total: petFound.likes.length, detail: petFound.likes.map(e => e.userId) }) : res.send(`There is no pet with the id ${req.params.pet}`)
+        petFound ? res.send({ total: petFound.likes.length, detail: petFound.likes.map(e => e.userId) }) : res.send(`There is no dog with the id ${req.params.pet}`)
     } catch (e) {
         next()
     }
@@ -32,7 +32,7 @@ router.get('/:pet', async (req, res, next) => {
 // This route allow us to like or dislike a pet
 router.post('/:pet', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
     try {
-        if (!req.params.pet) return res.status(400).send('Please provide a pet')
+        if (!req.params.pet) return res.status(400).send('Please provide a dog')
         let petFound = await Pet.findOne({
             where: {
                 id: req.params.pet
@@ -49,13 +49,13 @@ router.post('/:pet', passport.authenticate('jwt', { session: false }), async (re
             })
             if (liked) {
                 const disliked = await liked.destroy();
-                disliked ? res.send(`You disliked the pet with the id ${req.params.pet} successfully`) : res.status(500).send(`Sorry, The pet with the if ${req.params.pet} could not be disliked correctly`)
+                disliked ? res.send(`You disliked the dog with the id ${req.params.pet} successfully`) : res.status(500).send(`Sorry, the dog with the id ${req.params.pet} could not be disliked correctly`)
             } else {
                 const created = await Like.create({ userId: req.user.id, petId: req.params.pet });
-                created ? res.send(`You liked the pet with the id ${req.params.pet} successfully`) : res.status(500).send(`Sorry, The pet with the if ${req.params.pet} could not be liked correctly`)
+                created ? res.send(`You liked the dog with the id ${req.params.pet} successfully`) : res.status(500).send(`Sorry, the dog with the id ${req.params.pet} could not be liked correctly`)
             }
         } else {
-            res.status(404).send(`There is no pet with the id ${req.params.pet}`)
+            res.status(404).send(`There is no dog with the id ${req.params.pet}`)
         }
     } catch (e) {
         next()

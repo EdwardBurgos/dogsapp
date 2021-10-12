@@ -40,7 +40,7 @@ export default function Pet({ id }) {
                 setPet(response.data)
                 setChanged(false)
             } catch (e) {
-                if (e.response.status === 404 && e.response.data === `There is no pet with the id ${id}`) return setErrGlobal(e.response.data)
+                if (e.response.status === 404 && e.response.data === `There is no dog with the id ${id}`) return setErrGlobal(e.response.data)
                 setErrGlobal('Sorry, an error ocurred')
             }
         }
@@ -104,7 +104,7 @@ export default function Pet({ id }) {
                                     {
                                         Object.keys(user).length && user.pets.includes(parseInt(id)) ?
                                             <div className={s.optionsButtons}>
-                                                <Link to={`/editPet/${id}`} className={`btn btn-primary ${s.editButton}`}> Edit {pet.name}</Link>
+                                                <Link to={`/editDog/${id}`} className={`btn btn-primary ${s.editButton}`}> Edit {pet.name}</Link>
                                                 <button className={`btn btn-danger ${s.deleteButton}`} onClick={() => setShowDelete(true)}> Delete {pet.name}</button>
                                             </div>
                                             :
@@ -135,7 +135,7 @@ export default function Pet({ id }) {
                                                         )
                                                         :
                                                         <div>
-                                                            <p>You need to be login to see the likes given to this pet</p>
+                                                            <p>You need to be login to see the likes given to this dog</p>
                                                             <Link to='/login' className='btn btn-primary w-100'>Log in</Link>
                                                         </div>
                                                 }
@@ -161,7 +161,7 @@ export default function Pet({ id }) {
                 onHide={() => setUnauthorized(false)}
             >
                 <Modal.Header closeButton>
-                    <Modal.Title>Log in to like a pet</Modal.Title>
+                    <Modal.Title>Log in to like a dog</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Link to='/login' className='btn btn-primary w-100'>Log in</Link>

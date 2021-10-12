@@ -46,7 +46,7 @@ export default function NavBar() {
       <Navbar.Toggle aria-controls="basic-navbar-nav" onClick={() => navExpanded ? setNavExpanded(false) : setNavExpanded(true)} />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="me-auto" >
-          <Nav.Link as={NavLink} to="/registerPet" className={s.enlace} activeClassName={s.enlaceActivo} onClick={() => setNavExpanded(false)}>Register your pet</Nav.Link>
+          <Nav.Link as={NavLink} to="/registerDog" className={s.enlace} activeClassName={s.enlaceActivo} onClick={() => setNavExpanded(false)}>Register your dog</Nav.Link>
           <Nav.Link as={NavLink} to="/community" className={s.enlace} activeClassName={s.enlaceActivo} onClick={() => setNavExpanded(false)}>Community</Nav.Link>
           <Nav.Link as={NavLink} to="/communityDogs" className={s.enlace} activeClassName={s.enlaceActivo} onClick={() => setNavExpanded(false)}>Community dogs</Nav.Link>
         </Nav>

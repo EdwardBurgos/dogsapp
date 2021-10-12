@@ -147,7 +147,7 @@ export default function RegisterPet() {
                     user && dogs.length ?
                         Object.keys(user).length ?
                             <div className={s.content}>
-                                <h1 className={s.title}>Register your pet</h1>
+                                <h1 className={s.title}>Register your dog</h1>
 
                                 <div className={s.errorGlobalContainer}>
                                     {errGlobal ? <p className={s.errorGlobal}>{errGlobal}</p> : null}
@@ -198,12 +198,12 @@ export default function RegisterPet() {
                                         }
                                     </div>
 
-                                    <input type="submit" value="Register pet" disabled={buttonState} className={`w-100 btn btn-primary`} />
+                                    <input type="submit" value="Register dog" disabled={buttonState} className={`w-100 btn btn-primary`} />
                                 </form>
                             </div>
                             :
                             <div className={s.contentCenter}>
-                                <p>To be able to register your pet you need to be logged in.</p>
+                                <p>To be able to register your dog you need to be logged in.</p>
                                 <Link to="/login" className={`${s.loginButton} btn btn-primary`}>Log in</Link>
                             </div>
                         :

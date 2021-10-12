@@ -44,7 +44,7 @@ export async function uploadPetImage(pet, imageAsFile) {
         const url = await app.storage().ref('testsPetsPictures').child(`${pet}`).getDownloadURL()
         return url
     } catch (e) {
-        return 'Sorry, we could not upload your pet picture'
+        return 'Sorry, we could not upload your dog picture'
     }
 }
 
@@ -54,7 +54,7 @@ export async function uploadConfirmedPetImage(pet, imageAsFile) {
         const url = await app.storage().ref('petsPictures').child(`${pet}`).getDownloadURL()
         return url
     } catch (e) {
-        return 'Sorry, we could not save your pet picture'
+        return 'Sorry, we could not save your dog picture'
     }
 }
 

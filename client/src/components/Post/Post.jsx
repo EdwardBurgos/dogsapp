@@ -37,7 +37,7 @@ export default function Post({ name, img, id, likesCount, owner, likes, origin, 
     if (elementId === 'likeIcon') return;
     if (elementId === 'likesTotal') { setTargetOrigin('likesInfo'); return likesCount !== 0 ? Object.keys(user).length ? setShowModal(true) : setUnauthorized(true) : null; }
     if (elementId === 'userInfo') return setShowModal(false);
-    history.push(`/pet/${id}`)
+    history.push(`/dog/${id}`)
   }
 
   // This function allows us to give like
@@ -131,7 +131,7 @@ export default function Post({ name, img, id, likesCount, owner, likes, origin, 
         onHide={() => setUnauthorized(false)}
       >
         <Modal.Header closeButton>
-          <Modal.Title>{targetOrigin === 'likesInfo' ? 'Log in to see the likes given to this pet' : 'Log in to like a pet'}</Modal.Title>
+          <Modal.Title>{targetOrigin === 'likesInfo' ? 'Log in to see the likes given to this dog' : 'Log in to like a dog'}</Modal.Title>
         </Modal.Header>
         <Modal.Body className={s.centeredInfoModal}>
           <Link to='login' className='btn btn-primary w-100'>Log in</Link>
@@ -150,11 +150,11 @@ export default function Post({ name, img, id, likesCount, owner, likes, origin, 
             Object.keys(user).length && user.pets.includes(id) ?
               <>
                 <div className={s.optionDelete} onClick={() => setShowDelete(true)}>Delete {name}</div>
-                <Link to={`/editPet/${id}`} className={`${s.option} linkRR`} >Edit {name}</Link>
+                <Link to={`/editDog/${id}`} className={`${s.option} linkRR`} >Edit {name}</Link>
               </>
               : null
           }
-          <div className={s.optionLast} onClick={() => { navigator.clipboard.writeText(`http://localhost:3000/pet/${id}`); setShowOptions(false); showMessage('Link copied to clipboard'); }}>Copy link</div>
+          <div className={s.optionLast} onClick={() => { navigator.clipboard.writeText(`http://localhost:3000/dog/${id}`); setShowOptions(false); showMessage('Link copied to clipboard'); }}>Copy link</div>
         </Modal.Body>
       </Modal>
 

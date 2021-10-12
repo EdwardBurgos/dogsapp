@@ -26,7 +26,7 @@ router.post('/', passport.authenticate('jwt', { session: false }), async (req, r
 // This route allows us to get all the dog breeds
 router.get('/all/:breedid', async (req, res, next) => {
     try {
-        if (!req.params.breedid) return res.status(400).send('Please provide a pet');
+        if (!req.params.breedid) return res.status(400).send('Please provide a dog');
         const breedId = req.params.breedid;
         let pets = await Pet.findAll({
             where: {
@@ -44,7 +44,7 @@ router.get('/all/:breedid', async (req, res, next) => {
             })
             res.send(pets)
         } else {
-            res.status(404).send('No pets found')
+            res.status(404).send('No dogs found')
         }
     } catch (e) {
         next()
@@ -66,7 +66,7 @@ router.get('/own', passport.authenticate('jwt', { session: false }), async (req,
             })
             res.send(pets)
         } else {
-            res.status(404).send('You have not register any pet yet')
+            res.status(404).send('You have not register any dog yet')
         }
     } catch (e) {
         next()
@@ -137,7 +137,7 @@ router.get('/:id', async (req, res, next) => {
         if (pet) {
             res.send(Object.assign((({ id, name, photo, dog, likes }) => ({ id, name, photo, dog, likes }))(pet.dataValues), { likes: pet.dataValues.likes.map(e => e.dataValues ? (({ id, username, fullname, profilepic }) => ({ id, username, fullname, profilepic }))(e.dataValues.user) : null) }, { likesCount: pet.dataValues.likes.length }, { dog: (({ id, name, image }) => ({ id, name, image }))(pet.dataValues.dog) }));
         } else {
-            res.status(404).send(`There is no pet with the id ${req.params.id}`);
+            res.status(404).send(`There is no dog with the id ${req.params.id}`);
         }
     } catch (e) {
         next();
@@ -148,7 +148,7 @@ router.get('/:id', async (req, res, next) => {
 router.put('/', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
     try {
         const { id, name, photo, dogId } = req.body;
-        if (!id || !name || !photo || !dogId) return res.status(400).send('Please provide a name, a link of a photo, a dog breed and the pet you want to update');
+        if (!id || !name || !photo || !dogId) return res.status(400).send('Please provide a name, a link of a photo, a dog breed and the dog you want to update');
         if (!validURL(photo)) return res.status(400).send('Please provide a valid link of a photo')
         const pet = await Pet.findOne({
             where: { id },
@@ -168,10 +168,10 @@ router.put('/', passport.authenticate('jwt', { session: false }), async (req, re
                     return res.status(500).send(`Sorry, ${realName} can not be updated`)
                 }
             } else {
-                return res.status(404).send(`You can not edit this pet beacuse is not yours`);
+                return res.status(404).send(`You can not edit this dog beacuse is not yours`);
             }
         } else {
-            res.status(404).send(`There is no pet with the id ${id}`);
+            res.status(404).send(`There is no dog with the id ${id}`);
         }
     } catch (e) {
         next()
@@ -181,7 +181,7 @@ router.put('/', passport.authenticate('jwt', { session: false }), async (req, re
 // This route allow us to delete the pet of a user 
 router.delete('/:pet', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
     try {
-        if (!req.params.pet) return res.send(400).send('Please provide a pet')
+        if (!req.params.pet) return res.send(400).send('Please provide a dog')
         const pet = await Pet.findOne({
             where: { id: req.params.pet }
         })
@@ -200,7 +200,7 @@ router.delete('/:pet', passport.authenticate('jwt', { session: false }), async (
                 return res.status(404).send(`You can not delete ${name} because is not yours`);
             }
         } else {
-            res.status(404).send(`There is no pet with the id ${id}`);
+            res.status(404).send(`There is no dog with the id ${id}`);
         }
     } catch (e) {
         next()
