@@ -118,7 +118,10 @@ router.get('/:id', async (req, res, next) => {
                     ]
                 }
             ],
-            order: [[{ model: Pet, as: 'pets' }, 'createdAt', 'DESC']]
+            order: [
+                [{ model: Pet, as: 'pets' }, 'createdAt', 'DESC'],
+                [{ model: Pet, as: 'pets' }, {model: Like, as: 'likes'}, 'createdAt', 'DESC']
+            ]
         }); 
         if (dog) {
             const { id, name, heightmax, heightmin, weightmax, weightmin, lifespanmax, lifespanmin, bred_for, breed_group, origin, image, temperaments, pets, userId } = dog.dataValues;

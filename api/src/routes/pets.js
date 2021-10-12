@@ -131,7 +131,8 @@ router.get('/:id', async (req, res, next) => {
                     model: Dog,
                     as: "dog"
                 }
-            ]
+            ],
+            order: [[{model: Like, as: 'likes'}, 'createdAt', 'DESC']]
         });
         if (pet) {
             res.send(Object.assign((({ id, name, photo, dog, likes }) => ({ id, name, photo, dog, likes }))(pet.dataValues), { likes: pet.dataValues.likes.map(e => e.dataValues ? (({ id, username, fullname, profilepic }) => ({ id, username, fullname, profilepic }))(e.dataValues.user) : null) }, { likesCount: pet.dataValues.likes.length }, { dog: (({ id, name, image }) => ({ id, name, image }))(pet.dataValues.dog) }));
