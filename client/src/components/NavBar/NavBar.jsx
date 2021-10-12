@@ -45,12 +45,12 @@ export default function NavBar() {
       }
     }
     // If the navbar is open set a click detector that will execute the function handleClickOutside, if not remove that detector
-    if (document.getElementById('basic-navbar-nav').classList[2] === 'show') { 
+    if (navExpanded) { 
       document.addEventListener("mousedown", handleClickOutside);
     } else {
       document.removeEventListener("mousedown", handleClickOutside);
     }
-  }, [ref]);
+  }, [ref, navExpanded]);
 
   
 
