@@ -1,6 +1,6 @@
 import s from './NavBar.module.css';
 import { NavLink } from 'react-router-dom';
-import React,  { useEffect } from 'react';
+import React,  { useEffect, useRef } from 'react';
 import logo from '../../img/logo.png';
 import { useState } from 'react';
 import { Navbar, Nav, Dropdown } from 'react-bootstrap'
@@ -34,8 +34,28 @@ export default function NavBar() {
     return () => source.cancel("Unmounted");
   }, [dispatch])
 
+  const ref = useRef(null);
+
+  // This hook allows us to close the navbar when clicked outside of it while this one is expanded 
+  useEffect(() => {
+    function handleClickOutside(event) {
+      // If the ref exists and the click target (detected by the listener) if not inside of it, close the navbar
+      if (ref.current && !ref.current.contains(event.target)) {
+        setNavExpanded(false)
+      }
+    }
+    // If the navbar is open set a click detector that will execute the function handleClickOutside, if not remove that detector
+    if (document.getElementById('basic-navbar-nav').classList[2] === 'show') { 
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [ref]);
+
+  
+
   return (
-    <Navbar expand="lg" className={s.navbar} id="navBar" expanded={navExpanded} fixed="top">
+    <Navbar expand="lg" className={s.navbar} id="navBar" expanded={navExpanded} fixed="top" ref={ref}>
       <Navbar.Brand as={NavLink} to="/home" onClick={() => setNavExpanded(false)} className={s.brand}>
         <img src={logo} className={s.logo} alt="Cute dog"></img>
       </Navbar.Brand>
