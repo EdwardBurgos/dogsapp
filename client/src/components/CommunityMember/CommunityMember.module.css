@@ -1,0 +1,53 @@
+.card{
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 16px;
+    background-color: rgba(231, 233, 235, 0.5);
+    padding: 16px;
+    border-radius: 1rem;
+    text-align: left;
+}
+
+.card:hover {
+    cursor: pointer;
+    box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
+    -webkit-box-shadow: 1px 1px 12px -1px rgb(0 0 0 / 24%);
+}
+
+.image {
+    height: 200px;
+    width: 100%;
+    object-fit: contain;
+}
+
+.flag {
+    float: left;
+    height: 30px;
+    width: 30px;
+    margin-right: 15px;
+}
+
+.infoContainer {
+    display: flex;
+    margin-bottom: 16px;
+}
+
+.dataContainer {
+    width: calc(100% - 45px);
+}
+
+.flagContainer {
+    width: 45px;
+}
+
+@media only screen and (min-width: 768px) {
+    .card {
+        width: 45%;
+    }
+}
+
+@media only screen and (min-width: 1200px) {
+    .card {
+        width: 22%;
+    }
+}

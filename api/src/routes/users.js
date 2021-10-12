@@ -84,6 +84,11 @@ router.get('/availableEmail/:email', async (req, res, next) => {
     }
 })
 
+router.get('/communityAll', async (req, res) => {
+    const community = await User.findAll({ attributes: ['fullname', 'profilepic', 'username', 'country'], order: [ [ 'createdAt', 'desc' ] ]})
+    res.send(community)
+})
+
 // This route allows us to get the username, fullname, country, photo, dogs and pets of the especified user
 router.get('/:username', async (req, res, next) => {
     try {

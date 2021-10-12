@@ -6,7 +6,8 @@ const initialState = {
   publicUser: {},
   dog: {},
   petBreed: '',
-  loading: false
+  loading: false,
+  communityDogs: []
 }
 
 export default function reducer (state = initialState, action) {
@@ -40,6 +41,11 @@ export default function reducer (state = initialState, action) {
       return {
         ...state,
         dog: action.dog
+      }
+    case 'SET_COMMUNITY_DOGS':
+      return {
+        ...state,
+        communityDogs: action.communityDogs
       }
     case 'SET_PET_BREED':
       return {

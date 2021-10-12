@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import axios from '../../axiosInterceptor.js'
 import { showMessage, getUserInfo } from '../../extras/globalFunctions';
-import { setUser, setPublicUser, setCurrentDog } from '../../actions';
+import { setUser, setPublicUser, setCurrentDog, setCommunityDogs } from '../../actions';
 
 
 
@@ -49,6 +49,9 @@ export default function Post({ name, img, id, likesCount, owner, likes, origin, 
       if (origin === 'publicProfile') {
         const publicUser = await axios.get(`/users${location.pathname}`)
         dispatch(setPublicUser(publicUser.data))
+      } else if (origin === 'communityDogs') {
+        const communityDogs = await axios.get(`/pets/communityAll`);
+        dispatch(setCommunityDogs(communityDogs.data));
       } else {
         const currentDog = await axios.get(`/dogs${location.pathname.slice(7)}`);
         dispatch(setCurrentDog(currentDog.data));
@@ -65,6 +68,9 @@ export default function Post({ name, img, id, likesCount, owner, likes, origin, 
       if (origin === 'publicProfile') {
         const publicUser = await axios.get(`/users${location.pathname}`)
         dispatch(setPublicUser(publicUser.data))
+      } else if (origin === 'communityDogs') {
+        const communityDogs = await axios.get(`/pets/communityAll`);
+        dispatch(setCommunityDogs(communityDogs.data));
       } else {
         const currentDog = await axios.get(`/dogs${location.pathname.slice(7)}`);
         dispatch(setCurrentDog(currentDog.data));
@@ -78,7 +84,7 @@ export default function Post({ name, img, id, likesCount, owner, likes, origin, 
 
   return (
     <>
-      <div id="parentContainer" className={origin === "publicProfile" ? s.post : s.postFullWidth} onClick={handleClick}>
+      <div id="parentContainer" className={["publicProfile", "communityDogs"].includes(origin) ? s.post : s.postFullWidth} onClick={handleClick}>
         <div className={s.firstRow}>
           <Link id='ownerInfo' className={`${s.userInfoContainer} linkRR ${s.boldWeight}`} to={`/${owner.username}`} onClick={handleClick}>
             <img className={s.profilePic} src={owner.profilepic} alt='User profile' id='ownerInfoPhoto' onClick={handleClick}></img>
@@ -91,7 +97,7 @@ export default function Post({ name, img, id, likesCount, owner, likes, origin, 
         <p id='likesTotal' className={s.likesTotal} onClick={handleClick}>{`${likesCount} ${likesCount === 1 ? 'Like' : 'Likes'}`}</p>
         <div className={s.lastRow}>
           <Link id='ownerUsername' className={`${s.username} linkRR`} to={`/${owner.username}`} onClick={handleClick}>{owner.username}</Link>
-          <span>{`My dog's name is ${name}`}{origin === 'publicProfile' ? ['a', 'e', 'i', 'o', 'u'].includes(dog.name[0].toLowerCase()) ? ' and is an ' : ' and is a ' : ''}{origin === 'publicProfile' ? <Link id='breed' to={`/detail/${dog.id}`} className={s.linkDetail} onClick={handleClick}>{dog.name}</Link> : ''}</span>
+          <span>{`My dog's name is ${name}`}{["publicProfile", "communityDogs"].includes(origin) ? ['a', 'e', 'i', 'o', 'u'].includes(dog.name[0].toLowerCase()) ? ' and is an ' : ' and is a ' : ''}{["publicProfile", "communityDogs"].includes(origin) ? <Link id='breed' to={`/detail/${dog.id}`} className={s.linkDetail} onClick={handleClick}>{dog.name}</Link> : ''}</span>
         </div>
       </div>
 

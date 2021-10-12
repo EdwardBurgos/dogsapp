@@ -40,6 +40,13 @@ export function setCurrentDog(dog) {
     }
 }
 
+export function setCommunityDogs(communityDogs) {
+    return {
+        type: 'SET_COMMUNITY_DOGS',
+        communityDogs
+    }
+}
+
 export function setPetBreed(petBreed) {
     return {
         type: 'SET_PET_BREED',

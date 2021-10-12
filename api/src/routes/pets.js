@@ -73,6 +73,43 @@ router.get('/own', passport.authenticate('jwt', { session: false }), async (req,
     }
 })
 
+router.get('/communityAll', async (req, res, next) => {
+    try {
+        let community = await Pet.findAll({
+            include: [
+                {
+                    model: Like,
+                    as: "likes",
+                    attributes: ["createdAt"],
+                    include: [
+                        {
+                            model: User,
+                            as: "user",
+                            attributes: ["id", "fullname", "username", "profilepic"]
+                        }
+                    ]
+                },
+                {
+                    model: Dog,
+                    as: "dog",
+                    attributes: ['id', 'name']
+                },
+                {
+                    model: User,
+                    as: "user",
+                    attributes: ['username', 'fullname', 'profilepic']
+                }
+            ], 
+            attributes: ['id', 'name', 'photo'], 
+            order: [['createdAt', 'desc'], [{ model: Like, as: 'likes' }, 'createdAt', 'desc']]
+        })
+        res.send(community.map(e => { return { ...e.dataValues, likesCount: e.dataValues.likes.length, likes: e.dataValues.likes.map(e => e.user) } }))
+    } catch (e) {
+        console.log(e)
+        next()
+    }
+})
+
 // This route allows us to get pet by id
 router.get('/:id', async (req, res, next) => {
     try {
