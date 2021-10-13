@@ -31,9 +31,6 @@ import { countries } from './extras/countries';
 function App() {
   // Redux states
 
-  // const google = window.google;
-
-
   const user = useSelector(state => state.user)
 
   const [loggedIn, setLoggedIn] = useState(false)
@@ -112,128 +109,134 @@ function App() {
         dispatch(setUser(user));
         history.push('/home')
       }
-      if (!Object.keys(user).length) {
-        window.google.accounts.id.initialize({
-          client_id: process.env.REACT_APP_CLIENT_ID,
-          ux_mode: 'redirect', // This allows us to work in incognite mode
-          callback: onOneTapSignedIn
-        })
-        window.google.accounts.id.prompt(notification => {
-          //console.log('on prompt notification', notification)
-        })
-      }
+      document.getElementById('googleOneTap').addEventListener('load', () => {
+        // Patiently waiting to do the thing 
+        if (!Object.keys(user).length && window.google) {
+
+          window.google.accounts.id.initialize({
+            client_id: process.env.REACT_APP_CLIENT_ID,
+            ux_mode: 'redirect', // This allows us to work in incognite mode
+            callback: onOneTapSignedIn
+          })
+          window.google.accounts.id.prompt(notification => {
+            //console.log('on prompt notification', notification)
+          })
+        } else {
+          console.log(window.google)
+        }
+      })
     }
-    cargaInicial();
-    return () => source.cancel("Unmounted");
-  }, [dispatch])
+  cargaInicial();
+  return () => source.cancel("Unmounted");
+}, [dispatch])
 
 
-  // This function allows us to register and login with Google
-  async function handleModalSubmit(e) {
-    e.preventDefault();
-    if (Object.keys(googleProfile).length) {
-      try {
-        let { name, given_name, family_name, picture, email } = googleProfile;
-        const registered = await axios.post(`/users/register`, {
-          fullname: name,
-          name: given_name,
-          lastname: family_name,
-          profilepic: picture ? picture : 'https://firebasestorage.googleapis.com/v0/b/dogsapp-f043d.appspot.com/o/defaultProfilePic.jpg?alt=media&token=cfd199e8-c010-45ab-972b-c967c55f3461',
-          username,
-          country,
-          email: email,
-          password: 'google',
-          type: 'Google'
-        });
-        showMessage(`${registered.data.user} your registration was successful`);
-        const logged = await axios.post(`/users/login`, {
-          emailORusername: email,
-          password: '',
-          type: 'Google'
-        });
-        setLocalStorage(logged.data);
-        setShowModal(false);
-        const user = await getUserInfo();
-        dispatch(setUser(user))
-        history.push('/home')
-        showMessage(`${logged.data.user} your login was successful`);
-      } catch (e) {
-        dispatch(setUser({}));
-        history.push('/home')
-        if (e.response.status === 409 && e.response.data.msg === "There is already a user with this username") return setErrUsername(e.response.data.msg)
-        showMessage('Sorry, an error occurred');
-      }
-    } else {
-      dispatch(setUser({})); history.push('/home'); return showMessage('Sorry, an error occurred');
+// This function allows us to register and login with Google
+async function handleModalSubmit(e) {
+  e.preventDefault();
+  if (Object.keys(googleProfile).length) {
+    try {
+      let { name, given_name, family_name, picture, email } = googleProfile;
+      const registered = await axios.post(`/users/register`, {
+        fullname: name,
+        name: given_name,
+        lastname: family_name,
+        profilepic: picture ? picture : 'https://firebasestorage.googleapis.com/v0/b/dogsapp-f043d.appspot.com/o/defaultProfilePic.jpg?alt=media&token=cfd199e8-c010-45ab-972b-c967c55f3461',
+        username,
+        country,
+        email: email,
+        password: 'google',
+        type: 'Google'
+      });
+      showMessage(`${registered.data.user} your registration was successful`);
+      const logged = await axios.post(`/users/login`, {
+        emailORusername: email,
+        password: '',
+        type: 'Google'
+      });
+      setLocalStorage(logged.data);
+      setShowModal(false);
+      const user = await getUserInfo();
+      dispatch(setUser(user))
+      history.push('/home')
+      showMessage(`${logged.data.user} your login was successful`);
+    } catch (e) {
+      dispatch(setUser({}));
+      history.push('/home')
+      if (e.response.status === 409 && e.response.data.msg === "There is already a user with this username") return setErrUsername(e.response.data.msg)
+      showMessage('Sorry, an error occurred');
     }
+  } else {
+    dispatch(setUser({})); history.push('/home'); return showMessage('Sorry, an error occurred');
   }
+}
 
-  return (
-    <>
-      {
-        user ?
-          <div>
-            <NavBar />
-            <div className={s.padding}>
-              <Switch>
-                <Route path="/home" component={Home} />
-                <Route path="/detail/:id" render={({ match }) => <Detail id={match.params.id} />} />
-                <Route path="/registerDog" component={RegisterPet} />
-                <Route path="/editDog/:id" render={({ match }) => Object.keys(user).length && user.pets.includes(parseInt(match.params.id)) ? <EditPet id={match.params.id} /> : <Redirect to="/home" />}></Route>
-                <Route path="/dog/:id" render={({ match }) => <Pet id={match.params.id} />} />
-                <Route path="/profile">{Object.keys(user).length ? <Profile /> : <Redirect to="/login" />}</Route>
-                <Route path="/login">{Object.keys(user).length ? <Redirect to="/profile" /> : <Login />}</Route>
-                <Route path="/signup" >{Object.keys(user).length ? <Redirect to="/profile" /> : <Signup />}</Route>
-                <Route path="/community" component={Community} />
-                <Route path="/communityDogs" component={CommunityDogs} />
-                <Route path="/auto/:reason/:token" render={({ match }) => <VerifyEmail reason={match.params.reason} token={match.params.token} expires={query.get("expires")} />} />
-                {/* <Route path="/verifyEmail/:token" render={({ match }) =>  ? <EditPet id={match.params.id} /> : <Redirect to="/home"/> }></Route> */}
-                <Route path="/:username" render={({ match }) => <User username={match.params.username} />} />
-              </Switch>
-            </div>
+return (
+  <>
+    {
+      user ?
+        <div>
+          <NavBar />
+          <div className={s.padding}>
+            <Switch>
+              <Route path="/home" component={Home} />
+              <Route path="/detail/:id" render={({ match }) => <Detail id={match.params.id} />} />
+              <Route path="/registerDog" component={RegisterPet} />
+              <Route path="/editDog/:id" render={({ match }) => Object.keys(user).length && user.pets.includes(parseInt(match.params.id)) ? <EditPet id={match.params.id} /> : <Redirect to="/home" />}></Route>
+              <Route path="/dog/:id" render={({ match }) => <Pet id={match.params.id} />} />
+              <Route path="/profile">{Object.keys(user).length ? <Profile /> : <Redirect to="/login" />}</Route>
+              <Route path="/login">{Object.keys(user).length ? <Redirect to="/profile" /> : <Login />}</Route>
+              <Route path="/signup" >{Object.keys(user).length ? <Redirect to="/profile" /> : <Signup />}</Route>
+              <Route path="/community" component={Community} />
+              <Route path="/communityDogs" component={CommunityDogs} />
+              <Route path="/auto/:reason/:token" render={({ match }) => <VerifyEmail reason={match.params.reason} token={match.params.token} expires={query.get("expires")} />} />
+              {/* <Route path="/verifyEmail/:token" render={({ match }) =>  ? <EditPet id={match.params.id} /> : <Redirect to="/home"/> }></Route> */}
+              <Route path="/:username" render={({ match }) => <User username={match.params.username} />} />
+            </Switch>
           </div>
-          :
-          <div className={s.container}>
-            <Loading />
+        </div>
+        :
+        <div className={s.container}>
+          <Loading />
+        </div>
+    }
+
+    <Modal
+      show={showModal}
+      backdrop="static"
+      aria-labelledby="contained-modal-title-vcenter"
+      centered
+      keyboard={false}
+    >
+      <Modal.Header closeButton>
+        <Modal.Title id="contained-modal-title-vcenter">
+          Complete this form
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <form onSubmit={handleModalSubmit}>
+          <div className={errUsername ? '' : 'mb-3'}>
+            <label className={s.label} htmlFor="usernameValue">Username</label>
+            <input id="usernameValue" value={username} name='usernameValue' onChange={handleChange} className={`form-control ${s.input} ${errUsername ? s.errorInput : ''}`} />
           </div>
-      }
+          {errUsername ? <small className={s.error}>{errUsername}</small> : null}
 
-      <Modal
-        show={showModal}
-        backdrop="static"
-        aria-labelledby="contained-modal-title-vcenter"
-        centered
-        keyboard={false}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title id="contained-modal-title-vcenter">
-            Complete this form
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <form onSubmit={handleModalSubmit}>
-            <div className={errUsername ? '' : 'mb-3'}>
-              <label className={s.label} htmlFor="usernameValue">Username</label>
-              <input id="usernameValue" value={username} name='usernameValue' onChange={handleChange} className={`form-control ${s.input} ${errUsername ? s.errorInput : ''}`} />
-            </div>
-            {errUsername ? <small className={s.error}>{errUsername}</small> : null}
+          <div className='mb-3'>
+            <label className={s.label} htmlFor="countryValue">Country</label>
+            <select id="countryValue" name='countryValue' value={country} onChange={handleChange} className={`form-control ${s.input}`}>
+              {country === "Select a country" ? <option key="Select a country" value="Select a country">Select a country</option> : null}
+              {countries.map(c => {
+                return <option key={c.code} value={c.name}>{c.name}</option>
+              })}
+            </select>
+          </div>
 
-            <div className='mb-3'>
-              <label className={s.label} htmlFor="countryValue">Country</label>
-              <select id="countryValue" name='countryValue' value={country} onChange={handleChange} className={`form-control ${s.input}`}>
-                {country === "Select a country" ? <option key="Select a country" value="Select a country">Select a country</option> : null}
-                {countries.map(c => {
-                  return <option key={c.code} value={c.name}>{c.name}</option>
-                })}
-              </select>
-            </div>
-
-            <input type="submit" value="Log in" disabled={modalButtonState} className={`w-100 btn btn-primary`} />
-          </form>
-        </Modal.Body>
-      </Modal>
-    </>
-  );
+          <input type="submit" value="Log in" disabled={modalButtonState} className={`w-100 btn btn-primary`} />
+        </form>
+      </Modal.Body>
+    </Modal>
+  </>
+);
 }
 
 export default App;
