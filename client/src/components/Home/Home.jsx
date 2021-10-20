@@ -141,7 +141,8 @@ export default function Home() {
                     {selectedTemperaments.map(e =>
                       <div key={e} className={s.temperamentContainer}>
                         <span className={s.temperament}>{e}</span>
-                        <IonIcon icon={closeCircleOutline} className={s.iconDumb} onClick={event => { setSelectedTemperaments([...new Set(selectedTemperaments.filter(element => element !== e))]); filter({ target: { value: e, id: `id${e.toLowerCase()}` } }, selectedTemperaments); }}></IonIcon>
+                        <IonIcon icon={closeCircleOutline} className={s.iconDumb} onClick={event => { setSelectedTemperaments([...new Set(selectedTemperaments.filter(element => element !== e))]); filter({ target: { value: e, id: `id${e.toLowerCase()}` } }, selectedTemperaments); }}></IonIcon> 
+                        {/* The previous invocation of filter function requires the current selectedTemperaments (at the time of its execution) as second parameter */}
                       </div>
                     )}
                   </div>
